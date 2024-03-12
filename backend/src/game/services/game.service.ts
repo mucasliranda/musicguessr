@@ -1,19 +1,16 @@
 import { Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
-import { PrismaService } from "src/database/prisma.service";
+import { GameRepository } from "../repositories/game-repository";
 
 @Injectable()
 export class GameService {
   constructor(
-    private prisma: PrismaService,
+    private gameRepository: GameRepository,
   ) {}
 
-  async create(gameId: string, artistId: string) {
-    const gameCreated = await this.prisma.game.create({
-      data: {
-        id: gameId,
-        artist: artistId,
-      }
+  async createGame(gameId: string, artistId: string) {
+    const gameCreated = await this.gameRepository.create({
+      id: gameId,
+      artist: artistId,
     });
   }
 }

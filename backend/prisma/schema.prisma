@@ -17,8 +17,11 @@ model Game {
 }
 
 model Round {
-  id     Int    @id
-  music  String
-  game   Game   @relation(fields: [gameId], references: [id])
-  gameId String
+  id       String   @id
+  musicId  String
+  music    String
+  game     Game     @relation(fields: [gameId], references: [id])
+  gameId   String
+  tries    Int?     @default(0)
+  finished Boolean? @default(false)
 }

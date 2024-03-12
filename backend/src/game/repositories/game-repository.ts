@@ -1,3 +1,8 @@
-abstract class GameRepository {
-  abstract create(gameId: string, artistId: string): Promise<void>;
+import { Game } from "@prisma/client";
+
+export abstract class GameRepository {
+  abstract create({
+    id,
+    artist,
+  }: Game): Promise<void>;
 }

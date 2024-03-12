@@ -9,13 +9,12 @@ import { PrismaService } from './database/prisma.service';
 @Module({
   imports: [
     SpotifyModule,
-    PrismaService,
     ConfigModule.forRoot({
       isGlobal: true,
       load: [config]
     }),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, PrismaService],
 })
 export class AppModule {}
