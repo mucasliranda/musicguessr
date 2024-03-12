@@ -1,9 +1,9 @@
-import { Round } from "@prisma/client";
+import { CreateRoundDto } from "../dtos/create-round.dto";
 
 export abstract class RoundRepository {
   abstract create({
     gameId,
     musicId,
     music,
-  }: Omit<Round, "tries" | "finished">): Promise<Round>;
+  }: CreateRoundDto): Promise<void>;
 }

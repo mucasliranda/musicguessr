@@ -1,8 +1,11 @@
-import { Injectable } from "@nestjs/common";
+import { SpotifyRepository } from "../spotify-repository";
+
+// import { CreateRoundDto } from "../dtos/create-round.dto";
 import { ConfigService } from "@nestjs/config";
 
-@Injectable()
-export class SpotifyService {
+
+
+export class ApiSpotifyRepository implements SpotifyRepository {
   constructor(
     private configService: ConfigService,
   ) {}
@@ -94,4 +97,4 @@ export class SpotifyService {
     const oneHour = 3600 * 1000; // 3600 seconds in milliseconds
     return (Date.now() - this.tokenObtainedAt) >= oneHour;
   }
-};
+}

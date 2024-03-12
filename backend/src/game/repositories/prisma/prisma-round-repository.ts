@@ -12,8 +12,8 @@ export class PrismaRoundRepository implements RoundRepository {
     gameId,
     musicId,
     music,
-  }: Round): Promise<Round> {
-    const round = await this.prisma.round.create({
+  }: Round): Promise<void> {
+    await this.prisma.round.create({
       data: {
         musicId: musicId,
         id: randomUUID(),
@@ -27,7 +27,5 @@ export class PrismaRoundRepository implements RoundRepository {
         }
       }
     });
-
-    return round;
   }
 }
