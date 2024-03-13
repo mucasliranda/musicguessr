@@ -5,4 +5,6 @@ export abstract class GameRepository {
     id,
     artist,
   }: Game): Promise<void>;
+
+  abstract getGame(gameId: string): Promise<Game>;
 }

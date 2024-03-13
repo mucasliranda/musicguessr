@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString, IsNumber } from 'class-validator';
 
 export class CreateRoundDto {
   @IsNotEmpty()
@@ -12,4 +12,12 @@ export class CreateRoundDto {
   @IsNotEmpty()
   @IsString()
   music: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  startAt: number
+
+  @IsNotEmpty()
+  @IsNumber()
+  number: number;
 }

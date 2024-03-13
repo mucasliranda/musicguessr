@@ -18,8 +18,10 @@ model Game {
 
 model Round {
   id       String   @id
+  number   Int
   musicId  String
   music    String
+  startAt  Int
   game     Game     @relation(fields: [gameId], references: [id])
   gameId   String
   tries    Int?     @default(0)

@@ -7,5 +7,5 @@ export class CreateGameDto {
 
   @IsNotEmpty()
   @IsString()
-  artistId?: string;
+  artistId: string;
 }

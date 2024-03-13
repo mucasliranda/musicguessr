@@ -5,5 +5,7 @@ export abstract class RoundRepository {
     gameId,
     musicId,
     music,
+    startAt,
+    number,
   }: CreateRoundDto): Promise<void>;
 }

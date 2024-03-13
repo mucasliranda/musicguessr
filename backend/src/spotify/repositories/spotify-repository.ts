@@ -2,8 +2,8 @@
 
 
 export abstract class SpotifyRepository {
-  abstract getTrackAudioAnalysis(trackId: string): Promise<any>;
-  abstract getTopTracksByArtist(artistId: string): Promise<any>;
+  abstract getTrackHighlights(trackId: string, by: 'segments' | 'sections'): Promise<Array<number>>;
+  abstract getTopTracksByArtist(artistId: string): Promise<Array<{id: string, name: string}>>;
   abstract getArtistsBySearch(search: string): Promise<any>;
   abstract getAccessToken(): Promise<string>
 }
