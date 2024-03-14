@@ -1,4 +1,5 @@
 import { randomUUID } from "crypto";
+import Link from "next/link";
 
 interface Artist {
   id: string;
@@ -17,10 +18,10 @@ async function getArtists(searchValue: string) {
   return body.artists as Array<Artist>;
 }
 
-export default async function Search({ searchParams }:{ searchParams?: { [key: string]: string | string[] | undefined } }) {
-  const { q: searchValue } = searchParams as { [key: string]: string };
+export default async function SearchArtistId({ params }:{ params?: { [key: string]: string | string[] | undefined } }) {
+  const { artist } = params as { [key: string]: string };
 
-  const artists = await getArtists(searchValue)
+  const artists = await getArtists(artist)
 
   return (
     <div
@@ -37,7 +38,7 @@ export default async function Search({ searchParams }:{ searchParams?: { [key: s
 
           return (
             <li key={artist.id} className="aspect-square transition-opacity bg-white rounded-lg pb-4">
-              <a href={`/play/${randomUUID()}?artist=${artist.id}`}>
+              <Link href={`/play/${randomUUID()}?artist=${artist.id}`}>
                 {!!rightImage && (
                   <div className="w-[320px] h-[320px] rounded-lg overflow-hidden">
                     <img
@@ -48,7 +49,7 @@ export default async function Search({ searchParams }:{ searchParams?: { [key: s
                   </div>
                 )}
                 <p className="mt-2 ml-2 text-base font-medium">{artist.name}</p>
-              </a>
+              </Link>
             </li>
           );
         })}

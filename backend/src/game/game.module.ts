@@ -6,14 +6,21 @@ import { PrismaRoundRepository } from './repositories/prisma/prisma-round-reposi
 import { RoundRepository } from './repositories/round-repository';
 import { GameService } from './services/game.service';
 import { Module } from '@nestjs/common';
+import { SpotifyService } from 'src/spotify/services/spotify.service';
+import { SpotifyRepository } from 'src/spotify/repositories/spotify-repository';
+import { ApiSpotifyRepository } from 'src/spotify/repositories/api/api-spotify-repository';
 
 @Module({
   imports: [],
   controllers: [GameController],
   providers: [
     GameService,
+    SpotifyService,
     PrismaService,
     {
+      provide: SpotifyRepository,
+      useClass: ApiSpotifyRepository,
+    }, {
       provide: GameRepository,
       useClass: PrismaGameRepository,
     }, {

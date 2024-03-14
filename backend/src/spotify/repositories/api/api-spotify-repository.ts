@@ -16,6 +16,20 @@ export class ApiSpotifyRepository implements SpotifyRepository {
 
   // whats my age again     4LJhJ6DQS7NwE7UKtvcM52
 
+  async getTrackPreview(trackId: string): Promise<string> {
+    await this.ensureAccessToken();
+
+    const _fetch = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      }
+    });
+
+    const res = await _fetch.json();
+
+    return res.preview_url
+  }
+
   async getTrackHighlights(trackId: string, by: 'segments' | 'sections' = 'segments'): Promise<Array<number>> {
     await this.ensureAccessToken();
 
