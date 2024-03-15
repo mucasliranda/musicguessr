@@ -28,7 +28,7 @@ export default async function SearchArtistId({ params }:{ params?: { [key: strin
       className="pt-4"
     >
       <ul
-        className="grid gap-8 grid-cols-4"
+        className="grid gap-8 grid-cols-5 2xl:grid-cols-6"
       >
         {artists && artists.map((artist) => {
           const rightImage = (() => {
@@ -37,18 +37,30 @@ export default async function SearchArtistId({ params }:{ params?: { [key: strin
           })();
 
           return (
-            <li key={artist.id} className="aspect-square transition-opacity bg-white rounded-lg pb-4">
+            <li key={artist.id} className="aspect-square transition-opacity bg-onBackground rounded-lg pb-4">
               <Link href={`/play/${randomUUID()}?artist=${artist.id}`}>
                 {!!rightImage && (
-                  <div className="w-[320px] h-[320px] rounded-lg overflow-hidden">
+                  <div className="w-[200px] h-[200px] rounded-ss-lg rounded-se-lg overflow-hidden">
                     <img
                       src={rightImage.url}
                       alt={artist.name}
-                      className="object-cover w-full h-full hover:scale-110 "
+                      className="
+                      object-cover 
+                      w-full 
+                      h-full 
+
+                      grayscale-30
+                      hover:grayscale-0
+
+                      transition 
+                      duration-500 
+                      ease-in-out 
+                      transform 
+                      hover:scale-110"
                     />
                   </div>
                 )}
-                <p className="mt-2 ml-2 text-base font-medium">{artist.name}</p>
+                <p className="mt-2 ml-2 text-base text-white font-medium">{artist.name}</p>
               </Link>
             </li>
           );

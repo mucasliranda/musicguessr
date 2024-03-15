@@ -22,6 +22,9 @@ export default function Navbar() {
   return (
     <nav className="w-full flex justify-center">
       <form onSubmit={onSubmit} className="max-w-[550px] w-full relative">
+        <div className="absolute left-0 top-0 ml-3 flex h-full items-center">
+          <GlassIcon />
+        </div>
         <input
           key={artist}
           type="text"
@@ -29,11 +32,22 @@ export default function Navbar() {
           placeholder="Search for artists..."
           autoComplete="off"
           defaultValue={artist || ''}
-          className="w-full rounded-lg border border-primary focus:border-primary selection:border-primary bg-onBackground px-4 py-3 pr-10 text-lg text-neutral-500 placeholder:text-neutral-500"
+          className="
+            w-full 
+
+            rounded-3xl
+            border
+            border-transparent
+
+            hover:border-[#FFFFFF33]
+            
+            focus:border-primary 
+            focus:outline-none
+
+            bg-onBackground px-4 py-3 pl-10 
+            text-base text-neutral-100 
+            placeholder:text-neutral-500"
         />
-        <div className="absolute right-0 top-0 mr-3 flex h-full items-center">
-          <GlassIcon />
-        </div>
       </form>
     </nav>
   )
