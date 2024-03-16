@@ -1,3 +1,5 @@
+import { randomUUID } from "crypto";
+import { redirect } from "next/navigation";
 
 
 
@@ -24,6 +26,8 @@ export default async function ArtistPage({ params }:{ params?: { [key: string]: 
       "use server"
 
       console.log({albums: formData.getAll('albums')});
+
+      redirect(`/lobby/${randomUUID()}`)
     }}>
       <button type="submit" className="py-2 px-6 rounded-lg text-lg text-white self-end bg-primary hover:bg-[#1ed760] active:scale-95">
         Start Game

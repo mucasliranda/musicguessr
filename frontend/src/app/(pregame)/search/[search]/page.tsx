@@ -13,8 +13,6 @@ async function getArtists(searchValue: string) {
   
   const body = await res.json();
 
-  console.log(body.artists)
-
   return body.artists as Array<Artist>;
 }
 
