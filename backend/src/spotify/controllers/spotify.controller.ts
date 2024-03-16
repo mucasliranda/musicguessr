@@ -9,4 +9,9 @@ export class SpotifyController {
   getArtistsBySearch(@Query('q') q: string) {
     return this.spotifyService.getArtistsBySearch(q);
   }
+
+  @Get('/artist/albums')
+  getArtistAlbums(@Query('q') q: string) {
+    return this.spotifyService.getArtistAlbums(q);
+  }
 }

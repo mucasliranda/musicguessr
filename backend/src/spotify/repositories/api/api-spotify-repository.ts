@@ -4,6 +4,23 @@ import { ConfigService } from "@nestjs/config";
 
 
 
+function getRightImage(images: any[] | null) {
+  // preciso pegar a imagem que tem a menor diferença entre a largura e a altura
+  // e que seja maior ou igual que a largura desejada
+  const desiredWidth = 300; // Substitua isso pela largura desejada
+  let selectedImage = images[0];
+
+  images.forEach((img) => {
+    if (img.width >= desiredWidth && img.height >= desiredWidth) {
+      if (selectedImage.width > img.width && selectedImage.height > img.height) {
+        selectedImage = img;
+      }
+    }
+  });
+
+  return selectedImage?.url
+}
+
 @Injectable()
 export class ApiSpotifyRepository implements SpotifyRepository {
   constructor(
@@ -15,6 +32,27 @@ export class ApiSpotifyRepository implements SpotifyRepository {
   private tokenObtainedAt: number;
 
   // whats my age again     4LJhJ6DQS7NwE7UKtvcM52
+  // blink                  6FBDaR13swtiWwGhX1WQsP
+
+  async getArtistAlbums(artistId: string): Promise<Array<{id: string, name: string, image: string}>> {
+    await this.ensureAccessToken();
+
+    const _fetch = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums`, {
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      }
+    });
+
+    const res = await _fetch.json();
+
+    return res.items.map((album) => {
+      return {
+        id: album.id,
+        name: album.name,
+        image: getRightImage(album.images),
+      }
+    });
+  }
 
   async getTrackPreview(trackId: string): Promise<string> {
     await this.ensureAccessToken();
@@ -85,7 +123,7 @@ export class ApiSpotifyRepository implements SpotifyRepository {
         return {
           id: artist.id,
           name: artist.name,
-          images: artist.images,
+          image: getRightImage(artist.images),
         }
       })
     }

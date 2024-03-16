@@ -41,7 +41,7 @@ export default function Navbar() {
 
             hover:border-[#FFFFFF33]
             
-            focus:border-primary 
+            focus:border-primary
             focus:outline-none
 
             bg-onBackground px-4 py-3 pl-10 

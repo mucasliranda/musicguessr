@@ -10,10 +10,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      backgroundImage: {
-        "gradient-radial": "radial-gradient(var(--tw-gradient-stops))",
-        "gradient-conic":
-          "conic-gradient(from 180deg at 50% 50%, var(--tw-gradient-stops))",
+      backgroundImage: theme => ({
+        'gradient-radial': 'radial-gradient(red, red)',
+      }),
+      backgroundSize: {
+        'size-3px': '100% 3px',
       },
       colors: {
         primary: '#1DB954',
@@ -33,6 +34,8 @@ const config: Config = {
       },
     },
   },
-  plugins: [],
+  plugins: [
+    require('@tailwindcss/forms'),
+  ],
 };
 export default config;

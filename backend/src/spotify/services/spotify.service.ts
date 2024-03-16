@@ -7,6 +7,10 @@ export class SpotifyService {
     private readonly spotifyRepository: SpotifyRepository,
   ) {}
 
+  async getArtistAlbums(artistId: string): Promise<any> {
+    return this.spotifyRepository.getArtistAlbums(artistId);
+  }
+
   async getArtistsBySearch(search: string): Promise<any> {
     return this.spotifyRepository.getArtistsBySearch(search);
   }
