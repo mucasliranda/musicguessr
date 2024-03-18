@@ -1,17 +1,8 @@
 import Button from "@/shared/components/Button";
-import UserPhoto from "../components/UserPhoto";
-import { redirect } from "next/navigation";
-import StartGameButton from "../components/StartGameButton";
 
 
 
-export default async function Lobby({ params }: { params: { lobbyId: string } }) {
-
-  async function onStartGame() {
-    'use server'
-    // Start the game
-    redirect(`/game/${params.lobbyId}`);
-  }
+export default async function Game() {
 
   return (
     <div className="w-full max-w-screen-2xl h-screen flex">
@@ -38,7 +29,7 @@ export default async function Lobby({ params }: { params: { lobbyId: string } })
             border-primary
           "
         >
-          Lobby
+          Players Score
         </h3>
 
         <ul
@@ -69,7 +60,11 @@ export default async function Lobby({ params }: { params: { lobbyId: string } })
               Player Name
             </p>
 
-            <UserPhoto />
+            <p
+              className="text-white"
+            >
+              0
+            </p>
           </li>
 
           <li
@@ -89,11 +84,13 @@ export default async function Lobby({ params }: { params: { lobbyId: string } })
               Player Name
             </p>
 
-            <UserPhoto />
+            <p
+              className="text-white"
+            >
+              0
+            </p>
           </li>
         </ul>
-
-        <StartGameButton />
       </div>
 
       <div 
@@ -102,55 +99,54 @@ export default async function Lobby({ params }: { params: { lobbyId: string } })
           h-full
 
           p-4
+
+          flex
+          flex-col
+          gap-4
         "
       >
-        <h2
+
+
+        <div
           className="
-            text-3xl
-            text-white
-            font-bold
+            flex
+
+            gap-4
           "
         >
-          Waiting for Players...
-        </h2>
+          <Button>
+            Replay Song
+          </Button>
+
+          <Button>
+            Skip
+          </Button>
+        </div>
+        
+
         <div
           className="
             w-full
             h-full
 
-            flex
-            flex-col
-            justify-center
-            items-center
+            bg-red-300
+
+            grid
             gap-4
+            grid-cols-5 
+            2xl:grid-cols-6
           "
         >
-          <p
-            className="
-              text-base
-              text-white
-            "
-          >
-            Share the invite link with your friends to start the game!
-          </p>
-          <button
-            className="
-              py-2
-              px-6 
-              rounded-md 
-              
-              text-sm
-              text-white 
-              bg-primary 
-              
-              hover:bg-[#1ed760]
-              active:scale-95
-            "
-          >
-            Copy Invite Link
-          </button>
+          {Array(16).fill(0).map((_, i) => {
+            return (
+              <div
+                className="
+                  bg-blue-300
+                "
+              />
+            )
+          })}
         </div>
-
       </div>
     </div>
   )

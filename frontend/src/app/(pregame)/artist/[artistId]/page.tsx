@@ -30,7 +30,7 @@ export default async function ArtistPage({ params }:{ params?: { [key: string]: 
       redirect(`/lobby/${randomUUID()}`)
     }}>
       <button type="submit" className="py-2 px-6 rounded-lg text-lg text-white self-end bg-primary hover:bg-[#1ed760] active:scale-95">
-        Start Game
+        Create Lobby
       </button>
 
       <div className="grid gap-8 grid-cols-5 2xl:grid-cols-6">
