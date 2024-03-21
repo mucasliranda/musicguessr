@@ -10,10 +10,13 @@ interface Album {
 }
 
 async function getAlbums(artistId: string) {
-  const res = await fetch(`http://localhost:3005/artist/albums?q=${artistId}`);
+  const res = await fetch(`http://localhost:3005/artist/albums?q=${artistId}`, {
+    cache: 'no-cache',
+  });
+  
   const body = await res.json();
 
-  return body as Array<Album>;
+  return body.albums as Array<Album>;
 }
 
 export default async function ArtistPage({ params }:{ params?: { [key: string]: string | string[] | undefined } }) {
@@ -25,9 +28,21 @@ export default async function ArtistPage({ params }:{ params?: { [key: string]: 
     <form className="pt-4 flex flex-col items-start gap-8" action={async (formData: FormData) => {
       "use server"
 
-      console.log({albums: formData.getAll('albums')});
+      const albums = formData.getAll('albums');
+      const gameId = randomUUID();
 
-      redirect(`/lobby/${randomUUID()}`)
+      const res = await fetch('http://localhost:3005/game', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          gameId: gameId,
+          albums: albums,
+        }),
+      });
+
+      redirect(`/game/${gameId}`)
     }}>
       <button type="submit" className="py-2 px-6 rounded-lg text-lg text-white self-end bg-primary hover:bg-[#1ed760] active:scale-95">
         Create Lobby

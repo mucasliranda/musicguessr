@@ -1,35 +1,41 @@
-import { useRef } from "react"
+'use client';
 
-interface Props extends React.HTMLProps<HTMLAudioElement>{
-  startAt: number;
-}
+import { usePlayer } from "@/providers/player";
+import { useSocket } from "@/providers/socket";
 
 
-export default function Player({
-  startAt,
-  ...props
-}: Props) {
-  const playerRef = useRef<HTMLAudioElement>(null)
 
-  return (
-    <div>
-      <audio
-        ref={playerRef}
-        onPlay={() => {
-          if (playerRef.current) {
-            playerRef.current.currentTime = startAt / 1000
-          }
-        }}
-        // preciso fazer que o audio toque somente 1 segundo e pare
-        onTimeUpdate={() => {
-          if (playerRef.current) {
-            if (playerRef.current.currentTime - startAt / 1000 > 1.5) {
-              playerRef.current.pause()
+export default function Player() {
+  const { currentSong } = useSocket();
+  
+  if(!!currentSong) {
+    
+    const { playerRef } = usePlayer();
+    
+    const { startAt, url } = currentSong;
+
+    return (
+      <div>
+        <audio
+          ref={playerRef}
+          onPlay={() => {
+            if (playerRef.current) {
+              playerRef.current.currentTime = startAt
             }
-          }
-        }}
-        {...props}
-      />
-    </div>
-  )
+          }}
+          onTimeUpdate={() => {
+            if (playerRef.current) {
+              if (playerRef.current.currentTime - startAt > 1.5) {
+                playerRef.current.pause()
+              }
+            }
+          }}
+          src={url}
+          autoPlay
+        />
+      </div>
+    )
+  }
+
+  return (<></>)
 }

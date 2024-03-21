@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateGameDto {
   @IsNotEmpty()
@@ -6,6 +6,6 @@ export class CreateGameDto {
   gameId: string;
 
   @IsNotEmpty()
-  @IsString()
-  artistId: string;
+  @IsArray()
+  albums: Array<string>;
 }

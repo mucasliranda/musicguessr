@@ -1,4 +1,4 @@
-import Navbar from "@/app/(pregame)/search/components/Navbar";
+import Navbar from "@/app/(pregame)/(choose artist)/search/components/Navbar";
 
 
 

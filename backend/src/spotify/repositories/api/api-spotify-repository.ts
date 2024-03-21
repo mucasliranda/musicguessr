@@ -31,10 +31,7 @@ export class ApiSpotifyRepository implements SpotifyRepository {
   private clientSecret: string = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
   private tokenObtainedAt: number;
 
-  // whats my age again     4LJhJ6DQS7NwE7UKtvcM52
-  // blink                  6FBDaR13swtiWwGhX1WQsP
-
-  async getArtistAlbums(artistId: string): Promise<Array<{id: string, name: string, image: string}>> {
+  async getArtistAlbums(artistId: string) {
     await this.ensureAccessToken();
 
     const _fetch = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums`, {
@@ -45,68 +42,43 @@ export class ApiSpotifyRepository implements SpotifyRepository {
 
     const res = await _fetch.json();
 
-    return res.items.map((album) => {
-      return {
-        id: album.id,
-        name: album.name,
-        image: getRightImage(album.images),
-      }
-    });
+    return {
+      status: _fetch.status,
+      data: res.items.map((album) => {
+        return {
+          id: album.id,
+          name: album.name,
+          image: getRightImage(album.images),
+        }
+      })
+    }
   }
 
-  async getTrackPreview(trackId: string): Promise<string> {
+  async getSongsByAlbum(albumId: string) {
     await this.ensureAccessToken();
 
-    const _fetch = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+    const _fetch = await fetch(`https://api.spotify.com/v1/albums/${albumId}/tracks`, {
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
-      }
+      },
     });
 
     const res = await _fetch.json();
 
-    return res.preview_url
+    return {
+      status: _fetch.status,
+      data: res.items.map((song) => {
+        return {
+          id: song.id,
+          name: song.name,
+          url: song.preview_url,
+          playable: !!song.preview_url,
+        } 
+      })
+    }
   }
 
-  async getTrackHighlights(trackId: string, by: 'segments' | 'sections' = 'segments'): Promise<Array<number>> {
-    await this.ensureAccessToken();
-
-    const _fetch = await fetch(`https://api.spotify.com/v1/audio-analysis/${trackId}`, {
-      headers: {
-        'Authorization': `Bearer ${this.accessToken}`
-      }
-    });
-
-    const res = await _fetch.json();
-
-    const highlights = res[by].map((segment) => {
-      // seconds to milliseconds
-      return segment.start * 1000
-    });
-
-    return highlights as number[]
-  }
-
-  async getTopTracksByArtist(artistId: string): Promise<Array<{id: string, name: string}>> {
-    await this.ensureAccessToken();
-
-    const _fetch = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=BR`, {
-      headers: {
-        'Authorization': `Bearer ${this.accessToken}`
-      }
-    });
-
-    const res = await _fetch.json();
-
-    return res.tracks.map((track) => {
-      return {
-        id: track.id,
-        name: track.name,
-      }
-    });
-  };
-
-  async getArtistsBySearch(search: string): Promise<any> {
+  async getArtistsBySearch(search: string) {
     await this.ensureAccessToken();
 
     const _fetch = await fetch(`https://api.spotify.com/v1/search?q=${search}&type=artist&limit=20`, {
@@ -119,7 +91,7 @@ export class ApiSpotifyRepository implements SpotifyRepository {
 
     return {
       status: _fetch.status,
-      artists:  res.artists.items.map((artist) => {
+      data: res.artists.items.map((artist) => {
         return {
           id: artist.id,
           name: artist.name,
@@ -128,6 +100,10 @@ export class ApiSpotifyRepository implements SpotifyRepository {
       })
     }
   }
+
+
+
+
 
   async getAccessToken() {
     const _fetch = await fetch('https://accounts.spotify.com/api/token', {
@@ -160,4 +136,62 @@ export class ApiSpotifyRepository implements SpotifyRepository {
     const oneHour = 3600 * 1000; // 3600 seconds in milliseconds
     return (Date.now() - this.tokenObtainedAt) >= oneHour;
   }
+
+
+
+
+
+
+
+  // async getTrackPreview(trackId: string): Promise<string> {
+  //   await this.ensureAccessToken();
+
+  //   const _fetch = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${this.accessToken}`
+  //     }
+  //   });
+
+  //   const res = await _fetch.json();
+
+  //   return res.preview_url
+  // }
+
+  // async getTrackHighlights(trackId: string, by: 'segments' | 'sections' = 'segments'): Promise<Array<number>> {
+  //   await this.ensureAccessToken();
+
+  //   const _fetch = await fetch(`https://api.spotify.com/v1/audio-analysis/${trackId}`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${this.accessToken}`
+  //     }
+  //   });
+
+  //   const res = await _fetch.json();
+
+  //   const highlights = res[by].map((segment) => {
+  //     // seconds to milliseconds
+  //     return segment.start * 1000
+  //   });
+
+  //   return highlights as number[]
+  // }
+
+  // async getTopTracksByArtist(artistId: string): Promise<Array<{id: string, name: string}>> {
+  //   await this.ensureAccessToken();
+
+  //   const _fetch = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=BR`, {
+  //     headers: {
+  //       'Authorization': `Bearer ${this.accessToken}`
+  //     }
+  //   });
+
+  //   const res = await _fetch.json();
+
+  //   return res.tracks.map((track) => {
+  //     return {
+  //       id: track.id,
+  //       name: track.name,
+  //     }
+  //   });
+  // };
 }

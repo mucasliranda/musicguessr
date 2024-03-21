@@ -6,12 +6,29 @@ export class SpotifyController {
   constructor(private readonly spotifyService: SpotifyService) {}
 
   @Get('/search/artists')
-  getArtistsBySearch(@Query('q') q: string) {
-    return this.spotifyService.getArtistsBySearch(q);
+  async getArtistsBySearch(@Query('q') q: string) {
+    const response = await this.spotifyService.getArtistsBySearch(q);
+
+    return {
+      artists: response.data
+    };
+  }
+
+  @Get('/album/songs')
+  async getSongsByAlbum(@Query('q') q: string) {
+    const response = await this.spotifyService.getSongsByAlbum(q);
+
+    return {
+      songs: response.data
+    };
   }
 
   @Get('/artist/albums')
-  getArtistAlbums(@Query('q') q: string) {
-    return this.spotifyService.getArtistAlbums(q);
+  async getArtistAlbums(@Query('q') q: string) {
+    const response = await this.spotifyService.getArtistAlbums(q);
+
+    return {
+      albums: response.data
+    };
   }
 }

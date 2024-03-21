@@ -1,3 +1,4 @@
+import { SocketProvider } from "@/providers/socket";
 
 
 
@@ -7,8 +8,10 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="flex min-h-screen flex-col items-center bg-background">
-      {children}
-    </main>
-  )
+    <SocketProvider>
+      <div className="flex min-h-screen flex-col items-center bg-background">
+        {children}
+      </div>
+    </SocketProvider>
+  );
 }

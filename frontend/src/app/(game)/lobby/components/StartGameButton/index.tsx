@@ -1,20 +1,20 @@
 'use client'
 
+import { useSocket } from "@/providers/socket";
 import Button from "@/shared/components/Button";
-import { useParams, useRouter } from "next/navigation";
+
 
 
 export default function StartGameButton() {
-  const { lobbyId } = useParams();
-  const router = useRouter();
+  const { onStartGame } = useSocket();
 
-  async function onStartGame() {
-    router.push(`/game/${lobbyId}`);
+  async function onClick() {
+    onStartGame();
   }
 
   return (
     <Button
-      onClick={onStartGame}
+      onClick={onClick}
     >
       Start Game
     </Button>

@@ -1,35 +1,65 @@
 import { Injectable } from "@nestjs/common";
-import { GameRepository } from "../repositories/game-repository";
+import Game from "../entities/game";
 import { CreateGameDto } from "../dtos/create-game.dto";
-import { RoundRepository } from "../repositories/round-repository";
-import { CreateRoundDto } from "../dtos/create-round.dto";
-import { Game } from "@prisma/client";
+import { SpotifyService } from "src/spotify/services/spotify.service";
+
+let _game: Game;
 
 @Injectable()
 export class GameService {
   constructor(
-    private gameRepository: GameRepository,
-    private roundRepository: RoundRepository,
+    private readonly spotifyService: SpotifyService,
   ) {}
 
-  async createGame({gameId, artistId}: CreateGameDto): Promise<void> {
-    await this.gameRepository.create({
-      id: gameId,
-      artist: artistId,
-    });
+  private game: Game;
+
+  private setGame(game: Game) {
+    this.game = game;
+    _game = this.game;
   }
 
-  async getGame(gameId: string): Promise<Game> {
-    return this.gameRepository.getGame(gameId);
+  public debug() {
+    this.game.debug();
   }
 
-  async createRound({gameId, musicId, music, number, startAt}: CreateRoundDto): Promise<void> {
-    await this.roundRepository.create({
-      gameId,
-      musicId,
-      music,
-      number,
-      startAt,
-    });
+  public subscribe(fn) {
+    this.game.subscribe(fn);
+  }
+
+  public async createGame({ gameId, albums }: CreateGameDto) {
+    const songsReturn = await Promise.all(albums.map(album => this.spotifyService.getSongsByAlbum(album)));
+
+    const songs = songsReturn.flatMap(({ data }) => data);
+    
+    // this.game = new Game(gameId, songs as any[]);
+    this.setGame(new Game(gameId, songs as any[]));
+  }
+
+  public addPlayer({ playerId }) {
+    this.game.addPlayer({ playerId });
+  }
+
+  public removePlayer({ playerId }) {
+    this.game.removePlayer({ playerId });
+  }
+
+  public startGame() {
+    this.game.startGame();
+  }
+
+  public onNextRound() {
+    this.game.onNextRound();
+  }
+
+  public guessTrack({ playerId, guess, timePassed }) {
+    this.game.guessTrack({ playerId, guess, timePassed });
+  }
+
+  public getSongs() {
+    return this.game.getSongs();
+  }
+
+  public getPlayers() {
+    return this.game.getPlayers();
   }
 }
