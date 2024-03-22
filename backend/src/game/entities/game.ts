@@ -23,6 +23,13 @@ export default class Game {
   private songs: Array<Song> = [];
 
   private guessTime = 10000 // 10 SECS
+  private playersPlayed = 0;
+  private totalPlayers = 0; // Atualize este valor de acordo com o número de jogadores no seu jogo
+  private timeoutId;
+
+  private changeTotalPlayers() {
+    this.totalPlayers = this.players.length
+  }
 
   private subscribers = [];
 
@@ -48,10 +55,12 @@ export default class Game {
     const player = new Player(playerId)
 
     this.players.push(player)
+    this.changeTotalPlayers();
   }
 
   public removePlayer({ playerId }) {
     this.players = this.players.filter(player => player.getPlayerId() !== playerId)
+    this.changeTotalPlayers();
   }
 
   public getPlayers() {
@@ -67,7 +76,7 @@ export default class Game {
     this.currentRound = 0
     this.onNextRound()
 
-
+    
 
     console.log('Game started!')
     this.publish({ event: 'startGame', songs: this.getSongs() }); // Notificar todos os assinantes
@@ -88,16 +97,20 @@ export default class Game {
     }
     
     this.publish({ event: 'newRound', currentSong: this.currentSong }); //
+
+    this.timeoutId = setTimeout(() => {
+      this.onNextRound();
+    }, this.guessTime); // 10000 milissegundos = 10 segundos
   }
 
-  public guessTrack({ playerId, guess, timePassed }) {
+  public guessSong({ playerId, songGuessed, timePassed = 0 }: { playerId: string, songGuessed: Song, timePassed?: number }) {
     // CHECK IF THE GUESS IS RIGHT
     // IF RIGHT, ADD POINTS TO THE USER
     // TIME PASSED WILL BE MILISECONDS SINCE THE SONG STARTED
     const player = this.players.find(player => player.getPlayerId() === playerId)
 
     if (player) {
-      if(guess == this.currentSong.id && timePassed <= this.guessTime) {
+      if(songGuessed.id == this.currentSong.id && timePassed <= this.guessTime) {
         const points = this.guessTime - timePassed
         player.addPoints(points)
 
@@ -107,12 +120,20 @@ export default class Game {
       }
       console.log('Player guessed wrong!', player)
       // this.publish({ event: 'guess', player }); // Notificar todos os assinantes
+
+
+
+      if (this.playersPlayed >= this.totalPlayers) {
+        // this.roundEnded();
+        clearTimeout(this.timeoutId); // Limpar o timeout
+      }
     }
   }
 
   public getSongs() {
     return this.songs
   }
+
 }
 
 class Player {

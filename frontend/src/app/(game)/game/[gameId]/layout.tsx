@@ -11,13 +11,13 @@ export default function Layout({
 }>) {
   return (
     <CookiesProvider>
-      <PlayerProvider>
-        <SocketProvider>
+      <SocketProvider>
+        <PlayerProvider>
           <div className="flex min-h-screen flex-col items-center bg-background">
             {children}
           </div>
-        </SocketProvider>
-      </PlayerProvider>
+        </PlayerProvider>
+      </SocketProvider>
     </CookiesProvider>
   )
 }

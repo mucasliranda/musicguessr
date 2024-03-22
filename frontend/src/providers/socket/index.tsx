@@ -21,7 +21,9 @@ const SocketContext = createContext({
   onStartGame: () => {},
   songs: [] as Array<Song>,
   isGameStarted: false,
-  currentSong: null as Song & {startAt: number} | null
+  currentSong: null as Song & {startAt: number} | null,
+  selectedSong: null as Song | null,
+  onGuessSongs: (song: Song) => {}
 });
 
 
@@ -32,6 +34,8 @@ export function SocketProvider({ children }) {
   const [songs, setSongs] = useState<Array<Song>>([]);
   const [currentSong, setCurrentSong] = useState<Song & {startAt: number} | null>(null);
   const [isGameStarted, setIsGameStarted] = useState(false);
+
+  const [selectedSong, setSelectedSong] = useState<Song | null>(null);
 
   useEffect(() => {
     const newSocket = io('http://localhost:3005'); // Substitua com a URL do seu servidor
@@ -45,14 +49,17 @@ export function SocketProvider({ children }) {
 
     newSocket.on('newRound', onNewRound)
 
+    newSocket.on('guess', onChangePlayers)
+
     // return () => {
     //   newSocket.disconnect();
     //   newSocket.off('players', onChangePlayers);
     // }
   }, []);
 
-  function onChangePlayers(players) {
-    setPlayers(players);
+  function onChangePlayers(response: SocketData<{players: Array<Player>}>) {
+    console.log({players: response.data.players})
+    setPlayers(response.data.players);
   }
 
   // FUNÇÃO QUANDO CLICAR P COMEÇAR O GAME
@@ -70,10 +77,19 @@ export function SocketProvider({ children }) {
   function onNewRound(response: SocketData<{currentSong: CurrentSong}>) {
     console.log('currentSong: ', response.data.currentSong)
     setCurrentSong(response.data.currentSong);
+    setSelectedSong(null);
+  }
+
+  function onGuessSongs(song: Song) {
+    // SE JÁ TIVER CHUTADO UMA MUSICA, NAO TERÁ OUTRA CHANCE
+    if(!selectedSong) {
+      setSelectedSong(song);
+      socket?.emit('guessSong', song);
+    }
   }
 
   return (
-    <SocketContext.Provider value={{ players, onStartGame, songs, currentSong, isGameStarted }}>
+    <SocketContext.Provider value={{ players, onStartGame, songs, currentSong, isGameStarted, selectedSong, onGuessSongs }}>
       {children}
     </SocketContext.Provider>
   );

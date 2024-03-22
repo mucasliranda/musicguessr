@@ -10,6 +10,8 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     private gameService: GameService,
   ) {}
 
+
+
   @WebSocketServer() server: Server;
 
   // @SubscribeMessage('msg')
@@ -39,18 +41,28 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
       console.log({event, data: remaing})
 
-      client.emit(command.event, { data: remaing })
+      this.server.emit(command.event, { data: remaing })
     });
-
-
-    // this.gameService.debug()
 
     client.on('startGame', () => {  
       this.gameService.startGame();
-      // client.emit('startGame', this.gameService.getSongs());
     });
 
-    client.emit('players', this.gameService.getPlayers());
+    client.on('guessSong', (songGuessed) => {
+      console.log(playerId, 'chutou: ')
+      console.log(songGuessed)
+      this.gameService.guessSong({ playerId, songGuessed });
+    });
+    
+
+    this.server.emit('players', () => {
+      this.server.send('players', {
+        event: 'players',
+        data : {
+          players: this.gameService.getPlayers()
+        }
+      })
+    });
   } 
 
   // ON DISCONNECT

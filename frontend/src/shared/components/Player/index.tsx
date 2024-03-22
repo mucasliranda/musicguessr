@@ -10,26 +10,16 @@ export default function Player() {
   
   if(!!currentSong) {
     
-    const { playerRef } = usePlayer();
+    const { playerRef, onPlay, onTimeUpdate } = usePlayer();
     
-    const { startAt, url } = currentSong;
+    const { url } = currentSong;
 
     return (
       <div>
         <audio
           ref={playerRef}
-          onPlay={() => {
-            if (playerRef.current) {
-              playerRef.current.currentTime = startAt
-            }
-          }}
-          onTimeUpdate={() => {
-            if (playerRef.current) {
-              if (playerRef.current.currentTime - startAt > 1.5) {
-                playerRef.current.pause()
-              }
-            }
-          }}
+          onPlay={onPlay}
+          onTimeUpdate={onTimeUpdate}
           src={url}
           autoPlay
         />

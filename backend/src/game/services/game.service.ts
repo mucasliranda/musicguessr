@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import Game from "../entities/game";
 import { CreateGameDto } from "../dtos/create-game.dto";
 import { SpotifyService } from "src/spotify/services/spotify.service";
+import { Song } from "src/shared/model";
 
 let _game: Game;
 
@@ -51,8 +52,8 @@ export class GameService {
     this.game.onNextRound();
   }
 
-  public guessTrack({ playerId, guess, timePassed }) {
-    this.game.guessTrack({ playerId, guess, timePassed });
+  public guessSong({ playerId, songGuessed, timePassed }: { playerId: string, songGuessed: Song, timePassed?: number }) {
+    this.game.guessSong({ playerId, songGuessed, timePassed });
   }
 
   public getSongs() {
