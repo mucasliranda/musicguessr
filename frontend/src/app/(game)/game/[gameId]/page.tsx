@@ -17,6 +17,9 @@ export default function Game() {
       {isGameStarted ? <ScoreAside /> : <LobbyAside />}
 
       {isGameStarted ? <Songs /> : <Lobby />}
+      
+      {/* <Songs /> */}
+      
     </div>
   )
 }

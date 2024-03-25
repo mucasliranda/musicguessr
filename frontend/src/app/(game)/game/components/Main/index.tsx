@@ -4,12 +4,14 @@ import { usePlayer } from "@/providers/player";
 import { useSocket } from "@/providers/socket"
 import Button from "@/shared/components/Button"
 import Player from "@/shared/components/Player";
+import LinearTimer from "../LinearTimer";
+import clsx from "clsx";
 
 
 
 export default function Main() {
 
-  const { songs, onGuessSongs, selectedSong } = useSocket();
+  const { songs, onGuessSongs, guess } = useSocket();
 
   const { onPlay, volume, setVolume } = usePlayer();
 
@@ -24,8 +26,13 @@ export default function Main() {
         flex
         flex-col
         gap-8
+        relative
       "
     >
+
+
+      <LinearTimer />
+
 
       <Player />
 
@@ -61,9 +68,13 @@ export default function Main() {
           return (
             <div 
               key={song.id} 
-              onClick={() => onGuessSongs(song)}
-              className={`
-                p-4 
+              onClick={() => {
+                if(!!!guess) {
+                  onGuessSongs(song)
+                }
+              }}
+              className={clsx(
+                `p-4 
                 overflow-hidden 
                 bg-gray-800 
                 rounded 
@@ -71,9 +82,12 @@ export default function Main() {
                 cursor-pointer 
                 hover:bg-gray-700 
                 transition 
-                duration-200
-                ${selectedSong?.id === song.id && 'border-4 border-green-500'}
-              `}
+                duration-200`,
+                // guess !== null && guess?.id !== song.id && 'bg-gray-600',
+                // guess !== null && guess?.right && 'border-4 border-green-500',
+                // guess !== null && guess?.right == false && 'border-4 border-red-500',
+              )}
+              // ${guess?.id === song.id && 'border-4 border-green-500'}
             >
               <div className="text-white font-bold text-xl mb-2">{song.name}</div>
               <p className="text-gray-400">Artist Name</p>

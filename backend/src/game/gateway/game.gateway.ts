@@ -39,7 +39,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
       const { event, ...remaing } = command;
 
-      console.log({event, data: remaing})
+      // console.log({event, data: remaing})
 
       this.server.emit(command.event, { data: remaing })
     });
@@ -54,14 +54,18 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.gameService.guessSong({ playerId, songGuessed });
     });
     
+    client.on('timedOut', () => {
+      // QUANDO O USUÁRIO SKIPA OU O TEMPO ACABA
+      console.log(playerId, 'timedOut');
+      this.gameService.timedOut({ playerId });
+    })
 
-    this.server.emit('players', () => {
-      this.server.send('players', {
-        event: 'players',
-        data : {
-          players: this.gameService.getPlayers()
-        }
-      })
+    
+    this.server.emit('players', {
+      event: 'players',
+      data : {
+        players: this.gameService.getPlayers()
+      }
     });
   } 
 

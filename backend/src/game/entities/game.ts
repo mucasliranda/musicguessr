@@ -25,13 +25,30 @@ export default class Game {
   private guessTime = 10000 // 10 SECS
   private playersPlayed = 0;
   private totalPlayers = 0; // Atualize este valor de acordo com o número de jogadores no seu jogo
-  private timeoutId;
+
+  private subscribers = [];
 
   private changeTotalPlayers() {
     this.totalPlayers = this.players.length
   }
 
-  private subscribers = [];
+  private increasePlayersPlayed() {
+    this.playersPlayed++;
+    if(this.playersPlayed >= this.totalPlayers) {
+      console.log('ACABA O ROUND AQUI')
+
+      this.endRound();
+
+      this.onNextRound();
+      this.clearPlayersPlayed();
+      // setTimeout(() => {
+      // }, 5000);
+    }
+  }
+
+  private clearPlayersPlayed() {
+    this.playersPlayed = 0;
+  }
 
   public debug() {
     console.log({
@@ -98,9 +115,15 @@ export default class Game {
     
     this.publish({ event: 'newRound', currentSong: this.currentSong }); //
 
-    this.timeoutId = setTimeout(() => {
-      this.onNextRound();
-    }, this.guessTime); // 10000 milissegundos = 10 segundos
+
+
+    // this.timeoutId = setTimeout(() => {
+    //   this.onNextRound();
+    // }, this.guessTime); // 10000 milissegundos = 10 segundos
+  }
+
+  public endRound() {
+    this.publish({ event: 'endRound' }); // Notificar todos os assinantes
   }
 
   public guessSong({ playerId, songGuessed, timePassed = 0 }: { playerId: string, songGuessed: Song, timePassed?: number }) {
@@ -115,18 +138,27 @@ export default class Game {
         player.addPoints(points)
 
         console.log('Player guessed right!', player, points)
-        this.publish({ event: 'guess', players: this.getPlayers() }); // Notificar todos os assinantes
-        return
+        // return
       }
-      console.log('Player guessed wrong!', player)
+      this.increasePlayersPlayed();
+      this.publish({ event: 'guess', players: this.getPlayers() }); // Notificar todos os assinantes
+      // console.log('Player guessed wrong!', player)
       // this.publish({ event: 'guess', player }); // Notificar todos os assinantes
 
 
+    
+      // if (this.playersPlayed >= this.totalPlayers) {
+      //   // this.roundEnded();
+      //   clearTimeout(this.timeoutId); // Limpar o timeout
+      // }
+    }
+  }
 
-      if (this.playersPlayed >= this.totalPlayers) {
-        // this.roundEnded();
-        clearTimeout(this.timeoutId); // Limpar o timeout
-      }
+  public timedOut({ playerId }) {
+    const player = this.players.find(player => player.getPlayerId() === playerId)
+
+    if (player) {
+      this.increasePlayersPlayed();
     }
   }
 

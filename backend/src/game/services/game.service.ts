@@ -56,6 +56,10 @@ export class GameService {
     this.game.guessSong({ playerId, songGuessed, timePassed });
   }
 
+  public timedOut({ playerId }) {
+    this.game.timedOut({ playerId });
+  }
+
   public getSongs() {
     return this.game.getSongs();
   }
