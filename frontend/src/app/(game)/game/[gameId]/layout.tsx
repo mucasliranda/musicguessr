@@ -12,15 +12,15 @@ export default function Layout({
 }>) {
   return (
     <CookiesProvider>
+        <SocketProvider>
       <LinearTimerProvider>
-        <PlayerProvider>
-      <SocketProvider>
+          <PlayerProvider>
             <div className="flex min-h-screen flex-col items-center bg-background">
               {children}
             </div>
-      </SocketProvider>
-        </PlayerProvider>
-          </LinearTimerProvider>
+          </PlayerProvider>
+      </LinearTimerProvider>
+        </SocketProvider>
     </CookiesProvider>
   )
 }

@@ -41,8 +41,6 @@ export default class Game {
 
       this.onNextRound();
       this.clearPlayersPlayed();
-      // setTimeout(() => {
-      // }, 5000);
     }
   }
 
@@ -93,8 +91,6 @@ export default class Game {
     this.currentRound = 0
     this.onNextRound()
 
-    
-
     console.log('Game started!')
     this.publish({ event: 'startGame', songs: this.getSongs() }); // Notificar todos os assinantes
   }
@@ -114,12 +110,6 @@ export default class Game {
     }
     
     this.publish({ event: 'newRound', currentSong: this.currentSong }); //
-
-
-
-    // this.timeoutId = setTimeout(() => {
-    //   this.onNextRound();
-    // }, this.guessTime); // 10000 milissegundos = 10 segundos
   }
 
   public endRound() {
@@ -144,13 +134,6 @@ export default class Game {
       this.publish({ event: 'guess', players: this.getPlayers() }); // Notificar todos os assinantes
       // console.log('Player guessed wrong!', player)
       // this.publish({ event: 'guess', player }); // Notificar todos os assinantes
-
-
-    
-      // if (this.playersPlayed >= this.totalPlayers) {
-      //   // this.roundEnded();
-      //   clearTimeout(this.timeoutId); // Limpar o timeout
-      // }
     }
   }
 
@@ -165,7 +148,6 @@ export default class Game {
   public getSongs() {
     return this.songs
   }
-
 }
 
 class Player {
