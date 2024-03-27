@@ -1,4 +1,4 @@
-import { Album, Artist, Song } from "../../shared/model";
+import { Album, Artist, FullAlbum, Song } from "../../shared/model";
 
 
 
@@ -10,6 +10,8 @@ export interface ApiSpotifyResponse<T> {
 export abstract class SpotifyRepository {
   abstract getArtistAlbums(search: string): Promise<ApiSpotifyResponse<Array<Album>>>;
   abstract getSongsByAlbum(albumId: string): Promise<ApiSpotifyResponse<Array<Song>>>;
+  abstract getAlbum(albumId: string): Promise<ApiSpotifyResponse<FullAlbum>>;
+
   abstract getArtistsBySearch(search: string): Promise<ApiSpotifyResponse<Array<Artist>>>;
   abstract getAccessToken(): Promise<string>
 

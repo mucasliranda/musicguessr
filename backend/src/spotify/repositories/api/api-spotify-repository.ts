@@ -78,6 +78,36 @@ export class ApiSpotifyRepository implements SpotifyRepository {
     }
   }
 
+  async getAlbum(albumId: string) {
+    await this.ensureAccessToken();
+
+    const _fetch = await fetch(`https://api.spotify.com/v1/albums/${albumId}`, {
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      },
+    });
+
+    const res = await _fetch.json();
+
+    return {
+      status: _fetch.status,
+      data: {
+        id: res.id,
+        name: res.name,
+        image: getRightImage(res.images),
+        artists: res.artists.map(({name}) => name),
+        songs: res.tracks.items.map((song) => {
+          return {
+            id: song.id,
+            name: song.name,
+            url: song.preview_url,
+            playable: !!song.preview_url,
+          } 
+        }),
+      }
+    }
+  }
+
   async getArtistsBySearch(search: string) {
     await this.ensureAccessToken();
 

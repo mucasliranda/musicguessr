@@ -101,6 +101,48 @@ describe('SpotifyService', () => {
 
 
 
+  // GET ALBUM
+  describe('getAlbum', () => {
+    it('getAlbum should be defined', () => {
+      expect(service.getAlbum).toBeDefined();
+    });
+
+    it('getAlbum should return status code 200', async () => {
+      const response = await service.getAlbum(album);
+      expect(response).toBeDefined();
+      expect(response.status).toBe(200);
+    });
+
+    it('getAlbum should return an Album', async () => {
+      const response = await service.getAlbum(album);
+      expect(response).toBeDefined();
+    
+      const data = response.data
+    
+      expect(data).toHaveProperty('id');
+      expect(data).toHaveProperty('image');
+      expect(data).toHaveProperty('name');
+    });
+
+    it('getAlbum should return an Album with songs', async () => {
+      const response = await service.getAlbum(album);
+      expect(response).toBeDefined();
+    
+      const data = response.data
+    
+      expect(data).toHaveProperty('songs');
+      expect(Array.isArray(data.songs)).toBe(true);
+      
+      data.songs.forEach(song => {
+        expect(song).toHaveProperty('id');
+        expect(song).toHaveProperty('name');
+        expect(song).toHaveProperty('url');
+      });
+    });
+  });
+
+
+
   // GET ARTISTS BY SEARCH
   describe('getArtistsBySearch', () => {
     it('getArtistsBySearch should be defined', () => {

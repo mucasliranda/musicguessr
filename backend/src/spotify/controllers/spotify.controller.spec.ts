@@ -75,6 +75,42 @@ describe('SpotifyController', () => {
     });
   });
 
+  describe('/album', () => {
+    it('should be defined', () => {
+      expect(spotifyController.getAlbum(album)).toBeDefined();
+    });
+
+    it('should return an album', async () => {
+      const response = await spotifyController.getAlbum(album);
+      expect(response).toBeDefined();
+      expect(response.album).toBeDefined();
+      
+      const albumResponse = response.album;
+
+      expect(albumResponse).toHaveProperty('id');
+      expect(albumResponse).toHaveProperty('name');
+      expect(albumResponse).toHaveProperty('image');
+      expect(albumResponse).toHaveProperty('artists');
+      expect(albumResponse).toHaveProperty('songs');
+    });
+
+    it('should return an album with songs', async () => {
+      const response = await spotifyController.getAlbum(album);
+      expect(response).toBeDefined();
+      
+      const albumResponse = response.album;
+
+      expect(albumResponse).toHaveProperty('songs');
+      expect(Array.isArray(albumResponse.songs)).toBe(true);
+      
+      albumResponse.songs.forEach(song => {
+        expect(song).toHaveProperty('id');
+        expect(song).toHaveProperty('name');
+        expect(song).toHaveProperty('url');
+      });
+    });
+  });
+
   describe('/artist/albums', () => {
     it('should be defined', () => {
       expect(spotifyController.getArtistAlbums(artistId)).toBeDefined();

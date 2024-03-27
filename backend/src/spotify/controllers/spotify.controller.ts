@@ -23,6 +23,15 @@ export class SpotifyController {
     };
   }
 
+  @Get('/album')
+  async getAlbum(@Query('q') q: string) {
+    const response = await this.spotifyService.getAlbum(q);
+
+    return {
+      album: response.data
+    };
+  }
+
   @Get('/artist/albums')
   async getArtistAlbums(@Query('q') q: string) {
     const response = await this.spotifyService.getArtistAlbums(q);

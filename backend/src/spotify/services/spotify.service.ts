@@ -15,6 +15,10 @@ export class SpotifyService {
     return this.spotifyRepository.getSongsByAlbum(albumId);
   }
 
+  getAlbum(albumId: string) {
+    return this.spotifyRepository.getAlbum(albumId);
+  }
+
   getArtistsBySearch(search: string) {
     return this.spotifyRepository.getArtistsBySearch(search);
   }
