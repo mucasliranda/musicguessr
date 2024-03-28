@@ -9,11 +9,8 @@ import { Song } from "src/shared/model";
 export default class Game {
   constructor (
     gameId: string,
-    songs: Array<Song>
   ) {
     this.gameId = gameId
-    this.players = []
-    this.songs = songs
   }
 
   private gameId: string;
@@ -21,6 +18,14 @@ export default class Game {
   private currentSong: Song & { startAt: number };
   private currentRound: number;
   private songs: Array<Song> = [];
+
+  public addSongs(songs: Array<Song>) {
+    this.songs.push(...songs);
+
+    console.log({songs: this.songs})
+
+    return songs;
+  };
 
   private guessTime = 10000 // 10 SECS
   private playersPlayed = 0;

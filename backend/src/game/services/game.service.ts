@@ -3,6 +3,7 @@ import Game from "../entities/game";
 import { CreateGameDto } from "../dtos/create-game.dto";
 import { SpotifyService } from "src/spotify/services/spotify.service";
 import { Song } from "src/shared/model";
+import { AddSongsDto } from "../dtos/add-songs.dto";
 
 let _game: Game;
 
@@ -14,11 +15,6 @@ export class GameService {
 
   private game: Game;
 
-  private setGame(game: Game) {
-    this.game = game;
-    _game = this.game;
-  }
-
   public debug() {
     this.game.debug();
   }
@@ -27,13 +23,12 @@ export class GameService {
     this.game.subscribe(fn);
   }
 
-  public async createGame({ gameId, albums }: CreateGameDto) {
-    const songsReturn = await Promise.all(albums.map(album => this.spotifyService.getSongsByAlbum(album)));
+  public createGame({ gameId }: CreateGameDto) { 
+    this.game = new Game(gameId);
+  }
 
-    const songs = songsReturn.flatMap(({ data }) => data);
-    
-    // this.game = new Game(gameId, songs as any[]);
-    this.setGame(new Game(gameId, songs as any[]));
+  public addSongs({ songs }: AddSongsDto) {
+    this.game.addSongs(songs);
   }
 
   public addPlayer({ playerId }) {

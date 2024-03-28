@@ -4,8 +4,4 @@ export class CreateGameDto {
   @IsNotEmpty()
   @IsString()
   gameId: string;
-
-  @IsNotEmpty()
-  @IsArray()
-  albums: Array<string>;
 }

@@ -1,3 +1,6 @@
+'use client'
+
+
 
 export default function Layout({
   children,
@@ -5,7 +8,7 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 bg-[#F3F4F6]">
+    <main className="flex h-full flex-col items-center bg-background">
       {children}
     </main>
   )

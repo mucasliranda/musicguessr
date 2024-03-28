@@ -31,21 +31,20 @@ export default async function ArtistPage({ params }:{ params?: { [key: string]: 
       const albums = formData.getAll('albums');
       const gameId = randomUUID();
 
-      const res = await fetch('http://localhost:3005/game', {
+      await fetch('http://localhost:3005/game', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
           gameId: gameId,
-          albums: albums,
         }),
       });
 
-      redirect(`/game/${gameId}`)
+      redirect(`/game/${gameId}/songs/0?${albums.map((album) => `album=${album}`).join('&')}`);
     }}>
       <button type="submit" className="py-2 px-6 rounded-lg text-lg text-white self-end bg-primary hover:bg-[#1ed760] active:scale-95">
-        Create Lobby
+        Choose Songs
       </button>
 
       <div className="grid gap-8 grid-cols-5 2xl:grid-cols-6">

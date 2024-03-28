@@ -2,9 +2,9 @@
 
 import { useSocket } from "@/providers/socket";
 import ScoreAside from "../components/Aside";
-import LobbyAside from "../../lobby/components/Aside";
 import Songs from "../components/Main";
-import Lobby from "../../lobby/components/Main";
+import Lobby from "../components/Lobby";
+import { LobbyAside } from "../components/LobbyAside";
 
 
 
@@ -17,9 +17,6 @@ export default function Game() {
       {isGameStarted ? <ScoreAside /> : <LobbyAside />}
 
       {isGameStarted ? <Songs /> : <Lobby />}
-      
-      {/* <Songs /> */}
-      
     </div>
   )
 }

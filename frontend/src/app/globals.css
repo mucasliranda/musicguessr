@@ -26,12 +26,25 @@ body {
     rgb(var(--background-start-rgb));
 } */
 
-body {
-  /* overflow: hidden; */
+html {
+  overflow: hidden;
 }
 
-@layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
+body {
+  height: 100vh;
+}
+
+::-webkit-scrollbar {
+  height: 12px;
+  width: 12px;
+  background: transparent;
+}
+
+::-webkit-scrollbar-button {
+  display: none;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #FFFFFF4C;
+  -webkit-border-radius: 1ex;
 }
