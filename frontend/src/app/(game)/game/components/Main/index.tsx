@@ -1,19 +1,16 @@
 'use client'
 
-import { usePlayer } from "@/providers/player";
-import { useSocket } from "@/providers/socket"
-import Button from "@/shared/components/Button"
-import Player from "@/shared/components/Player";
-import LinearTimer from "../LinearTimer";
-import clsx from "clsx";
+import { Button } from "@/shared/components/Button"
+import LinearTimer from "../Timer";
+import { useGame } from "@/providers/game";
+import { cn } from "@/shared/utils";
+import ConfettiExplosion from 'react-confetti-explosion';
 
 
 
 export default function Main() {
+  const { songs, onGuessSongs, guess, playSong, volume, setVolume, roundEnded, currentSong, confetti, toggleConfetti } = useGame();
 
-  const { songs, onGuessSongs, guess } = useSocket();
-
-  const { onPlay, volume, setVolume } = usePlayer();
 
   return (
     <main 
@@ -22,6 +19,7 @@ export default function Main() {
         h-full
 
         p-4
+        pt-8
 
         flex
         flex-col
@@ -29,12 +27,7 @@ export default function Main() {
         relative
       "
     >
-
-
       <LinearTimer />
-
-
-      <Player />
 
       <div
         className="
@@ -44,13 +37,9 @@ export default function Main() {
         "
       >
         <Button
-          onClick={onPlay}
+          onClick={() => playSong()}
         >
           Replay Song
-        </Button>
-
-        <Button>
-          Skip
         </Button>
 
         <input 
@@ -64,16 +53,14 @@ export default function Main() {
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 
+        {confetti && <ConfettiExplosion onComplete={toggleConfetti} />}
+
         {songs.length > 0 && songs.map((song) => {
           return (
             <div 
               key={song.id} 
-              onClick={() => {
-                if(!!!guess) {
-                  onGuessSongs(song)
-                }
-              }}
-              className={clsx(
+              onClick={() => onGuessSongs(song)}
+              className={cn(
                 `p-4 
                 overflow-hidden 
                 bg-gray-800 
@@ -82,12 +69,16 @@ export default function Main() {
                 cursor-pointer 
                 hover:bg-gray-700 
                 transition 
-                duration-200`,
-                // guess !== null && guess?.id !== song.id && 'bg-gray-600',
-                // guess !== null && guess?.right && 'border-4 border-green-500',
-                // guess !== null && guess?.right == false && 'border-4 border-red-500',
+                duration-200
+                box-content
+                border-4 border-transparent`,
+
+                roundEnded && currentSong?.id === song.id && 'border-4 border-green-500',
+                guess !== null && roundEnded && currentSong?.id !== song.id && guess?.id === song.id && 'border-4 border-red-500',
+              
+                // QUANDO DA O GUESS E AINDA N ACABOU O ROUND, NÃO SABE SE ESTÁ CERTO OU ERRADO
+                guess !== null && !roundEnded && guess?.id === song.id && 'border-4 border-gray-400',
               )}
-              // ${guess?.id === song.id && 'border-4 border-green-500'}
             >
               <div className="text-white font-bold text-xl mb-2">{song.name}</div>
               <p className="text-gray-400">Artist Name</p>

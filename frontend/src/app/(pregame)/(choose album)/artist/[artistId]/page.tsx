@@ -1,5 +1,9 @@
+// 'use client'
+
+import { Button } from "@/shared/components/Button";
 import { randomUUID } from "crypto";
 import { redirect } from "next/navigation";
+import AlbumCard from "../../components/AlbumCard";
 
 
 
@@ -22,99 +26,38 @@ async function getAlbums(artistId: string) {
 export default async function ArtistPage({ params }:{ params?: { [key: string]: string | string[] | undefined } }) {
   const { artistId } = params as { [key: string]: string };
 
-  const albums = await getAlbums(artistId)
+  const albums = await getAlbums(artistId);
 
   return (
-    <form className="pt-4 flex flex-col items-start gap-8" action={async (formData: FormData) => {
-      "use server"
-
-      const albums = formData.getAll('albums');
-      const gameId = randomUUID();
-
-      await fetch('http://localhost:3005/game', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          gameId: gameId,
-        }),
-      });
-
-      redirect(`/game/${gameId}/songs/0?${albums.map((album) => `album=${album}`).join('&')}`);
-    }}>
-      <button type="submit" className="py-2 px-6 rounded-lg text-lg text-white self-end bg-primary hover:bg-[#1ed760] active:scale-95">
-        Choose Songs
-      </button>
+    <form className="flex flex-col items-start gap-8 overflow-y-auto" action={async (formData: FormData) => {
+        "use server"
+      
+        const albums = formData.getAll('albums');
+        const gameId = randomUUID();
+      
+        await fetch('http://localhost:3005/game', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            gameId: gameId,
+          }),
+        });
+      
+        redirect(`/game/${gameId}/songs/0?${albums.map((album) => `album=${album}`).join('&')}`);
+      }} >
+      <div className="w-full flex">
+        <Button type="submit" className="ml-auto">
+          Choose Songs
+        </Button>
+      </div>
 
       <div className="grid gap-8 grid-cols-5 2xl:grid-cols-6">
-        {albums && albums.map((album) => {
-          return (
-            <label key={album.id} htmlFor={album.id} className="w-[200px] pb-2 bg-onBackground rounded-lg group transition-opacity cursor-pointer">
-              <input type="checkbox" className="peer hidden" name="albums" id={album.id} value={album.id}/>
-              {!!album.image && (
-                <div className="w-[200px] h-[200px] rounded-ss-lg rounded-se-lg overflow-hidden group/image">
-                  <img
-                    src={album.image}
-                    alt={album.name}
-                    className="
-                      object-cover 
-                      w-full 
-                      h-full 
-                      
-                      grayscale-70
-                      transition 
-                      duration-500 
-                      ease-in-out 
-                      transform 
-                      group-hover:scale-110
-                      group-hover:grayscale-0
-                      peer-checked:group-[]/image:grayscale-0
-                      peer-checked:group-[]/image:scale-110
-                    "
-                  />
-                </div>
-              )}
-              <p 
-                className="
-                  w-fit
-                  m-2
-
-                  text-base 
-                  text-white 
-                  text-wrap
-                  font-medium
-
-                  relative
-
-                  group/paragraph
-                "
-              >
-                {album.name}
-                <span 
-                  className="
-                    absolute 
-                    h-[2px] 
-                    left-0 
-                    bottom-0 
-                    w-0 
-                    bg-primary
-                    transition-width 
-                    duration-500 
-                    ease-in-out
-
-                    group-hover:w-full
-                    
-                    peer-has-[:checked]:w-full
-                    peer-checked:group-[]/paragraph:w-full
-                  "
-                />
-              </p>
-            </label>
-          );
-        })}
-
+        {albums && albums.map((album) => <AlbumCard key={album.id} album={album} />)}
       </div>
     </form>
   )
 }
+
+

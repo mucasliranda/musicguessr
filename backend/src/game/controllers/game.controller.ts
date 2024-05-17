@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Post, Put } from '@nestjs/common';
 import { GameService } from '../services/game.service';
 import { CreateGameDto } from '../dtos/create-game.dto';
 import { AddSongsDto } from '../dtos/add-songs.dto';
@@ -11,12 +11,6 @@ export class GameController {
     private readonly gameService: GameService,
   ) {}
 
-  // @Post('/game/start')
-  // async startGame(@Body() createGameDto: CreateGameDto) {
-  //   console.log({...createGameDto, where: 'game.controller'})
-  //   await this.gameService.createGame(createGameDto);
-  // }
-
   @Post()
   async createGame(@Body() createGameDto: CreateGameDto) {
     this.gameService.createGame(createGameDto);
@@ -26,33 +20,6 @@ export class GameController {
   async addSongs(@Body() addSongsDto: AddSongsDto) {
     this.gameService.addSongs(addSongsDto);
   }
-
-  // @Get('/game/track')
-  // async getTrack(@Query() getTrackDto: GetTrackDto) {
-  //   const game = await this.gameService.getGame(getTrackDto.gameId);
-
-  //   const { id: trackId, name: trackName } = await this.spotifyService.getSomeTrackByArtist(game.artist);
-
-  //   const track = await this.spotifyService.getTrackPreview(trackId);
-
-    
-
-  //   // preciso sortear um numero de 0 a 25 (segundos) e multiplicar por 1000 para obter o valor em milissegundos
-  //   const startAt = Math.floor(Math.random() * 25) * 1000;
-
-  //   await this.gameService.createRound({
-  //     gameId: game.id,
-  //     musicId: trackId,
-  //     music: trackName,
-  //     startAt: startAt,
-  //     number: Number(getTrackDto.round),
-  //   });
-
-  //   return {
-  //     startAt: startAt,
-  //     track: track,
-  //   }
-  // }
 
 
 

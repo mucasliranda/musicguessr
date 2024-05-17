@@ -1,50 +1,71 @@
 @tailwind base;
-@tailwind components;
-@tailwind utilities;
+  @tailwind components;
+  @tailwind utilities;
 
-/* :root {
-  --foreground-rgb: 0, 0, 0;
-  --background-start-rgb: 214, 219, 220;
-  --background-end-rgb: 255, 255, 255;
-}
+  @layer base {
+    :root {
+      --background: #121212;
+      --foreground: #F9FAFB;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --foreground-rgb: 255, 255, 255;
-    --background-start-rgb: 0, 0, 0;
-    --background-end-rgb: 0, 0, 0;
+      --on-background: #1F2937;
+
+      --card: #121212;
+      --card-foreground: #F9FAFB;
+
+      --popover: #121212;
+      --popover-foreground: #F9FAFB;
+
+      --primary: #1DB954;
+      --primary-foreground: #F9FAFB;
+
+      --secondary: #1F2937;
+      --secondary-foreground: #F9FAFB;
+
+      --muted: #1F2937;
+      --muted-foreground: #9CA3AF;
+      
+      --accent: #1F2937;
+      --accent-foreground: #F9FAFB;
+
+      --destructive: #7F1D1D;
+      --destructive-foreground: #F9FAFB;
+
+      --border: #1F2937;
+      --input: #1F2937;
+      --ring: #D1D5DB;
+
+      --radius: 0.5rem;
+    }
   }
-}
 
-body {
-  color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
-      transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
-} */
-
-html {
-  overflow: hidden;
-}
-
-body {
-  height: 100vh;
-}
-
-::-webkit-scrollbar {
-  height: 12px;
-  width: 12px;
-  background: transparent;
-}
-
-::-webkit-scrollbar-button {
-  display: none;
-}
-
-::-webkit-scrollbar-thumb {
-  background: #FFFFFF4C;
-  -webkit-border-radius: 1ex;
-}
+  @layer base {
+    * {
+      @apply border-border;
+    }
+    body {
+      @apply bg-background text-foreground;
+    }
+  }
+  
+  html {
+    overflow: auto;
+  }
+  
+  body {
+    height: 100dvh;
+  }
+  
+  ::-webkit-scrollbar {
+    height: 12px;
+    width: 12px;
+    background: transparent;
+  }
+  
+  ::-webkit-scrollbar-button {
+    display: none;
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: #FFFFFF4C;
+    -webkit-border-radius: 1ex;
+  }

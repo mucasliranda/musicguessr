@@ -13,7 +13,7 @@ describe('Game', () => {
       { id: '1', name: 'song1', url: 'url1' },
       { id: '2', name: 'song2', url: 'url2' },
     ];
-    game = new Game('game1', songs);
+    game = new Game('game1');
   });
 
   it('should create a new game with given id and songs', () => {

@@ -2,7 +2,7 @@
 
 import { Song } from "@/shared/model"
 import "./styles.css"
-import { useParams, useRouter, useSearchParams } from "next/navigation"
+import { useParams, usePathname, useRouter, useSearchParams } from "next/navigation"
 import { Button } from "@/shared/components/Button"
 import { useEffect } from "react"
 import { useToast } from "@/shared/components/Toast"
@@ -14,34 +14,59 @@ interface Props {
 }
 
 export default function SongsList({ songs }: Props) {
+  const { artistId, albumId } = useParams();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const router = useRouter();
-  const { index, gameId } = useParams();
 
   const { toast } = useToast();
 
-  function onNextPage() {
-    const nextIndex = Number(index) + 1;
+  // function onNextPage() {
+  //   const nextIndex = Number(index) + 1;
 
-    if (nextIndex < [...searchParams.getAll('album'), ...searchParams.getAll('playlist')].length) {
-      return router.push(`/game/${gameId}/songs/${nextIndex}?${searchParams.toString()}`)
+  //   if (nextIndex < [...searchParams.getAll('album'), ...searchParams.getAll('playlist')].length) {
+  //     return router.push(`/game/${gameId}/songs/${nextIndex}?${searchParams.toString()}`)
+  //   }
+
+  //   return router.push(`/game/${gameId}`)
+  // }
+
+  // async function onSubmit(songsId: Array<string>) {
+  //   await fetch('http://localhost:3005/game', {
+  //     method: 'PUT',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({
+  //       songs: songs.filter(song => songsId.includes(song.id)),
+  //     }),
+  //   });
+  
+  //   onNextPage(); 
+  // }
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const formData = new FormData(e.currentTarget)
+
+    const selectedSongs = formData.getAll('songs') as Array<string>;
+
+    console.log(selectedSongs)
+
+    if (songs.length > selectedSongs.length) {
+      // selecionou algumas musicas, não está todas preenchidas, preciso "pushar" as selecionadas 
+      // para o searchParams, fazendo um key value com o albumId e as musicas selecionas
+
+      const params = new URLSearchParams(searchParams.toString())
+
+      selectedSongs.forEach((songId) => {
+        params.append(albumId.toString(), songId)
+      })
+
+      router.push(`${pathname}?${params.toString()}`)
     }
 
-    return router.push(`/game/${gameId}`)
-  }
-
-  async function onSubmit(songsId: Array<string>) {
-    await fetch('http://localhost:3005/game', {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        songs: songs.filter(song => songsId.includes(song.id)),
-      }),
-    });
-  
-    onNextPage(); 
+    
   }
 
   useEffect(() => {
@@ -64,14 +89,7 @@ export default function SongsList({ songs }: Props) {
         gap-4
         overflow-y-auto
       "
-      onSubmit={(e) => {
-        e.preventDefault();
-        const formData = new FormData(e.currentTarget)
-
-        const songs = formData.getAll('songs') as Array<string>;
-
-        onSubmit(songs);
-      }}
+      onSubmit={onSubmit}
     >
       <div
         className="
@@ -84,13 +102,13 @@ export default function SongsList({ songs }: Props) {
         {songs.map((song) => {
           return (
             <label key={song.id} htmlFor={song.id} className="song-container group cursor-pointer">
-              <input 
-                type="checkbox" 
-                defaultChecked={song.playable} 
-                disabled={!song.playable} 
-                className="peer hidden" 
-                name="songs" 
-                id={song.id} 
+              <input
+                type="checkbox"
+                defaultChecked={song.playable}
+                disabled={!song.playable}
+                className="peer hidden"
+                name="songs"
+                id={song.id}
                 value={song.id}
               />
               <p 

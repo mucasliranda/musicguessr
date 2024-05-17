@@ -1,14 +1,12 @@
 'use client'
 
-import { useSocket } from "@/providers/socket";
-import StartGameButton from "../../../lobby/components/StartGameButton";
-import UserPhoto from "../../../lobby/components/UserPhoto";
+import { useGame } from "@/providers/game";
 
 
 
 export default function Aside() {
 
-  const { players } = useSocket();
+  const { players } = useGame();
 
   return (
     <aside 

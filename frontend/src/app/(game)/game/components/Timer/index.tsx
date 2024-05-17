@@ -1,11 +1,10 @@
+import { useGame } from '@/providers/game';
 import './styles.css'
-import { useLinearTimer } from "@/providers/linearTimer";
 
 
 
-export default function LinearTimer() {
-
-  const { progress, finished } = useLinearTimer();
+export default function Timer() {
+  const { progress, finished } = useGame();
 
   return (
     <div 
@@ -27,15 +26,7 @@ export default function LinearTimer() {
           `}
           style={{ width: `${progress}%` }}
         />
-      ): (
-        <div
-          className={`
-            w-full
-            h-4
-            bg-red-400
-          `}
-        />
-      )}
+      ): null}
     </div>
   );
 }

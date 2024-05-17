@@ -27,7 +27,7 @@ export default async function ChooseSongs({ params, searchParams }: { params: { 
 
   return (
     <div
-      className="flex flex-col h-full max-h-screen w-full max-w-7xl p-8"
+      className="flex flex-col h-full max-h-screen w-full max-w-7xl"
     >
       <SongsHeader image={album.image} name={album.name} />
 

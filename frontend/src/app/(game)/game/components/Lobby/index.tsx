@@ -1,9 +1,9 @@
 'use client'
 
+import { Button } from "@/shared/components/Button"
 
 
 export default function Lobby() {
-
 
   return (
     <main 
@@ -44,22 +44,10 @@ export default function Lobby() {
         >
           Share the invite link with your friends to start the game!
         </p>
-        <button
-          className="
-            py-2
-            px-6 
-            rounded-md 
-            
-            text-sm
-            text-white 
-            bg-primary 
-            
-            hover:bg-[#1ed760]
-            active:scale-95
-          "
-        >
+        
+        <Button>
           Copy Invite Link
-        </button>
+        </Button>
       </div>
 
     </main>

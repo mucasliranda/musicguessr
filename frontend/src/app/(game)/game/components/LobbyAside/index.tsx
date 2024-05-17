@@ -1,12 +1,12 @@
-import { useSocket } from "@/providers/socket";
 import UserImage from "../UserPhoto";
 import StartGameButton from "../StartGameButton";
+import { useGame } from "@/providers/game";
 
 
 
 export function LobbyAside() {
 
-  const { players } = useSocket();
+  const { players } = useGame();
 
   return (
     <aside 

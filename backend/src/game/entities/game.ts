@@ -4,7 +4,7 @@
 // THE GAME WILL HAVE A LIST OF SONGS, EACH SONG WILL HAVE A UUID, BASED ON IT, WILL GET THE NAME AND URL
 // TO PLAY THE SONG.
 
-import { Song } from "src/shared/model";
+import { Song, SongSourcer } from "src/shared/model";
 
 export default class Game {
   constructor (
@@ -19,7 +19,11 @@ export default class Game {
   private currentRound: number;
   private songs: Array<Song> = [];
 
+  private songsSourcers: Array<SongSourcer> = []
+
   public addSongs(songs: Array<Song>) {
+    songs = songs.filter(({id}) => !this.songs.some(song => song.id !== id))
+
     this.songs.push(...songs);
 
     console.log({songs: this.songs})
@@ -43,9 +47,6 @@ export default class Game {
       console.log('ACABA O ROUND AQUI')
 
       this.endRound();
-
-      this.onNextRound();
-      this.clearPlayersPlayed();
     }
   }
 
@@ -84,41 +85,71 @@ export default class Game {
   }
 
   public getPlayers() {
-    return this.players.map((player) => {
+    const players = this.players.map((player) => {
       return {
         playerId: player.getPlayerId(),
         score: player.getScore(),
       }
     })
+
+    console.log({players})
+
+    return players
   }
 
   public startGame() {
     this.currentRound = 0
-    this.onNextRound()
-
     console.log('Game started!')
-    this.publish({ event: 'startGame', songs: this.getSongs() }); // Notificar todos os assinantes
+
+    this.publish({ event: 'startGame' }); // Notificar todos os assinantes
+
+    this.onNextRound();
   }
 
   public onNextRound() {
     this.currentRound++
   
     // GET A RANDOM SONG
-    const randomIndex = Math.floor(Math.random() * this.songs.length)
+    const rightSongIndex = Math.floor(Math.random() * this.songs.length)
     
     // GET A RANDOM START TIME
     const startAt = Math.floor(Math.random() * 27)
 
     this.currentSong = {
-      ...this.songs[randomIndex],
+      ...this.songs[rightSongIndex],
       startAt: startAt
     }
+
+    // Vou retornar somente 6 músicas para o usuário poder chutar, tem que ser a resposta correta +5 aleatórias
+    const songsToGuess = [
+      this.songs[rightSongIndex]
+    ]
+
+    while(
+      songsToGuess.length < 6
+      && !(songsToGuess.length === this.songs.length)
+    ) {
+      const randomIndex = Math.floor(Math.random() * this.songs.length)
+      const randomSong = this.songs[randomIndex]
+
+      if(!songsToGuess.includes(randomSong)) {
+        songsToGuess.push(randomSong)
+      }
+    }
+    songsToGuess.sort(() => Math.random() - 0.5)
+
     
-    this.publish({ event: 'newRound', currentSong: this.currentSong }); //
+    this.publish({ event: 'newRound', currentSong: this.currentSong, songs: songsToGuess }); //
   }
 
-  public endRound() {
-    this.publish({ event: 'endRound' }); // Notificar todos os assinantes
+  private endRound() {
+    this.publish({ event: 'endRound', players: this.getPlayers() }); // Notificar todos os assinantes
+    this.clearPlayersPlayed();
+
+    console.log('ESPERANDO 5 SEGUNDOS PARA O PRÓXIMO ROUND')
+    setTimeout(() => {
+      this.onNextRound();
+    }, 5000)
   }
 
   public guessSong({ playerId, songGuessed, timePassed = 0 }: { playerId: string, songGuessed: Song, timePassed?: number }) {
@@ -128,24 +159,25 @@ export default class Game {
     const player = this.players.find(player => player.getPlayerId() === playerId)
 
     if (player) {
-      if(songGuessed.id == this.currentSong.id && timePassed <= this.guessTime) {
-        const points = this.guessTime - timePassed
+      if(
+        songGuessed.id == this.currentSong.id 
+        && timePassed <= this.guessTime
+      ) {
+        // const points = this.guessTime - timePassed
+        const points = 10
         player.addPoints(points)
 
         console.log('Player guessed right!', player, points)
-        // return
       }
+      
       this.increasePlayersPlayed();
-      this.publish({ event: 'guess', players: this.getPlayers() }); // Notificar todos os assinantes
-      // console.log('Player guessed wrong!', player)
-      // this.publish({ event: 'guess', player }); // Notificar todos os assinantes
     }
   }
 
   public timedOut({ playerId }) {
     const player = this.players.find(player => player.getPlayerId() === playerId)
 
-    if (player) {
+    if (!!player) {
       this.increasePlayersPlayed();
     }
   }

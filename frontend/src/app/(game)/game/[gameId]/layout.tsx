@@ -1,6 +1,4 @@
-import { LinearTimerProvider } from "@/providers/linearTimer";
-import { PlayerProvider } from "@/providers/player";
-import { SocketProvider } from "@/providers/socket";
+import { GameProvider } from '@/providers/game';
 import { CookiesProvider } from 'next-client-cookies/server';
 
 
@@ -12,15 +10,11 @@ export default function Layout({
 }>) {
   return (
     <CookiesProvider>
-        <SocketProvider>
-      <LinearTimerProvider>
-          <PlayerProvider>
-            <div className="flex min-h-screen flex-col items-center bg-background">
-              {children}
-            </div>
-          </PlayerProvider>
-      </LinearTimerProvider>
-        </SocketProvider>
+      <GameProvider>
+        <div className="flex min-h-screen flex-col items-center bg-background">
+          {children}
+        </div>
+      </GameProvider>
     </CookiesProvider>
   )
 }

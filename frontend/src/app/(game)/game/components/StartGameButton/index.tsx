@@ -1,12 +1,12 @@
 'use client'
 
-import { useSocket } from "@/providers/socket";
-import Button from "@/shared/components/Button";
+import { useGame } from "@/providers/game";
+import { Button } from "@/shared/components/Button";
 
 
 
 export default function StartGameButton() {
-  const { onStartGame } = useSocket();
+  const { onStartGame } = useGame();
 
   async function onClick() {
     onStartGame();
