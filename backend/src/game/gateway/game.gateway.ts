@@ -22,32 +22,34 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     console.log(`connected client id: ${client.id}`);
 
-    this.gameService.addPlayer({ playerId });
+    client.join(gameId);
+    
+    this.gameService.addPlayer({ playerId, gameId });
 
     this.gameService.subscribe((command) => {
       const { event, ...remaing } = command;
 
       console.log({event, data: remaing})
 
-      this.server.emit(command.event, { data: remaing })
-    });
+      this.server.to(gameId).emit(command.event, { data: remaing })
+    }, gameId);
 
     client.on('startGame', () => {  
-      this.gameService.startGame();
+      this.gameService.startGame({ gameId });
     });
 
     client.on('guessSong', (songGuessed) => {
-      this.gameService.guessSong({ playerId, songGuessed });
+      this.gameService.guessSong({ playerId, songGuessed, gameId });
     });
     
     client.on('timedOut', () => {
-      this.gameService.timedOut({ playerId });
+      this.gameService.timedOut({ playerId, gameId });
     })
 
-    this.server.emit('players', {
+    this.server.to(gameId).emit('players', {
       event: 'players',
       data : {
-        players: this.gameService.getPlayers()
+        players: this.gameService.getPlayers({ gameId })
       }
     });
   } 
@@ -55,13 +57,14 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   // ON DISCONNECT
   handleDisconnect(client: Socket) {
     const playerId = client.id;
+    const gameId = client.handshake.auth.gameId;
 
-    this.gameService.removePlayer({ playerId });
+    this.gameService.removePlayer({ playerId, gameId });
 
-    this.server.emit('players', {
+    this.server.to(gameId).emit('players', {
       event: 'players',
       data : {
-        players: this.gameService.getPlayers()
+        players: this.gameService.getPlayers({ gameId })
       }
     });
   }

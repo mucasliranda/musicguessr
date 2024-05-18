@@ -8,6 +8,8 @@ export function LobbyAside() {
 
   const { players } = useGame();
 
+  console.log({players})
+
   return (
     <aside 
       className="
