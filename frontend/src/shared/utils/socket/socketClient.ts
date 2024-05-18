@@ -1,5 +1,10 @@
 import { io, Socket } from 'socket.io-client';
 
+export interface SocketResponse<T> {
+  event: string;
+  data: T;
+}
+
 export class SocketSingleton {
   static socket: SocketClient;
 
@@ -15,7 +20,7 @@ export class SocketSingleton {
 }
 
 class SocketClient {
-  private socket: Socket = io('http://localhost:3005');
+  private socket: Socket = io('http://localhost:3005', { autoConnect: false });
 
   constructor() { }
 
@@ -23,7 +28,7 @@ class SocketClient {
     this.socket.emit(event, data);
   }
 
-  on<T>(event: string, callback: (data: T) => void) {
+  on<T>(event: string, callback: (response: SocketResponse<T>) => void) {
     this.socket.on(event, callback);
   }
 
@@ -31,7 +36,8 @@ class SocketClient {
     this.socket.off(event, callback);
   }
 
-  connect() {
+  connect({ username, gameId }: { username: string, gameId: string}) {
+    this.socket.auth = { gameId, username };
     this.socket.connect();
   }
 

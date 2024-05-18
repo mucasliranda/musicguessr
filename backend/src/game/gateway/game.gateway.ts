@@ -15,6 +15,10 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   // ON CONNECT
   handleConnection(client: Socket) {
     const playerId = client.id;
+    const username = client.handshake.auth.username;
+    const gameId = client.handshake.auth.gameId;
+
+    console.log({ playerId, username, gameId })
 
     console.log(`connected client id: ${client.id}`);
 

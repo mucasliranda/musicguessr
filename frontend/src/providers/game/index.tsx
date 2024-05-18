@@ -5,14 +5,11 @@ import React, { MutableRefObject, createContext, useContext, useEffect, useRef, 
 import { useCookies } from 'next-client-cookies';
 // import SocketSingleton from '@/shared/utils/socket';
 import { useConfetti } from '@/shared/components/Confetti';
-import { SocketSingleton } from '@/shared/utils/socket/socketClient';
+import { SocketResponse, SocketSingleton } from '@/shared/utils/socket/socketClient';
+
+import { uniqueNamesGenerator, colors, adjectives, animals, Config } from 'unique-names-generator';
 
 
-
-interface SocketData<T> {
-  event: string;
-  data: T;
-}
 
 interface CurrentSong extends Song {
   startAt: number;
@@ -25,15 +22,15 @@ interface Guess extends Song {
 const GameContext = createContext({
   // GAME
   players: [] as Array<Player>,
-  onStartGame: () => {},
+  onStartGame: () => { },
   songs: [] as Array<Song>,
   isGameStarted: false,
   currentSong: null as CurrentSong | null,
   guess: null as Guess | null,
-  onGuessSongs: (song: Song) => {},
-  onTimedOut: () => {},
+  onGuessSongs: (song: Song) => { },
+  onTimedOut: () => { },
   roundEnded: false,
-
+  setGameId: (gameId: string) => { },
 
   // TIMER
   progress: 100,
@@ -41,16 +38,16 @@ const GameContext = createContext({
 
 
   // SONG PLAYER
-  playSong: () => {},
+  playSong: () => { },
   playerRef: null as unknown as MutableRefObject<HTMLAudioElement | null>,
-  onTimeUpdate: () => {},
+  onTimeUpdate: () => { },
   volume: 50,
-  setVolume: (volume: number) => {},
+  setVolume: (volume: number) => { },
 
 
   // CONFETTI
   confetti: false,
-  toggleConfetti: () => {},
+  toggleConfetti: () => { },
 });
 
 const guessDuration = 10000; // 10 SECS
@@ -58,7 +55,15 @@ const timerInterval = 50;
 let timer: NodeJS.Timeout;
 
 
-// const socket = new SocketClient();
+function generateRandomName() {
+  const customConfig: Config = {
+    dictionaries: [colors, adjectives, animals],
+    separator: '-',
+    length: 3,
+  };
+
+  return uniqueNamesGenerator(customConfig)
+}
 
 export function GameProvider({ children }) {
   const cookies = useCookies();
@@ -67,6 +72,8 @@ export function GameProvider({ children }) {
   const { confetti, toggleConfetti } = useConfetti();
 
   // GAME
+  const [gameId, setGameId] = useState('' as string);
+  const [username, setUsername] = useState(generateRandomName());
   const [players, setPlayers] = useState<Array<Player>>([]);
   const [songs, setSongs] = useState<Array<Song>>([]);
   const [currentSong, setCurrentSong] = useState<CurrentSong | null>(null);
@@ -100,17 +107,17 @@ export function GameProvider({ children }) {
       playerRef.current.src = song.url;
       playerRef.current.currentTime = song.startAt;
 
-      playerRef.current.play().then(() => {}).catch((err) => {
+      playerRef.current.play().then(() => { }).catch((err) => {
         console.log(err)
         playerRef.current?.play();
-      }) ;
+      });
     }
   }
 
   function onTimeUpdate() {
     if (
       playerRef.current
-      && currentSong  
+      && currentSong
       && playerRef.current.currentTime - currentSong.startAt > 1.5
     ) {
       playerRef.current.pause()
@@ -120,7 +127,7 @@ export function GameProvider({ children }) {
   function setVolume(volume: number) {
     _setVolume(volume);
     setVolumeOnCookie(volume);
-    
+
     if (playerRef.current) {
       playerRef.current.volume = volume / 100;
     }
@@ -173,8 +180,8 @@ export function GameProvider({ children }) {
     setFinished(false);
   }
 
-  function onChangePlayers(response: SocketData<{players: Array<Player>}>) {
-    console.log({players: response.data.players})
+  function onChangePlayers(response: SocketResponse<{ players: Array<Player> }>) {
+    console.log({ players: response.data.players })
     setPlayers(response.data.players);
   }
 
@@ -189,17 +196,8 @@ export function GameProvider({ children }) {
     setIsGameStarted(true);
   }
 
-  async function onNewRound(response: SocketData<{currentSong: CurrentSong, songs: Array<Song>}>) {
-    setRoundEnded(false);
-    startTimer();
-    setCurrentSong(response.data.currentSong);
-    setSongs(response.data.songs)
-    setGuess(null);
-    playSong(response.data.currentSong);
-  }
-
   function onGuessSongs(song: Song) {
-    if(!!!guess) {
+    if (!!!guess) {
       const socket = SocketSingleton.getSocket();
 
       setGuess({
@@ -216,37 +214,48 @@ export function GameProvider({ children }) {
     socket.emit('timedOut');
   }
 
-  function onEndRound(response: SocketData<{players: Array<Player>}>) {
+  function onEndRound(response: SocketResponse<{ players: Array<Player> }>) {
     endTimer();
     setRoundEnded(true);
-    startTimer(5000); 
+    startTimer(5000);
     setPlayers(response.data.players);
   }
 
+  async function onNewRound(response: SocketResponse<{ currentSong: CurrentSong, songs: Array<Song> }>) {
+    setRoundEnded(false);
+    startTimer();
+    setCurrentSong(response.data.currentSong);
+    setSongs(response.data.songs)
+    setGuess(null);
+    playSong(response.data.currentSong);
+  }
+
   useEffect(() => {
-    const socket = SocketSingleton.getSocket();
+    if (gameId) {
+      const socket = SocketSingleton.getSocket();
 
-    socket.connect();
+      socket.connect({ gameId, username });
   
-    socket.on('players', onChangePlayers)
-
-    socket.on('startGame', onReceiveStartGame)
-
-    socket.on('newRound', onNewRound)
-
-    socket.on('endRound', onEndRound)
-    
-    socket.on('guess', onChangePlayers)
-
-    return () => {
-      socket.disconnect();
-      socket.off('players', onChangePlayers);
-      socket.off('startGame', onReceiveStartGame);
-      socket.off('newRound', onNewRound);
-      socket.off('endRound', onEndRound);
-      socket.off('guess', onChangePlayers);
+      socket.on('players', onChangePlayers)
+  
+      socket.on('startGame', onReceiveStartGame)
+  
+      socket.on('newRound', onNewRound)
+  
+      socket.on('endRound', onEndRound)
+  
+      socket.on('guess', onChangePlayers)
+  
+      return () => {
+        socket.disconnect();
+        socket.off('players', onChangePlayers);
+        socket.off('startGame', onReceiveStartGame);
+        socket.off('newRound', onNewRound);
+        socket.off('endRound', onEndRound);
+        socket.off('guess', onChangePlayers);
+      }
     }
-  }, []);
+  }, [gameId]);
 
   useEffect(() => {
     const volume = getVolumeFromCookie();
@@ -254,7 +263,7 @@ export function GameProvider({ children }) {
   }, [])
 
   return (
-    <GameContext.Provider 
+    <GameContext.Provider
       value={{
         // GAME
         players,
@@ -266,6 +275,7 @@ export function GameProvider({ children }) {
         onGuessSongs,
         onTimedOut,
         roundEnded,
+        setGameId,
 
 
         // TIMER
