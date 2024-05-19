@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { SpotifyRepository } from "../spotify-repository";
 import { ConfigService } from "@nestjs/config";
+import { SongsRepository } from "../songsRepository";
 
 
 
-function getRightImage(images: any[] | null) {
+function getBestFitImage(images: any[] | null) {
   // preciso pegar a imagem que tem a menor diferença entre a largura e a altura
   // e que seja maior ou igual que a largura desejada
   const desiredWidth = 300; // Substitua isso pela largura desejada
@@ -22,7 +22,7 @@ function getRightImage(images: any[] | null) {
 }
 
 @Injectable()
-export class ApiSpotifyRepository implements SpotifyRepository {
+export class SpotifySongsRepository implements SongsRepository {
   constructor(
     private configService: ConfigService,
   ) {}
@@ -48,7 +48,7 @@ export class ApiSpotifyRepository implements SpotifyRepository {
         return {
           id: album.id,
           name: album.name,
-          image: getRightImage(album.images),
+          image: getBestFitImage(album.images),
         }
       })
     }
@@ -94,7 +94,7 @@ export class ApiSpotifyRepository implements SpotifyRepository {
       data: {
         id: res.id,
         name: res.name,
-        image: getRightImage(res.images),
+        image: getBestFitImage(res.images),
         artists: res.artists.map(({name}) => name),
         songs: res.tracks.items.map((song) => {
           return {
@@ -125,7 +125,7 @@ export class ApiSpotifyRepository implements SpotifyRepository {
         return {
           id: artist.id,
           name: artist.name,
-          image: getRightImage(artist.images),
+          image: getBestFitImage(artist.images),
         }
       })
     }
@@ -166,62 +166,4 @@ export class ApiSpotifyRepository implements SpotifyRepository {
     const oneHour = 3600 * 1000; // 3600 seconds in milliseconds
     return (Date.now() - this.tokenObtainedAt) >= oneHour;
   }
-
-
-
-
-
-
-
-  // async getTrackPreview(trackId: string): Promise<string> {
-  //   await this.ensureAccessToken();
-
-  //   const _fetch = await fetch(`https://api.spotify.com/v1/tracks/${trackId}`, {
-  //     headers: {
-  //       'Authorization': `Bearer ${this.accessToken}`
-  //     }
-  //   });
-
-  //   const res = await _fetch.json();
-
-  //   return res.preview_url
-  // }
-
-  // async getTrackHighlights(trackId: string, by: 'segments' | 'sections' = 'segments'): Promise<Array<number>> {
-  //   await this.ensureAccessToken();
-
-  //   const _fetch = await fetch(`https://api.spotify.com/v1/audio-analysis/${trackId}`, {
-  //     headers: {
-  //       'Authorization': `Bearer ${this.accessToken}`
-  //     }
-  //   });
-
-  //   const res = await _fetch.json();
-
-  //   const highlights = res[by].map((segment) => {
-  //     // seconds to milliseconds
-  //     return segment.start * 1000
-  //   });
-
-  //   return highlights as number[]
-  // }
-
-  // async getTopTracksByArtist(artistId: string): Promise<Array<{id: string, name: string}>> {
-  //   await this.ensureAccessToken();
-
-  //   const _fetch = await fetch(`https://api.spotify.com/v1/artists/${artistId}/top-tracks?country=BR`, {
-  //     headers: {
-  //       'Authorization': `Bearer ${this.accessToken}`
-  //     }
-  //   });
-
-  //   const res = await _fetch.json();
-
-  //   return res.tracks.map((track) => {
-  //     return {
-  //       id: track.id,
-  //       name: track.name,
-  //     }
-  //   });
-  // };
 }

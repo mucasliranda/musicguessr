@@ -1,39 +1,31 @@
 import { Injectable } from "@nestjs/common";
 import Game from "../entities/game";
 import { CreateGameDto } from "../dtos/create-game.dto";
-import { SpotifyService } from "src/spotify/services/spotify.service";
 import { Song } from "src/shared/model";
 import { AddSongsDto } from "../dtos/add-songs.dto";
 import { InMemoryGameRepository } from "../repository/InMemoryGameRepository";
 
-let _game: Game;
+
 
 @Injectable()
 export class GameService {
   constructor(
-    private readonly spotifyService: SpotifyService,
-    private readonly gameRepository: InMemoryGameRepository,
+    private readonly gameRepository: InMemoryGameRepository
   ) {}
 
-  // private game: Game;
-
-  // public debug() {
-  //   this.game.debug();
-  // }
-
-  public async subscribe(fn, gameId) {
+  public async subscribe(fn: any, gameId: string) {
     const game = await this.gameRepository.getGame(gameId);
 
     game.subscribe(fn);
   }
 
   public async createGame({ gameId }: CreateGameDto) { 
-    this.gameRepository.createGame(gameId);
+    await this.gameRepository.createGame(gameId);
   }
 
   public async addSongs({ songs, gameId }: AddSongsDto) {
     const game = await this.gameRepository.getGame(gameId);
-    
+
     game.addSongs(songs);
   }
 
@@ -55,11 +47,11 @@ export class GameService {
     game.startGame();
   }
 
-  // public async onNextRound({ gameId }) {
-  //   const game = await this.gameRepository.getGame(gameId);
+  public async onNextRound({ gameId }) {
+    const game = await this.gameRepository.getGame(gameId);
 
-  //   game.onNextRound();
-  // }
+    game.onNextRound();
+  }
 
   public async guessSong({ playerId, songGuessed, timePassed, gameId }: { playerId: string, songGuessed: Song, timePassed?: number, gameId: string}) {
     const game = await this.gameRepository.getGame(gameId);
@@ -82,12 +74,6 @@ export class GameService {
   public async getPlayers({ gameId }) {
     const game = await this.gameRepository.getGame(gameId);
 
-    console.log('getPlayers do game', game)
-
-    const players = game.getPlayers();
-
-    console.log({ 'players no service': players})
-    
-    return players
+    return game.getPlayers();
   }
 }

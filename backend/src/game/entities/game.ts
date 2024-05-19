@@ -4,7 +4,7 @@
 // THE GAME WILL HAVE A LIST OF SONGS, EACH SONG WILL HAVE A UUID, BASED ON IT, WILL GET THE NAME AND URL
 // TO PLAY THE SONG.
 
-import { Song, SongSourcer } from "src/shared/model";
+import { Song } from "src/shared/model";
 
 export default class Game {
   constructor (
@@ -18,8 +18,6 @@ export default class Game {
   private currentSong: Song & { startAt: number };
   private currentRound: number;
   private songs: Array<Song> = [];
-
-  private songsSourcers: Array<SongSourcer> = []
 
   public addSongs(songs: Array<Song>) {
     songs = songs.filter(({id}) => !this.songs.some(song => song.id !== id))
@@ -37,6 +35,16 @@ export default class Game {
 
   private subscribers = [];
 
+  public subscribe(fn) {
+    this.subscribers.push(fn);
+  }
+
+  public publish(data: any) {
+    for (let subscriber of this.subscribers) {
+      subscriber(data);
+    }
+  }
+
   private changeTotalPlayers() {
     this.totalPlayers = this.players.length
   }
@@ -52,24 +60,6 @@ export default class Game {
 
   private clearPlayersPlayed() {
     this.playersPlayed = 0;
-  }
-
-  public debug() {
-    console.log({
-      currentSong: this.currentSong,
-      currentRound: this.currentRound,
-      songs: this.songs,
-    })
-  }
-
-  public subscribe(fn) {
-    this.subscribers.push(fn);
-  }
-
-  public publish(data: any) {
-    for (let subscriber of this.subscribers) {
-      subscriber(data);
-    }
   }
 
   public addPlayer({ playerId }) {
@@ -92,7 +82,7 @@ export default class Game {
       }
     })
 
-    console.log({players})
+    console.log({'players na entity':players})
 
     return players
   }
@@ -103,7 +93,7 @@ export default class Game {
 
     this.publish({ event: 'startGame' }); // Notificar todos os assinantes
 
-    this.onNextRound();
+    return this.onNextRound();
   }
 
   public onNextRound() {
@@ -111,7 +101,7 @@ export default class Game {
   
     // GET A RANDOM SONG
     const rightSongIndex = Math.floor(Math.random() * this.songs.length)
-    
+
     // GET A RANDOM START TIME
     const startAt = Math.floor(Math.random() * 27)
 
@@ -125,6 +115,10 @@ export default class Game {
       this.songs[rightSongIndex]
     ]
 
+    if (this.songs.length === 0) {
+      throw new Error('NO_SONGS_TO_GUESS')
+    }
+
     while(
       songsToGuess.length < 6
       && !(songsToGuess.length === this.songs.length)
@@ -136,8 +130,8 @@ export default class Game {
         songsToGuess.push(randomSong)
       }
     }
-    songsToGuess.sort(() => Math.random() - 0.5)
 
+    songsToGuess.sort(() => Math.random() - 0.5)
     
     this.publish({ event: 'newRound', currentSong: this.currentSong, songs: songsToGuess }); //
   }
