@@ -236,10 +236,10 @@ export function GameProvider({ children }) {
 
       socket.connect({ gameId, username });
   
-      // socket.on('players', onChangePlayers)
-      socket.on('players', (a) => {
-        console.log({a})
-      })
+      socket.on('players', onChangePlayers)
+      // socket.on('players', (a) => {
+      //   console.log({a})
+      // })
   
       socket.on('startGame', onReceiveStartGame)
   

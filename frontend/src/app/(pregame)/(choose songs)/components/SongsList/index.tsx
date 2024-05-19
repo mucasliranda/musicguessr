@@ -38,6 +38,7 @@ export default function SongsList({ songs }: Props) {
       },
       body: JSON.stringify({
         songs: songs.filter(song => songsId.includes(song.id)),
+        gameId: gameId
       }),
     });
   

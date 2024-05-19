@@ -20,30 +20,4 @@ export class GameController {
   async addSongs(@Body() addSongsDto: AddSongsDto) {
     this.gameService.addSongs(addSongsDto);
   }
-
-
-
-
-
-  // DEPRECATED
-  // @Get('/game/highlight')
-  // async getMusicHighlight(@Query() goNextRoundDto: GoNextRoundDto) {
-  //   const game = await this.gameService.getGame(goNextRoundDto.gameId);
-
-  //   const track = await this.spotifyService.getSomeTrackByArtist(game.artist);
-
-  //   const highlight = await this.spotifyService.getSomeTrackHighlight(track.id);
-
-  //   await this.gameService.createRound({
-  //     gameId: game.id,
-  //     musicId: track.id,
-  //     music: track.name,
-  //     startAt: highlight,
-  //     number: !!goNextRoundDto.round ? parseInt(goNextRoundDto.round) : 1,
-  //   });
-
-  //   return {
-  //     startAt: highlight,
-  //   }
-  // }
 }

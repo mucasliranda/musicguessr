@@ -1,4 +1,4 @@
-import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
+import { OnGatewayConnection, OnGatewayDisconnect, OnGatewayInit, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Server, Socket } from "socket.io";
 import { GameService } from "../services/game.service";
 
@@ -13,7 +13,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   }
 
   // ON CONNECT
-  handleConnection(client: Socket) {
+  async handleConnection(client: Socket) {
     const playerId = client.id;
     const username = client.handshake.auth.username;
     const gameId = client.handshake.auth.gameId;
@@ -24,9 +24,9 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     client.join(gameId);
     
-    this.gameService.addPlayer({ playerId, gameId });
+    await this.gameService.addPlayer({ playerId, gameId });
 
-    this.gameService.subscribe((command) => {
+    await this.gameService.subscribe((command: any) => {
       const { event, ...remaing } = command;
 
       console.log({event, data: remaing})
@@ -34,37 +34,37 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       this.server.to(gameId).emit(command.event, { data: remaing })
     }, gameId);
 
-    client.on('startGame', () => {  
-      this.gameService.startGame({ gameId });
+    client.on('startGame', async () => {  
+      await this.gameService.startGame({ gameId });
     });
 
-    client.on('guessSong', (songGuessed) => {
-      this.gameService.guessSong({ playerId, songGuessed, gameId });
+    client.on('guessSong', async (songGuessed) => {
+      await this.gameService.guessSong({ playerId, songGuessed, gameId });
     });
     
-    client.on('timedOut', () => {
-      this.gameService.timedOut({ playerId, gameId });
+    client.on('timedOut', async () => {
+      await this.gameService.timedOut({ playerId, gameId });
     })
 
     this.server.to(gameId).emit('players', {
       event: 'players',
       data : {
-        players: this.gameService.getPlayers({ gameId })
+        players: await this.gameService.getPlayers({ gameId })
       }
     });
   } 
 
   // ON DISCONNECT
-  handleDisconnect(client: Socket) {
+  async handleDisconnect(client: Socket) {
     const playerId = client.id;
     const gameId = client.handshake.auth.gameId;
 
-    this.gameService.removePlayer({ playerId, gameId });
+    await this.gameService.removePlayer({ playerId, gameId });
 
     this.server.to(gameId).emit('players', {
       event: 'players',
       data : {
-        players: this.gameService.getPlayers({ gameId })
+        players: await this.gameService.getPlayers({ gameId })
       }
     });
   }

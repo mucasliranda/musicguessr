@@ -5,10 +5,7 @@ import { useGame } from "@/providers/game";
 
 
 export function LobbyAside() {
-
   const { players } = useGame();
-
-  console.log({players})
 
   return (
     <aside 
