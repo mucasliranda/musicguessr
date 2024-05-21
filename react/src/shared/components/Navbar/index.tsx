@@ -1,11 +1,12 @@
 import { useSearchParams } from "react-router-dom";
+import GlassIcon from "../GlassIcon";
 // import GlassIcon from "../GlassIcon";
 
 
 
 export default function Navbar() {
   const [searchParams, setSearchParams] = useSearchParams();
-  console.log(searchParams.get('artist'));
+  console.log(searchParams.get('q'));
 
 
 
@@ -13,29 +14,30 @@ export default function Navbar() {
   // const artist = params.artist?.split('%20').join(' ');
   // const router = useRouter();
 
-  // function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-  //   e.preventDefault();
+  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
 
-  //   const val = e.target as HTMLFormElement;
-  //   const search = val.search.value as string;
+    const val = e.target as HTMLFormElement;
+    const search = val.search.value as string;
 
-  //   router.push(`/search/${search}`);
-  // }
+    setSearchParams({ q: search });
+
+    // router.push(`/search/${search}`);
+  }
 
   return (
     <nav className="w-full flex justify-center">
-      <h2>teste</h2>
-      {/* <form onSubmit={onSubmit} className="max-w-[550px] w-full relative">
+      <form onSubmit={onSubmit} className="max-w-[550px] w-full relative">
         <div className="absolute left-0 top-0 ml-3 flex h-full items-center">
           <GlassIcon />
         </div>
         <input
-          key={artist}
+          key={''}
           type="text"
           name="search"
           placeholder="Search for artists..."
           autoComplete="off"
-          defaultValue={artist || ''}
+          defaultValue={'artist' || ''}
           className="
             w-full 
 
@@ -52,7 +54,7 @@ export default function Navbar() {
             text-base text-neutral-100 
             placeholder:text-neutral-500"
         />
-      </form> */}
+      </form>
     </nav>
   )
 }

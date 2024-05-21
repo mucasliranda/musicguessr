@@ -8,7 +8,9 @@ export default function ArtistPage() {
 
   return (
     <ArtistLayout>
-      <h1>Artist: {artistId}</h1>
+      <div className="pt-4">
+        <h1 className="text-4xl font-bold">Artist {artistId}</h1>
+      </div>
     </ArtistLayout>
   )
 }
