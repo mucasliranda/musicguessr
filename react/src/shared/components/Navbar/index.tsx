@@ -1,18 +1,17 @@
 import { useSearchParams } from "react-router-dom";
 import GlassIcon from "../GlassIcon";
+import { QueryClient, useQueryClient } from "@tanstack/react-query";
+import { useState } from "react";
 // import GlassIcon from "../GlassIcon";
 
 
 
 export default function Navbar() {
   const [searchParams, setSearchParams] = useSearchParams();
-  console.log(searchParams.get('q'));
 
+  const queryClient = useQueryClient();
 
-
-  // const params = useParams() as { artist: string };
-  // const artist = params.artist?.split('%20').join(' ');
-  // const router = useRouter();
+  const artist = searchParams.get('q')?.split('+').join(' ') || '';
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -21,6 +20,8 @@ export default function Navbar() {
     const search = val.search.value as string;
 
     setSearchParams({ q: search });
+
+    queryClient.invalidateQueries({ queryKey: ['artists'] });
 
     // router.push(`/search/${search}`);
   }
@@ -32,12 +33,12 @@ export default function Navbar() {
           <GlassIcon />
         </div>
         <input
-          key={''}
+          key={'search'}
           type="text"
           name="search"
           placeholder="Search for artists..."
           autoComplete="off"
-          defaultValue={'artist' || ''}
+          defaultValue={artist || ''}
           className="
             w-full 
 
@@ -52,7 +53,8 @@ export default function Navbar() {
 
             bg-onBackground px-4 py-3 pl-10 
             text-base text-neutral-100 
-            placeholder:text-neutral-500"
+            placeholder:text-neutral-500
+          "
         />
       </form>
     </nav>

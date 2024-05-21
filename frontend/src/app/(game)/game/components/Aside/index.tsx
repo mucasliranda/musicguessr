@@ -5,7 +5,6 @@ import { useGame } from "@/providers/game";
 
 
 export default function Aside() {
-
   const { players } = useGame();
 
   return (
