@@ -28,7 +28,7 @@ export default function useSongPlayer() {
   }, []);
 
   useEffect(() => {
-    console.log(state.songPlayer.)
+    // console.log(state.songPlayer.)
   }, [])
 
   function onTimeUpdate() {

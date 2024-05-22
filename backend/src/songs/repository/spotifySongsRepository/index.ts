@@ -78,6 +78,52 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
+  async getSongById(songId: string) {
+    await this.ensureAccessToken();
+
+    const _fetch = await fetch(`https://api.spotify.com/v1/tracks/${songId}`, {
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      },
+    });
+
+    const res = await _fetch.json();
+
+    return {
+      status: _fetch.status,
+      data: {
+        id: res.id,
+        name: res.name,
+        url: res.preview_url,
+        playable: !!res.preview_url,
+      }
+    }
+  }
+
+  async getSeveralSongsByIds(songIds: string[]) {
+    await this.ensureAccessToken();
+
+    const _fetch = await fetch(`https://api.spotify.com/v1/tracks?ids=${songIds.join(',')}`, {
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      },
+    });
+
+    const res = await _fetch.json();
+
+    return {
+      status: _fetch.status,
+      data: res.tracks.map((song) => {
+        return {
+          id: song.id,
+          name: song.name,
+          url: song.preview_url,
+          playable: !!song.preview_url,
+        }
+      })
+    }
+  }
+
   async getAlbum(albumId: string) {
     await this.ensureAccessToken();
 

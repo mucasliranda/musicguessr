@@ -9,15 +9,17 @@ import { Song } from "src/shared/model";
 export default class Game {
   constructor (
     gameId: string,
+    songs: Array<Song> = []
   ) {
     this.gameId = gameId
+    this.songs = songs
   }
 
   private gameId: string;
   private players: Player[] = [];
   private currentSong: Song & { startAt: number };
   private currentRound: number;
-  private songs: Array<Song> = [];
+  private songs: Array<Song>;
 
   public addSongs(songs: Array<Song>) {
     songs = songs.filter(({id}) => !this.songs.some(song => song.id !== id))

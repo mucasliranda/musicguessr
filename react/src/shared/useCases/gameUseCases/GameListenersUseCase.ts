@@ -4,7 +4,7 @@ import { SocketRepository } from "src/shared/repositories/SocketRepository";
 
 export class GameListenersUseCase {
   private socketServer: SocketRepository;
-  private onPlayerChangeCallback?;
+  private onChangePlayersCallback?;
   private onGameStartCallback?;
   private onNewRoundCallback?;
   private onEndRoundCallback?;
@@ -13,10 +13,10 @@ export class GameListenersUseCase {
     this.socketServer = socketServer;
   }
 
-  setOnPlayerChangeCallback(callback: (data: any) => void) {
-    this.onPlayerChangeCallback = callback;
+  setOnChangePlayersCallback(callback: (data: any) => void) {
+    this.onChangePlayersCallback = callback;
     this.socketServer.removeAllListeners('players');
-    this.socketServer.on('players', this.onPlayerChangeCallback);
+    this.socketServer.on('players', this.onChangePlayersCallback);
   }
 
   setOnGameStartCallback(callback: (data: any) => void) {

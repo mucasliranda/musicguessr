@@ -23,6 +23,22 @@ export class SongsService {
     };
   }
 
+  async getSongById(songId: string) {
+    const song = await this.songsRepository.getSongById(songId);
+
+    return {
+      song: song.data
+    };
+  }
+
+  async getSeveralSongsByIds(songIds: string[]) {
+    const songs = await this.songsRepository.getSeveralSongsByIds(songIds);
+
+    return {
+      songs: songs.data
+    };
+  }
+
   async getAlbum(albumId: string) {
     const album = await this.songsRepository.getAlbum(albumId);
 

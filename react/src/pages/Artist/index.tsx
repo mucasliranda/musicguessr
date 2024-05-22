@@ -3,6 +3,7 @@ import ArtistLayout from "./layout";
 import AlbumList from "src/shared/components/AlbumList";
 import { useQuery } from "@tanstack/react-query";
 import { Album } from "src/shared/model";
+import ArtistHeader from "./components/ArtistHeader";
 
 
 
@@ -26,7 +27,10 @@ export default function ArtistPage() {
 
   return (
     <ArtistLayout>
-      <AlbumList albums={data} />
+      <div className="w-full max-w-[1360px] flex flex-col gap-4">
+        <ArtistHeader />
+        <AlbumList albums={data} />
+      </div>
     </ArtistLayout>
   )
 }

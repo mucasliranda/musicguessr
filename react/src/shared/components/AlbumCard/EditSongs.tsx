@@ -1,15 +1,16 @@
+import { EllipsisVertical } from "lucide-react";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import { cn } from "src/shared/utils";
 
-// import { EllipsisVertical } from 'lucide-react'
-// import Link from 'next/link'
-// import { usePathname } from 'next/navigation';
+
 
 interface Props extends React.HTMLAttributes<HTMLDivElement> {
   albumId: string;
 }
 
 export default function EditSongs({ albumId, ...props }: Props) {
-  // const pathname = usePathname()
+  const { artistId } = useParams();
+  const [searchParams, _] = useSearchParams();
 
   return (
     <div
@@ -34,12 +35,13 @@ export default function EditSongs({ albumId, ...props }: Props) {
         )
       }
     >
-      {/* <Link href={`${pathname}/${albumId}`}> */}
-        {/* <EllipsisVertical
+      <Link 
+        to={`/artist/${artistId}/${albumId}?${searchParams.toString()}`}
+      >
+        <EllipsisVertical
           size={20}
-        /> */}
-        <p>...</p>
-      {/* </Link> */}
+        />
+      </Link>
     </div>
   )
 }

@@ -3,33 +3,29 @@ import Aside from "./components/Aside";
 import PlayersList from "./components/PlayersList";
 import SongPlayer from "./components/SongPlayer";
 import GameLayout from "./layout";
-import { changeColor } from "src/shared/redux/songPlayer";
+import { SongPlayerManager } from "src/shared/songPlayerManager";
+import { useEffect } from "react";
+import { useGame } from "src/shared/hooks/useGame";
 
 
 
 export default function GamePage() {
-  const isGameStarted = false;
+  const {} = useGame()
 
-  const dispatch = useDispatch()
+  const isGameStarted = false;
 
   return (
     <GameLayout>
       <Aside>
         
-        {/* <button onClick={playSong}>Play</button>
-        <button onClick={pauseSong}>Pause</button>
-        <button onClick={loadSong}>Load</button> */}
-
-        <button onClick={() => {
-          dispatch(changeColor())
-        }}>Change color</button>
-
-        <p id="paragraph">paragraph</p>
+        {/* <button onClick={SongPlayerManager.playSong}>Play</button>
+        <button onClick={SongPlayerManager.pauseSong}>Pause</button> */}
+        {/* <button onClick={loadSong}>Load</button> */}
 
         <PlayersList players={[]} />
       </Aside>
 
-      {/* <SongPlayer /> */}
+      <SongPlayer />
     </GameLayout>
   )
 }

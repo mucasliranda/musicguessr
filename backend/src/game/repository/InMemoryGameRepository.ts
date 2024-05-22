@@ -1,6 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import Game from "../entities/game";
 import { GameRepository } from "./GameRepository";
+import { Song } from "src/shared/model";
 
 
 @Injectable()
@@ -20,9 +21,10 @@ export class InMemoryGameRepository
     return game;
   }
 
-  async createGame(gameId: string): Promise<Game> {
-    const game = new Game(gameId);
+  async createGame(gameId: string, songs: Song[] = []): Promise<Game> {
+    const game = new Game(gameId, songs);
     this.games.set(gameId, game);
+    console.log(game)
     return game;
   }
 }

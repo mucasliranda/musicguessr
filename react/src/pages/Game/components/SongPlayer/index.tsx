@@ -1,12 +1,12 @@
-import useSongPlayer from "src/shared/hooks/useSongPlayer";
+import { SongPlayerManager } from "src/shared/songPlayerManager";
+
+
 
 export default function SongPlayer() {
-  const { onTimeUpdate } = useSongPlayer();
   
   return (
     <audio
-      // ref={songPlayerRef}
-      onTimeUpdate={onTimeUpdate}
+      onTimeUpdate={SongPlayerManager.onTimeUpdate}
       id="song-player"
     />
   )

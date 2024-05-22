@@ -1,6 +1,6 @@
 import { Album } from "src/shared/model";
 import EditSongs from "./EditSongs";
-// import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useSearchParams } from "react-router-dom";
 
 
 
@@ -8,31 +8,37 @@ interface Props {
   album: Album;
 }
 
-export default function AlbumCard({ album }: Props) {
-  // const searchParams = useSearchParams()
-  // const pathname = usePathname()
-  // const router = useRouter()
+export default function AlbumCard({ album }: Props) {  
+  const [searchParams, setSearchParams] = useSearchParams()
 
-  // const isSelected = searchParams.getAll('album').includes(album.id)
+  const isSelected = searchParams.getAll('album').includes(album.id)
 
-  // const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-  //   const albumId = event.target.value;
-  //   const params = new URLSearchParams(searchParams.toString())
-    
-  //   params.has('album', albumId) ? params.delete('album', albumId) : params.append('album', albumId)
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const albumId = event.target.value;
+    const params = new URLSearchParams(searchParams.toString())
 
-  //   router.push(pathname + '?' + params.toString())
-  // };
+    if (params.has('album', albumId)) {
+      // deletar a opção do album
+      params.delete('album', albumId)
+      
+      // deletar todas as musicas selecionadas do album
+      // params.delete(albumId)
+    } else {
+      params.append('album', albumId)
+    }
+
+    setSearchParams(params)
+  };
 
   return (
     <label key={album.id} htmlFor={album.id} className="w-[200px] pb-2 bg-onBackground rounded-lg group transition-opacity cursor-pointer relative">
       <input
         type="checkbox"
-        // defaultChecked={isSelected}
+        defaultChecked={isSelected}
         className="peer hidden"
         name="albums" id={album.id}
         value={album.id}
-        // onChange={handleCheckboxChange}
+        onChange={handleCheckboxChange}
       />
 
       <EditSongs albumId={album.id} />

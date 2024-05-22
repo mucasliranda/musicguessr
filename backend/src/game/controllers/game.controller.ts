@@ -13,6 +13,8 @@ export class GameController {
 
   @Post()
   async createGame(@Body() createGameDto: CreateGameDto) {
+    console.log('dentro do controller', createGameDto)
+
     this.gameService.createGame(createGameDto);
   }
 

@@ -5,11 +5,11 @@ import { GameEmitterUseCase } from "src/shared/useCases/gameUseCases/GameEmitter
 
 
 
-interface CurrentSong extends Song {
+export interface CurrentSong extends Song {
   startAt?: number
 }
 
-interface Guess extends Song {
+export interface Guess extends Song {
   right?: boolean;
 }
 
@@ -36,16 +36,14 @@ const initialState: GameState = {
   roundEnded: false
 };
 
-const gameEmitterUseCase = new GameEmitterUseCase(SocketSingleton.getSocket());
+const gameEmitterUseCase = new GameEmitterUseCase(
+  SocketSingleton.getSocket()
+);
 
 export const gameSlice = createSlice({
   name: 'game',
   initialState,
   reducers: {
-    connect: (_, action: PayloadAction<{gameId: string, username: string}>) => {
-      const player = action.payload
-      gameEmitterUseCase.emitConnect(player);
-    },
     startGame: () => {
       gameEmitterUseCase.emitStartGame();
     },
@@ -64,6 +62,9 @@ export const gameSlice = createSlice({
     timedOut: () => {
       gameEmitterUseCase.emitTimedOut();
     },
+    onChangePlayers: (state, action) => {
+      console.log({action})
+    }
   }
 });
 
