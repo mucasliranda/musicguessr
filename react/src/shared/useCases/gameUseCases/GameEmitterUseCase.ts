@@ -21,4 +21,8 @@ export class GameEmitterUseCase {
   emitTimedOut() {
     this.socketServer.emit('timedOut');
   }
+
+  emitConnect({ gameId, username }: { gameId: string, username: string }) {
+    this.socketServer.connect({ gameId, username });
+  }
 }
