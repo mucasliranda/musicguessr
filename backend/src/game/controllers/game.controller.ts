@@ -13,7 +13,7 @@ export class GameController {
 
   @Post()
   async createGame(@Body() createGameDto: CreateGameDto) {
-    this.gameService.createGame(createGameDto);
+    await this.gameService.createGame(createGameDto);
   }
 
   @Put() 

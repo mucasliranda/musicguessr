@@ -24,7 +24,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
 
     client.join(gameId);
     
-    await this.gameService.addPlayer({ playerId, gameId });
+    await this.gameService.addPlayer({ id: playerId, gameId, name: username});
 
     await this.gameService.subscribe((command: any) => {
       const { event, ...remaing } = command;
