@@ -24,7 +24,7 @@ export class InMemoryGameRepository
   async createGame(gameId: string, songs: Song[] = []): Promise<Game> {
     const game = new Game(gameId, songs);
     this.games.set(gameId, game);
-    console.log(game)
+    console.log({game})
     return game;
   }
 }

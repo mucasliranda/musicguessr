@@ -31,13 +31,11 @@ export class GameService {
       }
     });
 
-    // const songs = (await Promise.all(promises)).map((a) => console.log({a}));
-
-    const songs = (await Promise.all(promises))
+    const songs = await (await Promise.all(promises))
       .reduce((acc, val) => {
         acc.push(...val.data);
         return acc;
-      }, []) as Song[]
+      }, []) as Song[];
 
     await this.gameRepository.createGame(gameId, songs);
   }
@@ -48,10 +46,10 @@ export class GameService {
     game.addSongs(songs);
   }
 
-  public async addPlayer({ playerId, gameId }) {
+  public async addPlayer({ id, gameId, name }) {
     const game = await this.gameRepository.getGame(gameId);
 
-    game.addPlayer({ playerId });
+    game.addPlayer({ id, name });
   }
 
   public async removePlayer({ playerId, gameId }) {

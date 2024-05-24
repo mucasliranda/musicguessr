@@ -1,4 +1,5 @@
 export abstract class Player {
-  playerId: string;
+  id: string;
   score: number;
+  name: string;
 }

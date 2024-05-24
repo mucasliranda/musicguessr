@@ -64,8 +64,8 @@ export default class Game {
     this.playersPlayed = 0;
   }
 
-  public addPlayer({ playerId }) {
-    const player = new Player(playerId)
+  public addPlayer({ id, name }) {
+    const player = new Player(id, name)
 
     this.players.push(player)
     this.changeTotalPlayers();
@@ -79,8 +79,9 @@ export default class Game {
   public getPlayers() {
     const players = this.players.map((player) => {
       return {
-        playerId: player.getPlayerId(),
+        id: player.getPlayerId(),
         score: player.getScore(),
+        name: player.getPlayerName()
       }
     })
 
@@ -184,18 +185,22 @@ export default class Game {
 }
 
 class Player {
-  constructor(public readonly playerId: string, public score: number = 0) {}
+  constructor(public readonly id: string, public readonly name: string, public score: number = 0) {}
 
   public addPoints(points: number) {
     this.score += points
   }
 
-  public getScore() {
-    return this.score
+  public getPlayerId() {
+    return this.id
   }
 
-  public getPlayerId() {
-    return this.playerId
+  public getPlayerName() {
+    return this.name
+  }
+
+  public getScore() {
+    return this.score
   }
 }
 
