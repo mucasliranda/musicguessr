@@ -6,6 +6,7 @@ import { GameService } from './services/game.service';
 import { InMemoryGameRepository } from './repository/InMemoryGameRepository';
 import { SongsRepository } from 'src/songs/repository/songsRepository';
 import { SpotifySongsRepository } from 'src/songs/repository/spotifySongsRepository';
+import { CacheService } from 'src/cache/cacheService';
 
 @Module({
   imports: [],
@@ -15,6 +16,7 @@ import { SpotifySongsRepository } from 'src/songs/repository/spotifySongsReposit
     PrismaService,
     GameGateway,
     InMemoryGameRepository,
+    CacheService,
     {
       provide: SongsRepository,
       useClass: SpotifySongsRepository,

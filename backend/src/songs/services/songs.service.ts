@@ -1,5 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import { SongsRepository } from "../repository/songsRepository";
+import { CacheService } from "src/cache/cacheService";
+
+// 37i9dQZF1DZ06evO3WooFO this is blink
+
+const playlistsIds = [
+  
+]
 
 @Injectable()
 export class SongsService {
