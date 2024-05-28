@@ -10,9 +10,7 @@ type State = {
 
 type Actions = {
   finishTimer: () => void;
-  unfinishTimer: () => void;
   setProgress: (progress: number) => void;
-  resetProgress: () => void;
   resetTimer: () => { progress: number };
   startTimer: (duration?: number) => void;
 }
@@ -28,12 +26,7 @@ export const useTimerStore = create<State & Actions>((set) => ({
     useGameStore.getState().timedOut();
     set(() => ({ finished: true }))
   },
-  unfinishTimer: () => set(() => ({ finished: false })),
   setProgress: (progress) => set(() => ({ progress })),
-  resetProgress: () => set(() => ({ progress: 100 })),
-
-  
-  
   resetTimer: () => {
     clearInterval(timer)
     const newProgress = 100;
@@ -48,7 +41,7 @@ export const useTimerStore = create<State & Actions>((set) => ({
   },
   startTimer: (duration = guessDuration) => set((state) => {
     let progress = state.resetTimer().progress;
-
+    
     timer = setInterval(() => {
       if (progress === 0) {
         clearInterval(timer);

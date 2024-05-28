@@ -13,8 +13,6 @@ export class SongPlayerManager {
   static onTimeUpdate(event: React.SyntheticEvent<HTMLAudioElement, Event>) {
     const currentTime = event.currentTarget.currentTime;
 
-    console.log({currentTime})
-
     if (
       SongPlayerManager.shoudStopOn !== null
       && currentTime >= SongPlayerManager.shoudStopOn

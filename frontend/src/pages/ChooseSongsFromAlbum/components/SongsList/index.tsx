@@ -12,7 +12,7 @@ interface Props {
 }
 
 export default function SongsList({ songs }: Props) {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams, _] = useSearchParams();
   const { artistId, albumId } = useParams();
   const navigate = useNavigate();
   const { toast } = useToast();
@@ -56,14 +56,6 @@ export default function SongsList({ songs }: Props) {
         overflow-y-auto
       "
       onSubmit={onSubmit}
-        
-      //   (e) => {
-      //   e.preventDefault();
-      //   const formData = new FormData(e.currentTarget)
-
-      //   const songs = formData.getAll('songs') as Array<string>;
-
-      // }}
     >
       <div
         className="

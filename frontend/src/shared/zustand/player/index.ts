@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { uniqueNamesGenerator, colors, adjectives, animals, Config } from 'unique-names-generator';
-import { SocketSingleton } from "src/shared/socketClient";
 import { GameEmitterUseCase } from "src/shared/useCases/gameUseCases/GameEmitterUseCase";
+import { SocketSingleton } from "src/shared/repositories/socketClient";
 
 
 

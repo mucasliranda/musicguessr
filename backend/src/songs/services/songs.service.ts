@@ -5,7 +5,7 @@ import { CacheService } from "src/cache/cacheService";
 // 37i9dQZF1DZ06evO3WooFO this is blink
 
 const playlistsIds = [
-  
+
 ]
 
 @Injectable()
@@ -13,6 +13,22 @@ export class SongsService {
   constructor(
     private readonly songsRepository: SongsRepository,
   ) {}
+
+  async getPlaylist(playlistId: string) {
+    const playlist = await this.songsRepository.getPlaylist(playlistId);
+
+    return {
+      playlist: playlist.data
+    };
+  }
+
+  async getPlaylistsByCategory(categoryId: string) {
+    const playlists = await this.songsRepository.getPlaylistsByCategory(categoryId);
+
+    return {
+      playlists: playlists.data
+    };
+  }
 
   async getArtistAlbums(artistId: string) {
     const albums = await this.songsRepository.getArtistAlbums(artistId);
@@ -46,8 +62,8 @@ export class SongsService {
     };
   }
 
-  async getAlbum(albumId: string) {
-    const album = await this.songsRepository.getAlbum(albumId);
+  async getFullAlbum(albumId: string) {
+    const album = await this.songsRepository.getFullAlbum(albumId);
 
     return {
       album: album.data

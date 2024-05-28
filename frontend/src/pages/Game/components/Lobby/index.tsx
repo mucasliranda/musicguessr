@@ -47,7 +47,6 @@ export default function Lobby() {
           Copy Invite Link
         </Button>
       </div>
-
     </main>
   )
 }

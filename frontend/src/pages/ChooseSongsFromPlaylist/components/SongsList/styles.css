@@ -1,0 +1,20 @@
+
+
+
+.song-container:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.song-container:has(input:checked) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+/* preciso deixar com width maximo o span dentro do p que está dentro da div quando o input estiver checked */
+.song-container input:checked + div > p > span {
+  width: 100%;
+}
+
+/* agora a mesma coisa com hover */
+.song-container:hover > div > p > span {
+  width: 100%;
+}

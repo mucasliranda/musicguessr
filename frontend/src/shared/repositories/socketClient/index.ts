@@ -1,5 +1,5 @@
 import { io, Socket } from 'socket.io-client';
-import { SocketRepository, SocketResponse } from './repositories/SocketRepository';
+import { SocketRepository, SocketResponse } from '../SocketRepository';
 
 
 export class SocketSingleton {

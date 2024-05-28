@@ -16,6 +16,7 @@ export function useSongVolume() {
   function getVolumeFromCookie() {
     const newVolume = Cookies.get('song-volume');
     if (newVolume) {
+      SongPlayerManager.setVolume(Number(newVolume));
       return Number(newVolume);
     }
     return 50;

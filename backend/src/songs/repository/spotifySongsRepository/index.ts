@@ -2,15 +2,23 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SongsRepository } from "../songsRepository";
 import { CacheService } from "src/cache/cacheService";
-import { Album, Artist, FullAlbum, Song } from "src/shared/model";
+import { Album, Artist, FullAlbum, FullPlaylist, Playlist, Song } from "src/shared/model";
 
 
 
-function getBestFitImage(images: any[] | null) {
+interface Image {
+  url: string;
+  width: number | null;
+  height: number | null;
+}
+
+function getBestFitImage(images: Image[] | null) {
   // preciso pegar a imagem que tem a menor diferença entre a largura e a altura
   // e que seja maior ou igual que a largura desejada
   const desiredWidth = 300; // Substitua isso pela largura desejada
   let selectedImage = images[0];
+
+  if (!!!images.length) return selectedImage?.url;
 
   images.forEach((img) => {
     if (img.width >= desiredWidth && img.height >= desiredWidth) {
@@ -34,7 +42,19 @@ export class SpotifySongsRepository implements SongsRepository {
   private clientSecret: string = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
   private tokenObtainedAt: number;
 
+
+
   async getPlaylist(playlistId: string) {
+    const cacheKey = `playlist-${playlistId}`;
+    const cache = await this.cacheService.get<FullPlaylist>(cacheKey);
+
+    if (cache) {
+      return {
+        status: 200,
+        data: cache,
+      }
+    }
+
     await this.ensureAccessToken();
 
     const _fetch = await fetch(`https://api.spotify.com/v1/playlists/${playlistId}`, {
@@ -44,24 +64,73 @@ export class SpotifySongsRepository implements SongsRepository {
     });
 
     const res = await _fetch.json();
+    const data = {
+      id: res.id,
+      name: res.name,
+      image: getBestFitImage(res.images),
+      songs: res.tracks.items.map((song) => {
+        return {
+          id: song.track.id,
+          name: song.track.name,
+          url: song.track.preview_url,
+          playable: !!song.track.preview_url,
+          image: getBestFitImage(song.track.album.images),
+          artist: song.track.artists.map(({name}) => name),
+        }
+      })
+    } as FullPlaylist
+
+    await this.cacheService.set(cacheKey, data);
 
     return {
       status: _fetch.status,
-      data: {
-        id: res.id,
-        name: res.name,
-        image: getBestFitImage(res.images),
-        songs: res.tracks.items.map((song) => {
-          return {
-            id: song.track.id,
-            name: song.track.name,
-            url: song.track.preview_url,
-            playable: !!song.track.preview_url,
-          }
-        })
-      }
+      data: data
     }
   }
+
+  async getPlaylistsByCategory(categoryId: string) {
+    const cacheKey = `playlists-${categoryId}`;
+    const cache = await this.cacheService.get<Array<Playlist>>(cacheKey);
+
+    if (cache) {
+      return {
+        status: 200,
+        data: cache,
+      }
+    }
+
+    await this.ensureAccessToken();
+
+    const _fetch = await fetch(`https://api.spotify.com/v1/browse/categories/${categoryId}/playlists`, {
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      }
+    });
+
+    const res = await _fetch.json();
+    const data = res.playlists.items.reduce((unique, playlist) => {
+      if (!unique.some(item => item.id === playlist.id)) {
+        unique.push({
+          id: playlist.id,
+          name: playlist.name,
+          image: getBestFitImage(playlist.images),
+        });
+      }
+      return unique;
+    }, [] as Array<Playlist>);
+
+    await this.cacheService.set(cacheKey, data);
+
+    return {
+      status: _fetch.status,
+      data: data
+    }
+  }
+
+
+
+
+
 
 
   async getArtistAlbums(artistId: string) {
@@ -222,7 +291,7 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
-  async getAlbum(albumId: string) {
+  async getFullAlbum(albumId: string) {
     const cacheKey = `album-${albumId}`;
     const cache = await this.cacheService.get<FullAlbum>(`album-${albumId}`);
 

@@ -1,19 +1,22 @@
 import { Route, Routes } from "react-router-dom";
-import Home from "../pages/Home";
+import HomePage from "../pages/Home";
 import ArtistPage from "src/pages/Artist";
 import GamePage from "src/pages/Game";
-import ChooseSongsFromAlbum from "src/pages/ChooseSongsFromAlbum";
+import ChooseSongsFromAlbumPage from "src/pages/ChooseSongsFromAlbum";
+import SearchPage from "src/pages/Search";
+import ChooseSongsFromPlaylistPage from "src/pages/ChooseSongsFromPlaylist";
 
 
 
 export default function Router() {
-
   return (
     <Routes>
-      <Route path="/" element={<Home/>} />
+      <Route path="/" element={<HomePage/>} />
+      <Route path="/search" element={<SearchPage/>} />
       
       <Route path="/artist/:artistId" element={<ArtistPage/>} />
-      <Route path="/artist/:artistId/:albumId" element={<ChooseSongsFromAlbum/>} />
+      <Route path="/artist/:artistId/:albumId" element={<ChooseSongsFromAlbumPage/>} />
+      <Route path="/playlist/:playlistId" element={<ChooseSongsFromPlaylistPage/>} />
       
       <Route path="/game/:gameId" element={<GamePage/>} />
     </Routes>

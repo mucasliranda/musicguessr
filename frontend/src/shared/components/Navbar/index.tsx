@@ -1,13 +1,12 @@
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import GlassIcon from "../GlassIcon";
-import { QueryClient, useQueryClient } from "@tanstack/react-query";
-import { useState } from "react";
-// import GlassIcon from "../GlassIcon";
+import { useQueryClient } from "@tanstack/react-query";
 
 
 
 export default function Navbar() {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigation = useNavigate();
 
   const queryClient = useQueryClient();
 
@@ -23,7 +22,7 @@ export default function Navbar() {
 
     queryClient.invalidateQueries({ queryKey: ['artists'] });
 
-    // router.push(`/search/${search}`);
+    navigation(`/search?q=${search}`);
   }
 
   return (

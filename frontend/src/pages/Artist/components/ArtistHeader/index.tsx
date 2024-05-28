@@ -1,5 +1,6 @@
 import { Button } from "src/shared/components/Button";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
 
 
 
@@ -22,17 +23,8 @@ export default function ArtistHeader() {
     }
 
     console.log({gameId, albums})
-      
-    await fetch('http://localhost:3005/game', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        gameId: gameId,
-        albums: albums,
-      }),
-    });
+
+    await fetchApi.createGame({gameId, albums});
 
     navigate(`/game/${gameId}`);
   }

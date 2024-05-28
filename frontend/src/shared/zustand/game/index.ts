@@ -1,10 +1,10 @@
 import { Player, Song } from "src/shared/model";
 import { SocketResponse } from "src/shared/repositories/SocketRepository";
-import { SocketSingleton } from "src/shared/socketClient";
 import { GameEmitterUseCase } from "src/shared/useCases/gameUseCases/GameEmitterUseCase";
 import { create } from "zustand";
 import { useTimerStore } from "../timer";
 import { SongPlayerManager } from "src/shared/songPlayerManager";
+import { SocketSingleton } from "src/shared/repositories/socketClient";
 
 
 
@@ -49,7 +49,6 @@ export const useGameStore = create<State & Actions>((set) => ({
   guess: null,
   isRoundEnded: false,
   startGame: () => {
-    console.log('EMITINDO START GAME')
     gameEmitterUseCase.emitStartGame();
   },
   onStartGame: () => {
@@ -59,10 +58,13 @@ export const useGameStore = create<State & Actions>((set) => ({
     if (!!!state.guess) {
       const songGuessed = song;
 
-      state.guess = {
-        ...songGuessed,
-        right: state.currentSong?.id === songGuessed.id
-      };
+      state = {
+        ...state,
+        guess: {
+          ...songGuessed,
+          right: state.currentSong?.id === songGuessed.id
+        }
+      }
       
       gameEmitterUseCase.emitGuessSong(songGuessed);
     }

@@ -1,4 +1,4 @@
-export abstract class Artist {
+export interface Artist {
   id: string;
   name: string;
   image: string;

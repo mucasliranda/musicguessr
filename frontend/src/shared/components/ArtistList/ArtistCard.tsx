@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { Artist } from "src/shared/model";
+import { Image } from "src/shared/components/Image";
 
 
 
@@ -13,25 +14,7 @@ export default function ArtistCard({ artist }: Props) {
     <li className="w-[200px] pb-4 bg-onBackground rounded-lg group transition-opacity cursor-pointer">
       <Link to={`/artist/${artist.id}`}>
         {!!artist.image && (
-          <div className="w-[200px] h-[200px] rounded-ss-lg rounded-se-lg overflow-hidden">
-            <img
-              src={artist.image}
-              alt={artist.name}
-              className="
-              object-cover 
-              w-full 
-              h-full 
-              
-              grayscale-30
-              hover:grayscale-0
-              
-              transition 
-              duration-500 
-              ease-in-out 
-              transform 
-              hover:scale-110"
-            />
-          </div>
+          <Image src={artist.image} alt={artist.name} size={200} />
         )}
         <p
           className="

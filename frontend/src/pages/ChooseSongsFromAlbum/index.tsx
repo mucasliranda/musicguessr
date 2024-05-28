@@ -1,26 +1,16 @@
 import { useQuery } from "@tanstack/react-query"
 import { useParams } from "react-router-dom";
-import { FullAlbum } from "src/shared/model";
-import AlbumHeader from "./components/AlbumHeader";
-import SongsList from "./components/SongsList";
+import SongsHeader from "../../shared/components/SongsHeader";
 import ChooseSongsFromAlbumLayout from "./layout";
+import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
+import SongsList from "src/pages/ChooseSongsFromAlbum/components/SongsList";
 
 
 
-export default function ChooseSongsFromAlbum() {
+export default function ChooseSongsFromAlbumPage() {
   const { albumId } = useParams();
-
-  async function getSongs(): Promise<FullAlbum> {
-    const res = await fetch(`http://localhost:3005/album?q=${albumId}`, {
-      cache: 'no-cache',
-    });
-    
-    const body = await res.json();
   
-    return body.album;
-  }
-  
-  const { data } = useQuery({ queryKey: ['album', albumId], queryFn: getSongs });
+  const { data } = useQuery({ queryKey: ['album', albumId], queryFn: () => fetchApi.getFullAlbum(albumId)});
 
   if (!data) return null;
 
@@ -29,7 +19,7 @@ export default function ChooseSongsFromAlbum() {
       <div
         className="flex flex-col h-full max-h-screen w-full max-w-7xl"
       >
-        <AlbumHeader album={data} />
+        <SongsHeader album={data} />
 
         <SongsList songs={data.songs} />
       </div>

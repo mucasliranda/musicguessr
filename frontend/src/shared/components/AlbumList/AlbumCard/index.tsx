@@ -1,6 +1,7 @@
 import { Album } from "src/shared/model";
 import EditSongs from "./EditSongs";
 import { useSearchParams } from "react-router-dom";
+import { Image } from "src/shared/components/Image";
 
 
 
@@ -44,27 +45,7 @@ export default function AlbumCard({ album }: Props) {
       <EditSongs albumId={album.id} />
 
       {!!album.image && (
-        <div className="w-[200px] h-[200px] rounded-ss-lg rounded-se-lg overflow-hidden group/image">
-          <img
-            src={album.image}
-            alt={album.name}
-            className="
-              object-cover 
-              w-full 
-              h-full 
-              
-              grayscale-70
-              transition 
-              duration-500 
-              ease-in-out 
-              transform 
-              group-hover:scale-110
-              group-hover:grayscale-0
-              peer-checked:group-[]/image:grayscale-0
-              peer-checked:group-[]/image:scale-110
-            "
-          />
-        </div>
+        <Image src={album.image} alt={album.name} size={200} />
       )}
       
       <p 

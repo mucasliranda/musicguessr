@@ -1,4 +1,3 @@
-import { useSelector } from "react-redux";
 import Aside from "./components/Aside";
 import PlayersList from "./components/PlayersList";
 import SongPlayer from "./components/SongPlayer";

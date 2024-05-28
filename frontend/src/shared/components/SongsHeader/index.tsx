@@ -1,9 +1,9 @@
-import { FullAlbum } from "src/shared/model"
+import { FullAlbum, FullPlaylist } from "src/shared/model"
 
 
 
 interface Props {
-  album: FullAlbum;
+  album: FullAlbum | FullPlaylist;
 }
 
 export default function AlbumHeader({ album: { name, image } }: Props) {

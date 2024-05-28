@@ -1,12 +1,12 @@
 import { Song } from ".";
 
-export abstract class Album {
+export interface Album {
   id: string;
   name: string;
   image: string;
 }
 
-export abstract class FullAlbum {
+export interface FullAlbum {
   id: string;
   name: string;
   image: string;

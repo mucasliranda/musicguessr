@@ -1,4 +1,4 @@
-export abstract class Player {
+export interface Player {
   id: string;
   score: number;
   name: string;

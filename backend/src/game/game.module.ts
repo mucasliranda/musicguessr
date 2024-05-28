@@ -1,4 +1,3 @@
-import { PrismaService } from 'src/database/prisma.service';
 import { GameController } from './controllers/game.controller';
 import { Module } from '@nestjs/common';
 import { GameGateway } from './gateway/game.gateway';
@@ -13,7 +12,6 @@ import { CacheService } from 'src/cache/cacheService';
   controllers: [GameController],
   providers: [
     GameService,
-    PrismaService,
     GameGateway,
     InMemoryGameRepository,
     CacheService,

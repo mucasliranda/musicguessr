@@ -1,48 +1,68 @@
 import { useQuery } from "@tanstack/react-query";
 import HomeLayout from "./layout";
-import { Artist } from "src/shared/model";
-import { useCallback } from "react";
-import { useSearchParams } from "react-router-dom";
-import ArtistList from "src/shared/components/ArtistList";
+import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
+import PlaylistList from "./components/PlaylistList";
 
-
+const playlistsIds = [
+  {
+    id: '0JQ5DAqbMKFQIL0AXnG5AK',
+    name: 'Alta',
+  },
+  {
+    id: '0JQ5DAqbMKFM6qDjp13Rui',
+    name: 'Amplifika',
+  },
+  {
+    id: '0JQ5DAqbMKFDXXwE9BDJAr',
+    name: 'Rock',
+  },
+  {
+    id: '0JQ5DAqbMKFEC4WFtoNRpw',
+    name: 'Pop',
+  },
+  {
+    id: '0JQ5DAqbMKFDkd668ypn6O',
+    name: 'Metal',
+  },
+  // {
+  //   id: '0JQ5DAqbMKFz6FAsUtgAab',
+  //   name: 'Lançamentos',
+  // },
+  {
+    id: '0JQ5DAqbMKFziKOShCi009',
+    name: 'Anime',
+  }
+]
 
 export default function HomePage() {
-  const [searchParams, setSearchParams] = useSearchParams();
+  const { data: playlists } = useQuery({
+    queryKey: ['playlists'],
+    queryFn: () => {
+      return Promise.all(
+        playlistsIds.map(async (playlist) => {
+          const result = await fetchApi.getPlaylistsByCategory(playlist.id);
+          return {
+            label: playlist.name,
+            data: result,
+          };
+        })
+      );
+    },
+  });
 
-  const artist = searchParams.get('q')?.split('+').join(' ') || '';
-
-  // const getArtist = useCallback(async () => {
-  //   if (artist) {
-  //     const res = await fetch(`http://localhost:3005/search/artists?q=${artist}`,{
-  //       cache: "no-cache",
-  //     });
-      
-  //     const body = await res.json();
-    
-  //     return body.artists as Array<Artist>;
-  //   }
-  //   return [];
-  // }, [artist])
-
-  async function getArtist() {
-    if (artist) {
-      const res = await fetch(`http://localhost:3005/search/artists?q=${artist}`,{
-        cache: "no-cache",
-      });
-      
-      const body = await res.json();
-    
-      return body.artists as Array<Artist>;
-    }
-    return [];
-  }
-
-  const { data } = useQuery({ queryKey: ['artists'], queryFn: getArtist })
+  if (!playlists) return null;
 
   return (
     <HomeLayout>
-      <ArtistList artists={data || []} />
+      {playlists.map((playlist) => (
+        <PlaylistList key={playlist.label} playlists={playlist.data} category={playlist.label} />
+      ))}
+
+      {/* <PlaylistList playlists={alta} category={'alta'} />
+
+      <PlaylistList playlists={amplifika} category={'amplifika'} />
+
+      <PlaylistList playlists={rock} category={'rock'} /> */}
     </HomeLayout>
   )
 }

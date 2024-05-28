@@ -1,5 +1,5 @@
 import { Artist } from "src/shared/model"
-import ArtistCard from "../ArtistCard"
+import ArtistCard from "./ArtistCard"
 
 
 

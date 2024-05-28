@@ -1,5 +1,5 @@
 import { Album } from "src/shared/model";
-import AlbumCard from "../AlbumCard";
+import AlbumCard from "./AlbumCard";
 
 
 
