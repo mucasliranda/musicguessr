@@ -20,7 +20,15 @@ export class CacheService {
     return value ? value : null;
   }
 
+  public async getMany<T>(cacheKey: string, values: string[]) {
+    return (await this.redis.mget(values.map((value) => `${cacheKey}-${value}`))).filter((_) => _ !== null) as T[];
+  }
+
   public async set(key: string, value: any, ttl: number | undefined = this.defaultTtl) {
     return await this.redis.set(key, JSON.stringify(value), {ex: ttl});
+  }
+
+  public async setMany(cacheKey: string, values: {key: string, value: any}[], ttl: number | undefined = this.defaultTtl) {
+    return await Promise.all(values.map(({key, value}) => this.redis.set(`${cacheKey}-${key}`, JSON.stringify(value), {ex: ttl})));
   }
 }

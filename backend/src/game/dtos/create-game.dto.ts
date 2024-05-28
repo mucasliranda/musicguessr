@@ -5,6 +5,7 @@ export class CreateGameDto {
   @IsString()
   gameId: string;
 
-  @IsNotEmpty()
-  albums: {[key: string]: string[]};
+  albums: {[key: string]: string[]} | undefined;
+
+  songsId: string[] | undefined;
 }

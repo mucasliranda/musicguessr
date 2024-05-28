@@ -36,7 +36,7 @@ export class SpotifySongsRepository implements SongsRepository {
   constructor(
     private configService: ConfigService,
     private cacheService: CacheService,
-  ) {}
+  ) { }
   private accessToken: string | null;
   private clientId: string = this.configService.get<string>('SPOTIFY_CLIENT_ID');
   private clientSecret: string = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
@@ -75,7 +75,7 @@ export class SpotifySongsRepository implements SongsRepository {
           url: song.track.preview_url,
           playable: !!song.track.preview_url,
           image: getBestFitImage(song.track.album.images),
-          artist: song.track.artists.map(({name}) => name),
+          artist: song.track.artists.map(({ name }) => name),
         }
       })
     } as FullPlaylist
@@ -127,12 +127,6 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
-
-
-
-
-
-
   async getArtistAlbums(artistId: string) {
     const cacheKey = `artist-albums-${artistId}`;
     const cache = await this.cacheService.get<Array<Album>>(cacheKey);
@@ -182,6 +176,45 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
+  async getSeveralSongsByIds(songsId: string[]) {
+    const cacheKey = 'song'
+    const cache = await this.cacheService.getMany<Song>(cacheKey, songsId);
+
+    await this.ensureAccessToken();
+
+    const songsNotCached = songsId.filter((id) => !cache.some((song) => song.id === id));
+
+    const promises = [];
+    for (let i = 0; i < songsNotCached.length; i += 50) {
+      const chunkIds = songsNotCached.slice(i, i + 50);
+      const promise = fetch(`https://api.spotify.com/v1/tracks?ids=${chunkIds.join(',')}`, {
+        headers: {
+          'Authorization': `Bearer ${this.accessToken}`
+        },
+      }).then(response => response.json());
+      promises.push(promise);
+    }
+
+    const results = await Promise.all(promises);
+    const dataFromApi = results.map(result => result.tracks.map((song) => {
+      return {
+        id: song.id,
+        name: song.name,
+        url: song.preview_url,
+        playable: !!song.preview_url,
+      }
+    })).flat() as Array<Song>;
+
+    const data = [...cache, ...dataFromApi];
+
+    await this.cacheService.setMany(cacheKey, dataFromApi.map((song) => ({ key: song.id, value: song })));
+
+    return {
+      status: 200,
+      data: data
+    }
+  }
+
   async getSongsByAlbum(albumId: string) {
     const cacheKey = `songs-${albumId}`;
     const cache = await this.cacheService.get<Array<Song>>(cacheKey);
@@ -208,7 +241,7 @@ export class SpotifySongsRepository implements SongsRepository {
         name: song.name,
         url: song.preview_url,
         playable: !!song.preview_url,
-      } 
+      }
     }) as Array<Song>
 
     await this.cacheService.set(cacheKey, data);
@@ -254,43 +287,6 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
-  async getSeveralSongsByIds(songIds: string[]) {
-    const cacheKey = `several-songs-${songIds.toString()}`;
-    const cache = await this.cacheService.get<Array<Song>>(`several-songs-${songIds.toString()}`);
-
-    if (cache) {
-      return {
-        status: 200,
-        data: cache,
-      }
-    }
-
-    await this.ensureAccessToken();
-
-    const _fetch = await fetch(`https://api.spotify.com/v1/tracks?ids=${songIds.join(',')}`, {
-      headers: {
-        'Authorization': `Bearer ${this.accessToken}`
-      },
-    });
-
-    const res = await _fetch.json();
-    const data = res.tracks.map((song) => {
-      return {
-        id: song.id,
-        name: song.name,
-        url: song.preview_url,
-        playable: !!song.preview_url,
-      }
-    }) as Array<Song>
-
-    await this.cacheService.set(cacheKey, data);
-
-    return {
-      status: _fetch.status,
-      data: data
-    }
-  }
-
   async getFullAlbum(albumId: string) {
     const cacheKey = `album-${albumId}`;
     const cache = await this.cacheService.get<FullAlbum>(`album-${albumId}`);
@@ -315,14 +311,14 @@ export class SpotifySongsRepository implements SongsRepository {
       id: res.id,
       name: res.name,
       image: getBestFitImage(res.images),
-      artists: res.artists.map(({name}) => name),
+      artists: res.artists.map(({ name }) => name),
       songs: res.tracks.items.map((song) => {
         return {
           id: song.id,
           name: song.name,
           url: song.preview_url,
           playable: !!song.preview_url,
-        } 
+        }
       }),
     } as FullAlbum
 

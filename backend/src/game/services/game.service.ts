@@ -20,7 +20,13 @@ export class GameService {
     game.subscribe(fn);
   }
 
-  public async createGame({ gameId, albums }: CreateGameDto) {
+  public async createGame({ gameId, albums, songsId }: CreateGameDto) {
+    if (songsId !== undefined && songsId.length > 0) {
+      const songs = (await this.songsRepository.getSeveralSongsByIds(songsId)).data;
+
+      return await this.gameRepository.createGame(gameId, songs);
+    }
+
     const promises = [];
 
     Object.entries(albums).forEach(([albumId, songsId]) => {
@@ -37,7 +43,7 @@ export class GameService {
         return acc;
       }, []) as Song[];
 
-    await this.gameRepository.createGame(gameId, songs);
+    return await this.gameRepository.createGame(gameId, songs);
   }
 
   public async addSongs({ songs, gameId }: AddSongsDto) {

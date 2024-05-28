@@ -16,7 +16,7 @@ export abstract class SongsRepository {
   abstract getArtistAlbums(search: string): Promise<SongsRepositoryResponse<Array<Album>>>;
   abstract getSongsByAlbum(albumId: string): Promise<SongsRepositoryResponse<Array<Song>>>;
   abstract getSongById(songId: string): Promise<SongsRepositoryResponse<Song>>;
-  abstract getSeveralSongsByIds(songIds: string[]): Promise<SongsRepositoryResponse<Array<Song>>>;
+  abstract getSeveralSongsByIds(songsId: string[]): Promise<SongsRepositoryResponse<Array<Song>>>;
   abstract getFullAlbum(albumId: string): Promise<SongsRepositoryResponse<FullAlbum>>;
   abstract getArtistsBySearch(search: string): Promise<SongsRepositoryResponse<Array<Artist>>>;
   
