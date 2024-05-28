@@ -4,6 +4,7 @@ import { useToast } from "src/shared/components/Toast/use-toast";
 import { Button } from "src/shared/components/Button";
 import { useNavigate } from "react-router-dom";
 import { PlaylistSong } from "src/shared/model";
+import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
 
 
 
@@ -15,29 +16,31 @@ export default function SongsList({ songs }: Props) {
   const navigate = useNavigate();
   const { toast } = useToast();
 
-  function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
     const formData = new FormData(e.currentTarget);
     const songsId = formData.getAll('songs') as Array<string>;
+    const gameId = window.crypto.randomUUID();
 
-    // criar game com essas musicas
+    console.log({songsId})
 
-    // const params = new URLSearchParams(searchParams.toString());
+    await fetchApi.createGame({gameId, songsId});
 
-    // // clean all selected songs from this album previously
-    // params.delete(albumId || "")
+    navigate(`/game/${gameId}`);
+  }
 
-    // songsId.forEach(songId => {
-    //   params.append(albumId || "", songId)
-    // })
-
-    // navigate(`/artist/${artistId}?${params.toString()}`)
+  function onChangeSong(song: PlaylistSong) {
+    if(!song.playable) {
+      toast({
+        description: "This song is not playable."
+      })
+    }
   }
 
   useEffect(() => {
     if(songs.some(song => !song.playable)) {
-      const description = "Some songs are not playable";
+      const description = "Some songs are not playable.";
       toast({
         description: description,
       })
@@ -69,13 +72,7 @@ export default function SongsList({ songs }: Props) {
               key={song.id} 
               htmlFor={song.id} 
               className="song-container group cursor-pointer flex p-2 gap-2"         
-              onClick={() => {
-                if(!song.playable) {
-                  toast({
-                    description: "This song is not playable",
-                  })
-                }
-              }}
+              onClick={() => onChangeSong(song)}
             >
               <img 
                 src={song.image} 
@@ -90,7 +87,6 @@ export default function SongsList({ songs }: Props) {
                 name="songs" 
                 id={song.id} 
                 value={song.id}
-        
               />
               <div>
                 <p 
@@ -140,7 +136,7 @@ export default function SongsList({ songs }: Props) {
       </div>
 
       <Button className="ml-auto" type="submit">
-        {"<---"}
+        Create Game
       </Button>
     </form>
   )

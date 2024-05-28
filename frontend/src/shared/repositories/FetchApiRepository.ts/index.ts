@@ -3,6 +3,12 @@ import { ApiRepository } from "../ApiRepository";
 
 
 
+interface CreateGameDto {
+  gameId: string;
+  albums?: {[key: string]: string[]};
+  songsId?: string[];
+}
+
 class FetchApiRepository
   implements ApiRepository {
   private baseUrl = 'http://localhost:3005';
@@ -46,13 +52,15 @@ class FetchApiRepository
     return data.playlist;
   }
 
-  async createGame({ gameId, albums }): Promise<void> {
+
+
+  async createGame({ gameId, albums, songsId }: CreateGameDto): Promise<void> {
     await fetch(`${this.baseUrl}/game`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ gameId, albums }),
+      body: JSON.stringify({ gameId, albums, songsId }),
     });
   }
 }

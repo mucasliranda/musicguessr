@@ -17,7 +17,7 @@ export default function ChooseSongsFromPlaylistPage() {
   return (
     <ChooseSongsFromPlaylistLayout>
       <div
-        className="flex flex-col h-full max-h-screen w-full max-w-7xl"
+        className="flex flex-col h-full max-h-[calc(100vh-32px)] w-full max-w-7xl"
       >
         <SongsHeader album={data} />
 
