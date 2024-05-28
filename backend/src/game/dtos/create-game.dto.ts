@@ -1,8 +1,7 @@
-import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 
-export class CreateGameDto {
-  @IsNotEmpty()
-  @IsString()
+
+
+export interface CreateGameDto {
   gameId: string;
 
   albums: {[key: string]: string[]} | undefined;

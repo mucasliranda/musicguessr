@@ -7,6 +7,7 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
   constructor(
     private gameService: GameService,
   ) {}
+  // @ts-ignore
   @WebSocketServer() server: Server;
 
   afterInit(server: Server) {
