@@ -20,5 +20,5 @@ export abstract class SongsRepository {
   abstract getFullAlbum(albumId: string): Promise<SongsRepositoryResponse<FullAlbum>>;
   abstract getArtistsBySearch(search: string): Promise<SongsRepositoryResponse<Array<Artist>>>;
   
-  abstract getAccessToken(): Promise<string>
+  abstract getAccessToken(): Promise<string | null | undefined>
 }

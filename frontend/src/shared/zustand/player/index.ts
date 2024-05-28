@@ -27,7 +27,7 @@ const gameEmitterUseCase = new GameEmitterUseCase(
   SocketSingleton.getSocket()
 );
 
-export const usePlayerStore = create<State & Actions>((set) => ({
+export const usePlayerStore = create<State & Actions>(() => ({
   name: generateRandomName(),
   connect: (gameId) => {
     const player = {

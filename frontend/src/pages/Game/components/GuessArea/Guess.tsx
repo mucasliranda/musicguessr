@@ -36,7 +36,7 @@ export default function Guess({ song }: Props) {
       )}
     >
       <div className="text-white font-bold text-xl mb-2">{song.name}</div>
-      <p className="text-gray-400">Artist Name</p>
+      <p className="text-gray-400">{song.artists.join(', ')}</p>
     </div>
   )
 }

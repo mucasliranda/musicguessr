@@ -127,7 +127,7 @@ export default function SongsList({ songs }: Props) {
                     dark:text-red-400
                   "
                 >
-                  {song.artist.join(", ")}
+                  {song.artists?.join(", ")}
                 </p>
               </div>
             </label>

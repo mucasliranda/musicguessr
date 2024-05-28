@@ -17,8 +17,8 @@ export default class Game {
 
   private gameId: string;
   private players: Player[] = [];
-  private currentSong: Song & { startAt: number };
-  private currentRound: number;
+  private currentSong?: Song & { startAt: number };
+  private currentRound?: number;
   private songs: Array<Song>;
 
   public addSongs(songs: Array<Song>) {
@@ -35,7 +35,7 @@ export default class Game {
   private playersPlayed = 0;
   private totalPlayers = 0; // Atualize este valor de acordo com o número de jogadores no seu jogo
 
-  private subscribers = [];
+  private subscribers = [] as Array<Function>;
 
   public subscribe(fn) {
     this.subscribers.push(fn);
@@ -100,7 +100,7 @@ export default class Game {
   }
 
   public onNextRound() {
-    this.currentRound++
+    this.currentRound === undefined ? this.currentRound = 0 : this.currentRound++
   
     // GET A RANDOM SONG
     const rightSongIndex = Math.floor(Math.random() * this.songs.length)
@@ -157,7 +157,7 @@ export default class Game {
 
     if (player) {
       if(
-        songGuessed.id == this.currentSong.id 
+        this.currentSong && songGuessed.id == this.currentSong.id 
         && timePassed <= this.guessTime
       ) {
         // const points = this.guessTime - timePassed

@@ -27,9 +27,9 @@ export class GameService {
       return await this.gameRepository.createGame(gameId, songs);
     }
 
-    const promises = [];
+    const promises = [] as Promise<any>[];
 
-    Object.entries(albums).forEach(([albumId, songsId]) => {
+    Object.entries(albums ?? {}).forEach(([albumId, songsId]) => {
       if (songsId.length > 0) {
         promises.push(this.songsRepository.getSeveralSongsByIds(songsId))
       } else {

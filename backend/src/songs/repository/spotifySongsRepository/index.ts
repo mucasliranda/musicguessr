@@ -3,6 +3,7 @@ import { ConfigService } from "@nestjs/config";
 import { SongsRepository } from "../songsRepository";
 import { CacheService } from "src/cache/cacheService";
 import { Album, Artist, FullAlbum, FullPlaylist, Playlist, Song } from "src/shared/model";
+import { PlaylistSong } from "src/shared/model/song";
 
 
 
@@ -15,14 +16,15 @@ interface Image {
 function getBestFitImage(images: Image[] | null) {
   // preciso pegar a imagem que tem a menor diferença entre a largura e a altura
   // e que seja maior ou igual que a largura desejada
+  if (!images) return null;
   const desiredWidth = 300; // Substitua isso pela largura desejada
   let selectedImage = images[0];
 
   if (!!!images.length) return selectedImage?.url;
 
   images.forEach((img) => {
-    if (img.width >= desiredWidth && img.height >= desiredWidth) {
-      if (selectedImage.width > img.width && selectedImage.height > img.height) {
+    if (img.width && img.height && img.width >= desiredWidth && img.height >= desiredWidth) {
+      if (selectedImage.width && selectedImage.height && selectedImage.width > img.width && selectedImage.height > img.height) {
         selectedImage = img;
       }
     }
@@ -37,10 +39,10 @@ export class SpotifySongsRepository implements SongsRepository {
     private configService: ConfigService,
     private cacheService: CacheService,
   ) { }
-  private accessToken: string | null;
-  private clientId: string = this.configService.get<string>('SPOTIFY_CLIENT_ID');
-  private clientSecret: string = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
-  private tokenObtainedAt: number;
+  private accessToken?: string | null;
+  private clientId?: string = this.configService.get<string>('SPOTIFY_CLIENT_ID');
+  private clientSecret?: string = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
+  private tokenObtainedAt?: number;
 
 
 
@@ -75,8 +77,8 @@ export class SpotifySongsRepository implements SongsRepository {
           url: song.track.preview_url,
           playable: !!song.track.preview_url,
           image: getBestFitImage(song.track.album.images),
-          artist: song.track.artists.map(({ name }) => name),
-        }
+          artists: song.track.artists.map(({ name }) => name),
+        } as PlaylistSong;
       })
     } as FullPlaylist
 
@@ -176,6 +178,10 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
+
+
+
+
   async getSeveralSongsByIds(songsId: string[]) {
     const cacheKey = 'song'
     const cache = await this.cacheService.getMany<Song>(cacheKey, songsId);
@@ -184,7 +190,7 @@ export class SpotifySongsRepository implements SongsRepository {
 
     const songsNotCached = songsId.filter((id) => !cache.some((song) => song.id === id));
 
-    const promises = [];
+    const promises = [] as Array<Promise<any>>;
     for (let i = 0; i < songsNotCached.length; i += 50) {
       const chunkIds = songsNotCached.slice(i, i + 50);
       const promise = fetch(`https://api.spotify.com/v1/tracks?ids=${chunkIds.join(',')}`, {
@@ -202,7 +208,8 @@ export class SpotifySongsRepository implements SongsRepository {
         name: song.name,
         url: song.preview_url,
         playable: !!song.preview_url,
-      }
+        artists: song.artists.map(({ name }) => name),
+      } as Song;
     })).flat() as Array<Song>;
 
     const data = [...cache, ...dataFromApi];
@@ -241,7 +248,8 @@ export class SpotifySongsRepository implements SongsRepository {
         name: song.name,
         url: song.preview_url,
         playable: !!song.preview_url,
-      }
+        artists: song.artists.map(({ name }) => name),
+      } as Song;
     }) as Array<Song>
 
     await this.cacheService.set(cacheKey, data);
@@ -277,6 +285,7 @@ export class SpotifySongsRepository implements SongsRepository {
       name: res.name,
       url: res.preview_url,
       playable: !!res.preview_url,
+      artists: res.artists.map(({ name }) => name),
     } as Song
 
     await this.cacheService.set(cacheKey, data);
@@ -286,6 +295,10 @@ export class SpotifySongsRepository implements SongsRepository {
       data: data
     }
   }
+
+
+
+
 
   async getFullAlbum(albumId: string) {
     const cacheKey = `album-${albumId}`;
@@ -318,7 +331,8 @@ export class SpotifySongsRepository implements SongsRepository {
           name: song.name,
           url: song.preview_url,
           playable: !!song.preview_url,
-        }
+          artists: song.artists.map(({ name }) => name),
+        } as Song;
       }),
     } as FullAlbum
 
@@ -371,6 +385,10 @@ export class SpotifySongsRepository implements SongsRepository {
 
 
   async getAccessToken() {
+    if (!this.clientId || !this.clientSecret) {
+      throw new Error('Client ID and Secret not provided');
+    }
+
     const _fetch = await fetch('https://accounts.spotify.com/api/token', {
       method: 'POST',
       headers: {
@@ -399,6 +417,6 @@ export class SpotifySongsRepository implements SongsRepository {
 
   private isTokenExpired() {
     const oneHour = 3600 * 1000; // 3600 seconds in milliseconds
-    return (Date.now() - this.tokenObtainedAt) >= oneHour;
+    return (!this.tokenObtainedAt || (Date.now() - this.tokenObtainedAt) >= oneHour);
   }
 }

@@ -3,6 +3,7 @@ export interface Song {
   name: string;
   url: string;
   playable?: boolean;
+  artists: Array<string>;
 }
 
 export interface PlaylistSong {
@@ -11,5 +12,5 @@ export interface PlaylistSong {
   url: string;
   playable?: boolean;
   image: string;
-  artist: Array<string>;
+  artists: Array<string>;
 }
