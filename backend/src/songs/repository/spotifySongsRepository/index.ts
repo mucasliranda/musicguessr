@@ -2,25 +2,20 @@ import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SongsRepository } from "../songsRepository";
 import { CacheService } from "src/cache/cacheService";
-import { Album, Artist, FullAlbum, FullPlaylist, Playlist, Song } from "src/shared/model";
-import { PlaylistSong } from "src/shared/model/song";
+import { Album, Artist, FullAlbum, FullPlaylist, Playlist, Song, Image, PlaylistSong } from "src/shared/model";
+import { generateBlurHash } from "src/utils/generateBlurHash";
 
 
 
-interface Image {
-  url: string;
-  width: number | null;
-  height: number | null;
-}
-
-function getBestFitImage(images: Image[] | null) {
+function getBestFitImage(images: Array<Omit<Image, 'blurHash'>> | null) {
   // preciso pegar a imagem que tem a menor diferença entre a largura e a altura
   // e que seja maior ou igual que a largura desejada
   if (!images) return null;
   const desiredWidth = 300; // Substitua isso pela largura desejada
   let selectedImage = images[0];
+  
 
-  if (!!!images.length) return selectedImage?.url;
+  if (!!!images.length) return selectedImage;
 
   images.forEach((img) => {
     if (img.width && img.height && img.width >= desiredWidth && img.height >= desiredWidth) {
@@ -30,7 +25,7 @@ function getBestFitImage(images: Image[] | null) {
     }
   });
 
-  return selectedImage?.url
+  return selectedImage
 }
 
 @Injectable()
@@ -66,21 +61,40 @@ export class SpotifySongsRepository implements SongsRepository {
     });
 
     const res = await _fetch.json();
+
+    const bestImage = getBestFitImage(res.images);
+    const image = bestImage ? {
+      url: bestImage.url,
+      blurHash: await generateBlurHash(bestImage.url),
+      width: bestImage.width,
+      height: bestImage.height,
+    } satisfies Image : null;
+
     const data = {
       id: res.id,
       name: res.name,
-      image: getBestFitImage(res.images),
-      songs: res.tracks.items.map((song) => {
-        return {
-          id: song.track.id,
-          name: song.track.name,
-          url: song.track.preview_url,
-          playable: !!song.track.preview_url,
-          image: getBestFitImage(song.track.album.images),
-          artists: song.track.artists.map(({ name }) => name),
-        } as PlaylistSong;
-      })
-    } as FullPlaylist
+      image: image,
+      songs: await Promise.all(
+        res.tracks.items.map(async (song) => {
+          const bestImage = getBestFitImage(song.track.album.images);
+          const image = bestImage ? {
+            url: bestImage.url,
+            blurHash: await generateBlurHash(bestImage.url),
+            width: bestImage.width,
+            height: bestImage.height,
+          } satisfies Image : null;
+  
+          return {
+            id: song.track.id,
+            name: song.track.name,
+            url: song.track.preview_url,
+            playable: !!song.track.preview_url,
+            artists: song.track.artists.map(({ name }) => name),
+            image: image,
+          } satisfies PlaylistSong;
+        }) satisfies Array<PlaylistSong>
+      ),
+    } satisfies FullPlaylist
 
     await this.cacheService.set(cacheKey, data);
 
@@ -110,16 +124,23 @@ export class SpotifySongsRepository implements SongsRepository {
     });
 
     const res = await _fetch.json();
-    const data = res.playlists.items.reduce((unique, playlist) => {
-      if (!unique.some(item => item.id === playlist.id)) {
-        unique.push({
+    const data = await Promise.all(
+      res.playlists.items.map(async (playlist) => {
+        const bestImage = getBestFitImage(playlist.images);
+        const image = bestImage ? {
+          url: bestImage.url,
+          blurHash: await generateBlurHash(bestImage.url),
+          width: bestImage.width,
+          height: bestImage.height,
+        } as Image : null;
+  
+        return {
           id: playlist.id,
           name: playlist.name,
-          image: getBestFitImage(playlist.images),
-        });
-      }
-      return unique;
-    }, [] as Array<Playlist>);
+          image: image,
+        }
+      }) as Array<Playlist>
+    );
 
     await this.cacheService.set(cacheKey, data);
 
@@ -162,13 +183,25 @@ export class SpotifySongsRepository implements SongsRepository {
       albums = [...albums, ...res.items];
     }
 
-    const data = albums.map((album) => {
-      return {
-        id: album.id,
-        name: album.name,
-        image: getBestFitImage(album.images),
-      }
-    }) as Array<Album>
+    
+
+    const data = await Promise.all(
+      albums.map(async (album) => {
+        const bestImage = getBestFitImage(album.images);
+        const image = bestImage ? {
+          url: bestImage.url,
+          blurHash: await generateBlurHash(bestImage.url),
+          width: bestImage.width,
+          height: bestImage.height,
+        } satisfies Image : null;
+  
+        return {
+          id: album.id,
+          name: album.name,
+          image: image,
+        } satisfies Album;
+      })
+    )
 
     await this.cacheService.set(cacheKey, data);
 
@@ -209,8 +242,8 @@ export class SpotifySongsRepository implements SongsRepository {
         url: song.preview_url,
         playable: !!song.preview_url,
         artists: song.artists.map(({ name }) => name),
-      } as Song;
-    })).flat() as Array<Song>;
+      } satisfies Song;
+    })).flat() satisfies Array<Song>;
 
     const data = [...cache, ...dataFromApi];
 
@@ -223,7 +256,7 @@ export class SpotifySongsRepository implements SongsRepository {
   }
 
   async getSongsByAlbum(albumId: string) {
-    const cacheKey = `songs-${albumId}`;
+    const cacheKey = `album-songs-${albumId}`;
     const cache = await this.cacheService.get<Array<Song>>(cacheKey);
 
     if (cache) {
@@ -249,8 +282,8 @@ export class SpotifySongsRepository implements SongsRepository {
         url: song.preview_url,
         playable: !!song.preview_url,
         artists: song.artists.map(({ name }) => name),
-      } as Song;
-    }) as Array<Song>
+      } satisfies Song;
+    }) satisfies Array<Song>
 
     await this.cacheService.set(cacheKey, data);
 
@@ -296,13 +329,9 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
-
-
-
-
   async getFullAlbum(albumId: string) {
     const cacheKey = `album-${albumId}`;
-    const cache = await this.cacheService.get<FullAlbum>(`album-${albumId}`);
+    const cache = await this.cacheService.get<FullAlbum>(cacheKey);
 
     if (cache) {
       return {
@@ -320,10 +349,19 @@ export class SpotifySongsRepository implements SongsRepository {
     });
 
     const res = await _fetch.json();
+
+    const bestImage = getBestFitImage(res.images);
+    const image = bestImage ? {
+      url: bestImage.url,
+      blurHash: await generateBlurHash(bestImage.url),
+      width: bestImage.width,
+      height: bestImage.height,
+    } as Image : null;
+
     const data = {
       id: res.id,
       name: res.name,
-      image: getBestFitImage(res.images),
+      image: image,
       artists: res.artists.map(({ name }) => name),
       songs: res.tracks.items.map((song) => {
         return {
@@ -332,9 +370,9 @@ export class SpotifySongsRepository implements SongsRepository {
           url: song.preview_url,
           playable: !!song.preview_url,
           artists: song.artists.map(({ name }) => name),
-        } as Song;
+        } satisfies Song;
       }),
-    } as FullAlbum
+    } satisfies FullAlbum
 
     await this.cacheService.set(cacheKey, data);
 
@@ -346,7 +384,7 @@ export class SpotifySongsRepository implements SongsRepository {
 
   async getArtistsBySearch(search: string) {
     const cacheKey = `search-${search}`;
-    const cache = await this.cacheService.get<Array<Artist>>(`search-${search}`);
+    const cache = await this.cacheService.get<Array<Artist>>(cacheKey);
 
     if (cache) {
       return {
@@ -364,13 +402,23 @@ export class SpotifySongsRepository implements SongsRepository {
     });
 
     const res = await _fetch.json();
-    const data = res.artists.items.map((artist) => {
-      return {
-        id: artist.id,
-        name: artist.name,
-        image: getBestFitImage(artist.images),
-      }
-    }) as Array<Artist>
+    const data = await Promise.all(
+      res.artists.items.map(async (artist) => {
+        const bestImage = getBestFitImage(artist.images);
+        const image = bestImage ? {
+          url: bestImage.url,
+          blurHash: await generateBlurHash(bestImage.url),
+          width: bestImage.width,
+          height: bestImage.height,
+        } satisfies Image : null;
+
+        return {
+          id: artist.id,
+          name: artist.name,
+          image: image,
+        }
+      }) satisfies Array<Artist>
+    );
 
     await this.cacheService.set(cacheKey, data);
 
