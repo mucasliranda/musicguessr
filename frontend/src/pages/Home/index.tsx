@@ -57,12 +57,6 @@ export default function HomePage() {
       {playlists.map((playlist) => (
         <PlaylistList key={playlist.label} playlists={playlist.data} category={playlist.label} />
       ))}
-
-      {/* <PlaylistList playlists={alta} category={'alta'} />
-
-      <PlaylistList playlists={amplifika} category={'amplifika'} />
-
-      <PlaylistList playlists={rock} category={'rock'} /> */}
     </HomeLayout>
   )
 }
