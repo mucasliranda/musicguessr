@@ -31,7 +31,12 @@ export default function PlaylistCard({ playlist }: Props) {
       >
         <Link to={`/playlist/${playlist.id}`}>
           {!!playlist.image && (
-            <Image src={playlist.image} alt={playlist.name} className="lg:h-[160px] 2xl:h-[176px]" />
+            <Image
+              src={playlist.image.url}
+              blurHash={playlist.image.blurHash}
+              alt={playlist.name}
+              className="lg:h-[160px] 2xl:h-[176px]"
+            />
           )}
           <p
             className="

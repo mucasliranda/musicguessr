@@ -1,4 +1,5 @@
 import { FullAlbum, FullPlaylist } from "src/shared/model"
+import { Image } from "../Image";
 
 
 
@@ -6,30 +7,21 @@ interface Props {
   album: FullAlbum | FullPlaylist;
 }
 
-export default function AlbumHeader({ album: { name, image } }: Props) {
+export default function SongsHeader({ album: { name, image } }: Props) {
 
   return (
     <div
-      className="flex items-start gap-4"
+      className="flex items-start gap-4 group"
     >
-      <div className="w-[200px] h-[200px] rounded-lg">
-        <img
-          src={image}
+      {image && (
+        <Image
+          src={image.url}
           alt={name}
-          className="
-            object-cover 
-            w-full 
-            h-full 
-            rounded-lg
-          
-            transition 
-            duration-500 
-            ease-in-out 
-            transform 
-            hover:scale-105
-          "
+          blurHash={image.blurHash}
+          className="w-[200px] h-[200px] rounded-lg"
+          grayscaleEffect={false}
         />
-      </div>
+      )}
 
       <h2
         className="text-5xl font-bold text-white"

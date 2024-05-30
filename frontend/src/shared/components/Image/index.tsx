@@ -1,13 +1,17 @@
 import { cn } from "src/shared/utils";
+import { Blurhash } from "react-blurhash"; // Import the Blurhash component
 
 
 
-interface Props extends React.ImgHTMLAttributes<HTMLDivElement> {
+interface Props extends Pick<React.ImgHTMLAttributes<HTMLDivElement>, 'className'> {
   src: string;
+  blurHash: string;
   alt: string;
+  grayscaleEffect?: boolean;
+  hoverscaleEffect?: boolean;
 }
 
-export function Image({ src, alt, className, ...props }: Props) {
+export function Image({ src, blurHash, alt, className, grayscaleEffect = true, hoverscaleEffect = true }: Props) {
   return (
     <div
       className={cn(
@@ -19,26 +23,34 @@ export function Image({ src, alt, className, ...props }: Props) {
         group/image`,
         className
       )}
-      {...props}
     >
+      <Blurhash
+        hash={blurHash}
+        width="100%"
+        height="100%"
+        resolutionX={32}
+        resolutionY={32}
+        punch={1}
+      />
       <img
         src={src}
         alt={alt}
-        className="
+        className={cn(`
           object-cover 
           w-full 
-          h-full 
-          
-          grayscale-50
-          group-hover:scale-110
-          group-hover:grayscale-0
+          h-full
           
           transition 
           duration-500 
           ease-in-out 
-          transform
-        "
+          transform`,
+          grayscaleEffect && "grayscale-50 group-hover:grayscale-0",
+          hoverscaleEffect && "group-hover:scale-110"
+        )}
         loading="lazy"
+        onLoad={(e) => {
+          e.currentTarget.previousElementSibling?.classList.add("!hidden")
+        }}
       />
     </div>
   )

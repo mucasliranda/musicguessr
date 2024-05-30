@@ -17,12 +17,10 @@ export default function ArtistHeader() {
     });
 
     for (const [key, value] of searchParams.entries()) {
-      if (key !== 'album') {
+      if (key !== 'album' && !!albums[key]) {
         albums[key].push(value);
       }
     }
-
-    console.log({gameId, albums})
 
     await fetchApi.createGame({gameId, albums});
 

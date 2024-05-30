@@ -11,7 +11,7 @@ export default function SearchPage() {
 
   const artist = searchParams.get('q')?.split('+').join(' ') || '';
 
-  const { data } = useQuery({ queryKey: ['artists'], queryFn: () => fetchApi.getArtists(artist)})
+  const { data } = useQuery({ queryKey: ['artists'], queryFn: () => fetchApi.getArtists(artist)});
 
   if (!data) return null;
 

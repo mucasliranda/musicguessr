@@ -14,7 +14,11 @@ export default function ArtistCard({ artist }: Props) {
     <li className="w-[200px] pb-4 bg-onBackground rounded-lg group transition-opacity cursor-pointer">
       <Link to={`/artist/${artist.id}`}>
         {!!artist.image && (
-          <Image src={artist.image} alt={artist.name} size={200} />
+          <Image 
+            src={artist.image.url}
+            alt={artist.name}
+            blurHash={artist.image.blurHash}
+          />
         )}
         <p
           className="

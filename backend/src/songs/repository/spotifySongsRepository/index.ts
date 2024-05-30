@@ -4,6 +4,7 @@ import { SongsRepository } from "../songsRepository";
 import { CacheService } from "src/cache/cacheService";
 import { Album, Artist, FullAlbum, FullPlaylist, Playlist, Song, Image, PlaylistSong } from "src/shared/model";
 import { generateBlurHash } from "src/utils/generateBlurHash";
+import fetch from 'node-fetch';
 
 
 
@@ -142,11 +143,13 @@ export class SpotifySongsRepository implements SongsRepository {
       }) as Array<Playlist>
     );
 
-    await this.cacheService.set(cacheKey, data);
+    const dateDeduplicated = data.filter((playlist, index, self) => self.findIndex((p) => p.id === playlist.id) === index);
+
+    await this.cacheService.set(cacheKey, dateDeduplicated);
 
     return {
       status: _fetch.status,
-      data: data
+      data: dateDeduplicated
     }
   }
 
@@ -163,7 +166,7 @@ export class SpotifySongsRepository implements SongsRepository {
 
     await this.ensureAccessToken();
 
-    const _fetch = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums?limit=50`, {
+    const _fetch = await fetch(`https://api.spotify.com/v1/artists/${artistId}/albums?limit=50&include_groups=album,single,compilation`, {
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       }
@@ -400,6 +403,8 @@ export class SpotifySongsRepository implements SongsRepository {
         'Authorization': `Bearer ${this.accessToken}`
       }
     });
+
+    console.log()
 
     const res = await _fetch.json();
     const data = await Promise.all(

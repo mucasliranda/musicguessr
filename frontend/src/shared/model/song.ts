@@ -1,3 +1,5 @@
+import { Image } from './image';
+
 export interface Song {
   id: string;
   name: string;
@@ -11,6 +13,6 @@ export interface PlaylistSong {
   name: string;
   url: string;
   playable?: boolean;
-  image: string;
+  image: Image | null;
   artists: Array<string>;
 }

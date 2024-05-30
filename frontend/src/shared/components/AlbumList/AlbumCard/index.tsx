@@ -45,7 +45,11 @@ export default function AlbumCard({ album }: Props) {
       <EditSongs albumId={album.id} />
 
       {!!album.image && (
-        <Image src={album.image} alt={album.name} size={200} />
+        <Image 
+          src={album.image.url}
+          alt={album.name}
+          blurHash={album.image.blurHash}
+        />
       )}
       
       <p 
