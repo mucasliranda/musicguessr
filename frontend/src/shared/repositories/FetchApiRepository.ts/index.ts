@@ -9,6 +9,10 @@ interface CreateGameDto {
   songsId?: string[];
 }
 
+const fetchDefaultOpts = {
+  cache: 'no-cache',
+} as RequestInit;
+
 class FetchApiRepository
   implements ApiRepository {
   private baseUrl = 'http://localhost:3005';
@@ -17,7 +21,7 @@ class FetchApiRepository
     if (!search) {
       return [];
     }
-    const response = await fetch(`${this.baseUrl}/search/artists?q=${search}`);
+    const response = await fetch(`${this.baseUrl}/search/artists?q=${search}`, {...fetchDefaultOpts});
     const data = await response.json();
     return data.artists;
   }
@@ -26,7 +30,7 @@ class FetchApiRepository
     if (!artistId) {
       return [];
     }
-    const response = await fetch(`${this.baseUrl}/artist/albums?q=${artistId}`);
+    const response = await fetch(`${this.baseUrl}/artist/albums?q=${artistId}`, {...fetchDefaultOpts});
     const data = await response.json();
     return data.albums;
   }
@@ -35,19 +39,19 @@ class FetchApiRepository
     if (!albumId) {
       throw new Error('Album ID is required');
     }
-    const response = await fetch(`${this.baseUrl}/album?q=${albumId}`);
+    const response = await fetch(`${this.baseUrl}/album?q=${albumId}`, {...fetchDefaultOpts});
     const data = await response.json();
     return data.album;
   }
 
   async getPlaylistsByCategory(categoryId: string): Promise<Array<Playlist>> {
-    const response = await fetch(`${this.baseUrl}/playlists/${categoryId}`);
+    const response = await fetch(`${this.baseUrl}/playlists/${categoryId}`, {...fetchDefaultOpts});
     const data = await response.json();
     return data.playlists;
   }
 
   async getPlaylist(playlistId: string): Promise<FullPlaylist> {
-    const response = await fetch(`${this.baseUrl}/playlist?q=${playlistId}`);
+    const response = await fetch(`${this.baseUrl}/playlist?q=${playlistId}`, {...fetchDefaultOpts});
     const data = await response.json();
     return data.playlist;
   }
@@ -56,6 +60,7 @@ class FetchApiRepository
 
   async createGame({ gameId, albums, songsId }: CreateGameDto): Promise<void> {
     await fetch(`${this.baseUrl}/game`, {
+      ...fetchDefaultOpts,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
