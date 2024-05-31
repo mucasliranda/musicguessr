@@ -32,7 +32,22 @@ export default function AlbumCard({ album }: Props) {
   };
 
   return (
-    <label key={album.id} htmlFor={album.id} className="w-[200px] pb-2 bg-onBackground rounded-lg group transition-opacity cursor-pointer relative">
+    <label 
+      key={album.id} 
+      htmlFor={album.id} 
+      // className="w-[200px] pb-2 bg-onBackground rounded-lg group transition-opacity cursor-pointer relative"
+      className="
+        bg-onBackground 
+        rounded-lg 
+        group 
+        transition-opacity
+
+        cursor-pointer
+        w-full
+        h-full
+        relative
+      "
+    >
       <input
         type="checkbox"
         defaultChecked={isSelected}
@@ -55,6 +70,7 @@ export default function AlbumCard({ album }: Props) {
       <p 
         className="
           w-fit
+          h-fit
           m-2
 
           text-base 
@@ -62,7 +78,10 @@ export default function AlbumCard({ album }: Props) {
           text-wrap
           font-medium
 
+          line-clamp-2
+
           relative
+          truncate
 
           group/paragraph
         "

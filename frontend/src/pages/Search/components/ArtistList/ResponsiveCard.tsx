@@ -1,28 +1,40 @@
 import { Link } from "react-router-dom";
-import { Artist } from "src/shared/model";
+import { Artist, Playlist } from "src/shared/model";
 import { Image } from "src/shared/components/Image";
 
 
 
 interface Props {
-  artist: Artist;
+  item: Playlist | Artist;
+  linkTo: string;
 }
 
-export default function ArtistCard({ artist }: Props) {
-
+export default function ResponsiveCard({ item, linkTo }: Props) {
   return (
-    <li className="w-[200px] pb-4 bg-onBackground rounded-lg group transition-opacity cursor-pointer">
-      <Link to={`/artist/${artist.id}`}>
-        {!!artist.image && (
-          <Image 
-            src={artist.image.url}
-            alt={artist.name}
-            blurHash={artist.image.blurHash}
+    <div
+      className="
+        bg-onBackground 
+        rounded-lg 
+        group 
+        transition-opacity
+
+        w-full
+      "
+    >
+      <Link
+        to={linkTo}
+      >
+        {!!item.image && (
+          <Image
+            src={item.image.url}
+            blurHash={item.image.blurHash}
+            alt={item.name}
           />
         )}
         <p
           className="
             w-fit
+            h-fit
             m-2
 
             text-base 
@@ -31,9 +43,11 @@ export default function ArtistCard({ artist }: Props) {
             font-medium
 
             relative
+
+            truncate
           "
         >
-          {artist.name}
+          {item.name}
           <span
             className="
               absolute 
@@ -50,6 +64,6 @@ export default function ArtistCard({ artist }: Props) {
           />
         </p>
       </Link>
-    </li>
+    </div>
   )
 }

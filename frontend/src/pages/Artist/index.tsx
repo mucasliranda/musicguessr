@@ -1,9 +1,9 @@
 import { useParams } from "react-router-dom";
 import ArtistLayout from "./layout";
-import AlbumList from "src/shared/components/AlbumList";
 import { useQuery } from "@tanstack/react-query";
 import ArtistHeader from "./components/ArtistHeader";
 import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
+import AlbumList from "./components/AlbumList";
 
 
 

@@ -1,8 +1,8 @@
 import { useQuery } from "@tanstack/react-query";
 import SearchLayout from "./layout";
 import { useSearchParams } from "react-router-dom";
-import ArtistList from "src/shared/components/ArtistList";
 import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
+import ArtistList from "./components/ArtistList";
 
 
 

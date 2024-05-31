@@ -4,6 +4,7 @@ import { useEffect } from "react"
 import { useToast } from "src/shared/components/Toast/use-toast";
 import { Button } from "src/shared/components/Button";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import SongCard from "src/shared/components/SongCard";
 
 
 
@@ -65,56 +66,7 @@ export default function SongsList({ songs }: Props) {
           overflow-y-auto
         "
       >
-        {songs.map((song) => {
-          return (
-            <label key={song.id} htmlFor={song.id} className="song-container group cursor-pointer">
-              <input 
-                type="checkbox" 
-                defaultChecked={song.playable} 
-                disabled={!song.playable} 
-                className="peer hidden" 
-                name="songs" 
-                id={song.id} 
-                value={song.id}
-              />
-              <p 
-                className="
-                  w-fit
-                  m-2
-
-                  text-lg 
-                  text-white 
-                  text-wrap
-                  font-medium
-
-                  relative
-
-                  group/paragraph
-                "
-              >
-                {song.name}
-                <span 
-                  className="
-                    absolute 
-                    h-[2px] 
-                    left-0 
-                    bottom-0 
-                    w-0 
-                    bg-primary
-                    transition-width 
-                    duration-500 
-                    ease-in-out
-
-                    group-hover:w-full
-                    
-                    peer-has-[:checked]:w-full
-                    peer-checked:group-[]/paragraph:w-full
-                  "
-                />
-              </p>
-            </label>
-          )
-        })}
+        {songs.map((song) => <SongCard key={song.id} song={song}/>)}
       </div>
 
       <Button className="ml-auto" type="submit">

@@ -5,7 +5,7 @@ import { Button } from "src/shared/components/Button";
 import { useNavigate } from "react-router-dom";
 import { PlaylistSong } from "src/shared/model";
 import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
-import SongCard from "./SongCard";
+import SongCard from "src/shared/components/SongCard";
 
 
 

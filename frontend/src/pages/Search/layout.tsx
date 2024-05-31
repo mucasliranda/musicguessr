@@ -8,9 +8,20 @@ interface Props {
 
 export default function SearchLayout({ children }: Props) {
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 bg-background">
+    <main 
+      className="
+        flex 
+        min-h-screen 
+        flex-col 
+        items-center
+        bg-background
+        
+        p-2
+        lg:p-4
+      "
+    >
       <Navbar />
-      <div className="pt-4">
+      <div className="pt-4 w-full max-w-screen-2xl">
         {children}
       </div>
     </main>

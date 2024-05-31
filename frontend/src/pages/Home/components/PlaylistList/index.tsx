@@ -5,7 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "src/shared/components/Carousel"
-import PlaylistCard from "./PlaylistCard"
+import { CarouselCard } from "src/shared/components/Card"
 
 
 
@@ -29,13 +29,21 @@ export default function PlaylistList({ playlists, category }: Props) {
         className="w-full"
       >
         <CarouselContent>
-          {playlists.map((playlist) => <PlaylistCard key={playlist.id} playlist={playlist} />)}
+          {playlists.map((playlist) => <CarouselCard key={playlist.id} item={playlist} linkTo={`/playlist/${playlist.id}`} />)}
         </CarouselContent>
         <CarouselPrevious
-          className="bg-background"
+          className="
+            bg-background
+            hidden
+            lg:inline-flex
+          "
         />
         <CarouselNext
-          className="bg-background"
+          className="
+            bg-background
+            hidden
+            lg:inline-flex
+          "
         />
       </Carousel>
     </div>

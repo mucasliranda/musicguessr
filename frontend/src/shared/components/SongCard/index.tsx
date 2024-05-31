@@ -1,14 +1,19 @@
 import { toast } from "src/shared/components/Toast/use-toast";
-import { PlaylistSong } from "src/shared/model";
+import { Image as ImageProps, Song } from "src/shared/model";
 import { Image } from "src/shared/components/Image";
 
 
+
+interface ExtendedSong extends Song {
+  image?: ImageProps | null;
+}
+
 interface Props {
-  song: PlaylistSong;
+  song: ExtendedSong
 }
 
 export default function SongCard({ song }: Props) {
-  function onChangeSong(song: PlaylistSong) {
+  function onChangeSong(song: Props["song"]) {
     if(!song.playable) {
       toast({
         description: "This song is not playable."
@@ -20,10 +25,18 @@ export default function SongCard({ song }: Props) {
     <label 
       key={song.id} 
       htmlFor={song.id} 
-      className="song-container group cursor-pointer flex p-2 gap-2"         
+      className="
+        w-full
+        song-container 
+        group 
+        cursor-pointer 
+        flex 
+        p-2 
+        gap-2
+      "         
       onClick={() => onChangeSong(song)}
     >
-      {song.image && (
+      {song?.image && (
         <Image
           src={song.image.url}
           blurHash={song.image.blurHash}
@@ -32,6 +45,7 @@ export default function SongCard({ song }: Props) {
           grayscaleEffect={false}
         />
       )}
+
       <input 
         type="checkbox" 
         defaultChecked={song.playable} 
@@ -41,7 +55,11 @@ export default function SongCard({ song }: Props) {
         id={song.id} 
         value={song.id}
       />
-      <div>
+      <div
+        className="
+          w-full
+        "
+      >
         <p 
           className="
             w-fit
@@ -53,6 +71,9 @@ export default function SongCard({ song }: Props) {
             font-medium
 
             relative
+
+            line-clamp-1
+            truncate
           "
         >
           {song.name}
@@ -77,7 +98,9 @@ export default function SongCard({ song }: Props) {
             text-gray-500
             text-wrap
             font-medium
-            dark:text-red-400
+
+            line-clamp-1
+            truncate
           "
         >
           {song.artists?.join(", ")}

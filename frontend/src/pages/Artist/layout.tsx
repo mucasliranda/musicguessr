@@ -8,7 +8,18 @@ interface Props {
 export default function ArtistLayout({ children }: Props) {
   
   return (
-    <main className="flex min-h-screen flex-col items-center p-4 bg-background">
+    <main 
+      className="
+        flex 
+        min-h-screen 
+        flex-col 
+        items-center 
+        bg-background
+        
+        p-2
+        lg:p-4
+      "
+    >
       {children}
     </main>
   )
