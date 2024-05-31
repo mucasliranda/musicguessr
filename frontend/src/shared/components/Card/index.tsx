@@ -19,16 +19,8 @@ export function Card({ item, linkTo }: Props) {
         group 
         transition-opacity
 
-        w-[112px]
-        md:w-[128px]
-        lg:w-[144px]
-        xl:w-[160px] 
-        2xl:w-[176px]
-
-        h-[176px]
-        md:h-[192px]
-        lg:h-[224px]
-        2xl:h-[240px]
+        w-full
+        h-full
       "
     >
       <Link
@@ -39,19 +31,12 @@ export function Card({ item, linkTo }: Props) {
             src={item.image.url}
             blurHash={item.image.blurHash}
             alt={item.name}
-            className="
-              h-[112px]
-              md:h-[128px]
-              lg:h-[144px]
-              xl:h-[160px] 
-              2xl:h-[176px]
-            "
           />
         )}
         <p
           className="
             w-fit
-            h-fit
+            h-10
             m-2
 
             text-base 
@@ -59,18 +44,20 @@ export function Card({ item, linkTo }: Props) {
             text-wrap
             font-medium
 
-            relative
-
+            leading-5
+            line-clamp-2
             truncate
+            
+            relative
           "
         >
           {item.name}
           <span
             className="
               absolute 
-              h-[2px] 
+              h-[2px]
+              top-[18px] 
               left-0 
-              bottom-0 
               w-0 
               bg-primary
               transition-width 
@@ -90,11 +77,7 @@ export function CarouselCard(props: Props) {
   return (
     <CarouselItem 
       className="
-        basis-[128px]
-        md:basis-[144px]
-        lg:basis-[160px]
-        xl:basis-[176px]
-        2xl:basis-[192px]
+        basis-[176px]
       "
     >
       <Card {...props} />

@@ -35,7 +35,6 @@ export default function AlbumCard({ album }: Props) {
     <label 
       key={album.id} 
       htmlFor={album.id} 
-      // className="w-[200px] pb-2 bg-onBackground rounded-lg group transition-opacity cursor-pointer relative"
       className="
         bg-onBackground 
         rounded-lg 

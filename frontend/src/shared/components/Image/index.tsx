@@ -16,7 +16,7 @@ export function Image({ src, blurHash, alt, className, grayscaleEffect = true, h
     <div
       className={cn(
         `w-full 
-        h-[200px] 
+        h-[160px] 
         rounded-ss-lg 
         rounded-se-lg 
         overflow-hidden 

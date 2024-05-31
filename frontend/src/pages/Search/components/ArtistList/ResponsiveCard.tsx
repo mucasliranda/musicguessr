@@ -19,6 +19,7 @@ export default function ResponsiveCard({ item, linkTo }: Props) {
         transition-opacity
 
         w-full
+        h-full
       "
     >
       <Link

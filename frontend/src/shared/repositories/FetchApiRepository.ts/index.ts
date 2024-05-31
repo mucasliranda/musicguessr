@@ -26,6 +26,15 @@ class FetchApiRepository
     return data.artists;
   }
 
+  async getFullSearch(search: string): Promise<{ artists: Array<Artist>; playlists: Array<Playlist> }> {
+    if (!search) {
+      return { artists: [], playlists: [] };
+    }
+    const response = await fetch(`${this.baseUrl}/search?q=${search}`, {...fetchDefaultOpts});
+    const data = await response.json();
+    return data;
+  }
+
   async getAlbumsByArtistId(artistId: string | undefined): Promise<Array<Album>> {
     if (!artistId) {
       return [];

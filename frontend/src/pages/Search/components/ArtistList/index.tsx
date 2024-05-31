@@ -1,6 +1,5 @@
 import { Artist } from "src/shared/model"
-import { Card } from "../../../../shared/components/Card"
-import ResponsiveCard from "./ResponsiveCard"
+import { Card } from "src/shared/components/Card"
 
 
 
@@ -25,7 +24,7 @@ export default function ArtistList({ artists }: Props) {
         place-items-center
       "
     >
-      {artists.map((artist) => <ResponsiveCard key={artist.id} item={artist} linkTo={`/artist/${artist.id}`} />)}
+      {artists.map((artist) => <Card key={artist.id} item={artist} linkTo={`/artist/${artist.id}`} />)}
     </div>
   )
 }

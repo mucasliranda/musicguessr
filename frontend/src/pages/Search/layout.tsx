@@ -21,7 +21,18 @@ export default function SearchLayout({ children }: Props) {
       "
     >
       <Navbar />
-      <div className="pt-4 w-full max-w-screen-2xl">
+      <div 
+        className="
+          flex
+          flex-col
+
+          w-full
+          max-w-screen-2xl
+          pt-4
+
+          gap-4
+        "
+      >
         {children}
       </div>
     </main>
