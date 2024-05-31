@@ -404,8 +404,6 @@ export class SpotifySongsRepository implements SongsRepository {
       }
     });
 
-    console.log()
-
     const res = await _fetch.json();
     const data = await Promise.all(
       res.artists.items.map(async (artist) => {
@@ -433,7 +431,76 @@ export class SpotifySongsRepository implements SongsRepository {
     }
   }
 
+  async getFullSearch(search: string) {
+    const cacheKey = `fullsearch-${search}`;
+    const cache = await this.cacheService.get<{artists: Array<Artist>, playlists: Array<Playlist>}>(cacheKey);
 
+    if (cache) {
+      return {
+        status: 200,
+        data: cache,
+      }
+    }
+
+    await this.ensureAccessToken();
+
+    const _fetch = await fetch(`https://api.spotify.com/v1/search?q=${search}:this&type=artist,playlist&limit=10`, {
+      headers: {
+        'Authorization': `Bearer ${this.accessToken}`
+      }
+    });
+
+    const res = await _fetch.json();
+
+    const artists = await Promise.all(
+      res.artists.items.map(async (artist) => {
+        const bestImage = getBestFitImage(artist.images);
+        const image = bestImage ? {
+          url: bestImage.url,
+          blurHash: await generateBlurHash(bestImage.url),
+          width: bestImage.width,
+          height: bestImage.height,
+        } satisfies Image : null;
+
+        return {
+          id: artist.id,
+          name: artist.name,
+          image: image,
+        }
+      }) satisfies Array<Artist>
+    ) as Array<Artist>;
+
+    const playlists = (await Promise.all(
+      res.playlists.items.map(async (playlist) => {
+        const bestImage = getBestFitImage(playlist.images);
+        const image = bestImage ? {
+          url: bestImage.url,
+          blurHash: await generateBlurHash(bestImage.url),
+          width: bestImage.width,
+          height: bestImage.height,
+        } satisfies Image : null;
+
+        return {
+          id: playlist.id,
+          name: playlist.name,
+          image: image,
+        }
+      }) satisfies Array<Playlist>
+    )).filter((playlist, index, self) => self.findIndex((p) => p.id === playlist.id) === index) as Array<Playlist>;
+
+    await this.cacheService.set(cacheKey, {
+      artists: artists,
+      playlists: playlists,
+    });
+
+    return {
+      status: _fetch.status,
+      data: {
+        artists: artists,
+        playlists: playlists,
+      }
+    }
+  }
 
 
 

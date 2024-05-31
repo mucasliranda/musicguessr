@@ -72,4 +72,13 @@ export class SongsService {
       artists: artists.data
     };
   }
+
+  async getFullSearch(search: string) {
+    const searchResults = await this.songsRepository.getFullSearch(search);
+
+    return {
+      artists: searchResults.data.artists,
+      playlists: searchResults.data.playlists
+    };
+  }
 };

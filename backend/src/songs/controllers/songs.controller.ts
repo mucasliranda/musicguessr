@@ -20,6 +20,11 @@ export class SongsController {
     return await this.songsService.getArtistsBySearch(q);
   }
 
+  @Get('/search')
+  async getFullSearch(@Query('q') q: string) {
+    return await this.songsService.getFullSearch(q);
+  }
+
   @Get('/album/songs')
   async getSongsByAlbum(@Query('q') q: string) {
     return await this.songsService.getSongsByAlbum(q);
