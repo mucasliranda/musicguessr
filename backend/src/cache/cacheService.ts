@@ -6,7 +6,7 @@ import { Redis } from '@upstash/redis'
 @Injectable()
 export class CacheService {
   private redis: Redis;
-  private defaultTtl = 24 * 60 * 60 * 1000; // 24 horas
+  private defaultTtl = 8 * 60 * 60 * 1000; // 8 horas
 
   constructor() {
     this.redis = new Redis({
