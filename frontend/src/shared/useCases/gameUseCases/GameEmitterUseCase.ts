@@ -14,8 +14,8 @@ export class GameEmitterUseCase {
     this.socketServer.emit('startGame');
   }
 
-  emitGuessSong(song: Song) {
-    this.socketServer.emit('guessSong', song);
+  emitGuessSong({ songGuessed, guessedAt }: { songGuessed: Song, guessedAt: number}) {
+    this.socketServer.emit('guessSong', { songGuessed, guessedAt });
   }
 
   emitTimedOut() {
@@ -24,5 +24,9 @@ export class GameEmitterUseCase {
 
   emitConnect({ gameId, username }: { gameId: string, username: string }) {
     this.socketServer.connect({ gameId, username });
+  }
+
+  emitGameConfig({ speed, duration }: { speed: string, duration: string }) {
+    this.socketServer.emit('gameConfig', { speed, duration });
   }
 }

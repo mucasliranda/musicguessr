@@ -1,4 +1,4 @@
-import { CurrentSong } from "./zustand/game";
+import { CurrentSong, useGameStore } from "./zustand/game";
 
 
 
@@ -8,24 +8,37 @@ function getInstance() {
 }
 
 export class SongPlayerManager {
-  static shoudStopOn: number | null = 2;
+  static shouldPauseOn: number | null = null;
 
   static onTimeUpdate(event: React.SyntheticEvent<HTMLAudioElement, Event>) {
     const currentTime = event.currentTarget.currentTime;
-
+    
     if (
-      SongPlayerManager.shoudStopOn !== null
-      && currentTime >= SongPlayerManager.shoudStopOn
+      SongPlayerManager.shouldPauseOn !== null
+      && currentTime >= SongPlayerManager.shouldPauseOn
     ) {
       event.currentTarget.pause();
     }
+  }
+
+  static setShouldPauseOn() {
+    const songDuration = useGameStore.getState().songDuration;
+    const currentSong = useGameStore.getState().currentSong;
+
+    this.shouldPauseOn = 
+      (currentSong !== null && currentSong.startAt !== null && songDuration !== null) ? 
+      (currentSong?.startAt || 0) + (songDuration / 1000) 
+      : null;
   }
 
   static playSong(song: CurrentSong) {
     const songPlayer = getInstance();
 
     if (songPlayer) {
+      this.setShouldPauseOn();
       songPlayer.src = song.url;
+      songPlayer.currentTime = song.startAt || 0;
+
       songPlayer.play().then(() => { }).catch((err) => {
         console.log(err)
         songPlayer.play();
@@ -38,6 +51,22 @@ export class SongPlayerManager {
 
     if (songPlayer) {
       songPlayer.currentTime = 0;
+      songPlayer.play().then(() => { }).catch((err) => {
+        console.log(err)
+        songPlayer.play();
+      });
+    }
+  }
+
+  static resumeSongOnRoundEnded() {
+    const songPlayer = getInstance();
+
+    this.shouldPauseOn = null;
+
+    if (
+      songPlayer
+      && songPlayer.paused
+    ) {
       songPlayer.play().then(() => { }).catch((err) => {
         console.log(err)
         songPlayer.play();

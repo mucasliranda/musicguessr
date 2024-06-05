@@ -1,7 +1,8 @@
 import { Body, Controller, Post, Put } from '@nestjs/common';
 import { GameService } from '../services/game.service';
-import { CreateGameDto } from '../dtos/create-game.dto';
 import { AddSongsDto } from '../dtos/add-songs.dto';
+import { CreateGameByAlbumsDto } from '../dtos/create-game-by-albums.dto';
+import { CreateGameBySongs } from '../dtos/create-game-by-songs.dto';
 
 
 
@@ -11,13 +12,18 @@ export class GameController {
     private readonly gameService: GameService,
   ) {}
 
-  @Post()
-  async createGame(@Body() createGameDto: CreateGameDto) {
-    await this.gameService.createGame(createGameDto);
+  @Post('/albums')
+  async createGameByAlbums(@Body() createGameDto: CreateGameByAlbumsDto) {
+    return await this.gameService.createGameByAlbums(createGameDto);
+  }
+
+  @Post('/songs')
+  async createGameBySongs(@Body() createGameDto: CreateGameBySongs) {
+    return await this.gameService.createGameBySongs(createGameDto);
   }
 
   @Put() 
   async addSongs(@Body() addSongsDto: AddSongsDto) {
-    this.gameService.addSongs(addSongsDto);
+    return this.gameService.addSongs(addSongsDto);
   }
 }

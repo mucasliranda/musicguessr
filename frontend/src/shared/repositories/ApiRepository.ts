@@ -8,5 +8,6 @@ export abstract class ApiRepository {
   
   abstract getPlaylistsByCategory(categoryId: string): Promise<Array<Playlist>>;
 
-  abstract createGame({ gameId, albums }): Promise<void>;
+  abstract createGameByAlbums({ gameId, albums }): Promise<void>;
+  abstract createGameBySongs({ gameId, songs }): Promise<void>;
 }

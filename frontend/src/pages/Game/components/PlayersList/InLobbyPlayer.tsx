@@ -1,4 +1,6 @@
 import { Player } from "src/shared/model"
+import { cn } from "src/shared/utils";
+import { usePlayerStore } from "src/shared/zustand/player"
 
 
 
@@ -7,20 +9,25 @@ interface Props {
 }
 
 export default function InLobbyPlayer({ player }: Props) {
+  const playerId = usePlayerStore((state) => state.id);
+
   return (
     <li
-      className="
+      className={cn(`
         flex
         justify-between
 
         pb-1
 
         border-b-[1px]
-        border-[#646464]
-      "
+      `,
+        playerId === player.id ? "border-primary" : "border-[#646464]"
+      )}
     >
       <p
-        className="text-white"
+        className="
+          text-white
+        "
       >
         {player.name}
       </p>

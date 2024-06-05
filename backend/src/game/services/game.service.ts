@@ -1,9 +1,10 @@
 import { Injectable } from "@nestjs/common";
-import { CreateGameDto } from "../dtos/create-game.dto";
 import { Song } from "src/shared/model";
 import { AddSongsDto } from "../dtos/add-songs.dto";
 import { InMemoryGameRepository } from "../repository/InMemoryGameRepository";
 import { SongsRepository } from "src/songs/repository/songsRepository";
+import { CreateGameByAlbumsDto } from "../dtos/create-game-by-albums.dto";
+import { CreateGameBySongs } from "../dtos/create-game-by-songs.dto";
 
 
 
@@ -20,13 +21,7 @@ export class GameService {
     game.subscribe(fn);
   }
 
-  public async createGame({ gameId, albums, songsId }: CreateGameDto) {
-    if (songsId !== undefined && songsId.length > 0) {
-      const songs = (await this.songsRepository.getSeveralSongsByIds(songsId)).data;
-
-      return await this.gameRepository.createGame(gameId, songs);
-    }
-
+  public async createGameByAlbums({ gameId, albums }: CreateGameByAlbumsDto) {
     const promises = [] as Promise<any>[];
 
     Object.entries(albums ?? {}).forEach(([albumId, songsId]) => {
@@ -43,6 +38,10 @@ export class GameService {
         return acc;
       }, []) as Song[];
 
+    return await this.gameRepository.createGame(gameId, songs);
+  }
+
+  public async createGameBySongs({ gameId, songs }: CreateGameBySongs) {
     return await this.gameRepository.createGame(gameId, songs);
   }
 
@@ -76,16 +75,22 @@ export class GameService {
     game.onNextRound();
   }
 
-  public async guessSong({ playerId, songGuessed, timePassed, gameId }: { playerId: string, songGuessed: Song, timePassed?: number, gameId: string}) {
+  public async guessSong({ playerId, songGuessed, gameId, guessedAt }: { playerId: string, songGuessed: Song, gameId: string, guessedAt: number }) {
     const game = await this.gameRepository.getGame(gameId);
 
-    game.guessSong({ playerId, songGuessed, timePassed });
+    game.guessSong({ playerId, songGuessed, guessedAt });
   }
 
   public async timedOut({ playerId, gameId }) {
     const game = await this.gameRepository.getGame(gameId);
 
     game.timedOut({ playerId });
+  }
+
+  public async setGameConfig({ speed, duration, gameId }) {
+    const game = await this.gameRepository.getGame(gameId);
+
+    game.setGameConfig({ speed, duration });
   }
 
   public async getSongs({ gameId }) {

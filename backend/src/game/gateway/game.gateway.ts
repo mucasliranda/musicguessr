@@ -27,6 +27,13 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
     
     await this.gameService.addPlayer({ id: playerId, gameId, name: username});
 
+    client.emit('connected', {
+      event: 'connected',
+      data: {
+        playerId 
+      }
+    });
+
     await this.gameService.subscribe((command: any) => {
       const { event, ...remaing } = command;
 
@@ -39,13 +46,22 @@ export class GameGateway implements OnGatewayInit, OnGatewayConnection, OnGatewa
       await this.gameService.startGame({ gameId });
     });
 
-    client.on('guessSong', async (songGuessed) => {
-      await this.gameService.guessSong({ playerId, songGuessed, gameId });
+    client.on('guessSong', async ({ songGuessed, guessedAt}) => {
+      await this.gameService.guessSong({ 
+        playerId, 
+        songGuessed, 
+        gameId,
+        guessedAt
+      });
     });
     
     client.on('timedOut', async () => {
       await this.gameService.timedOut({ playerId, gameId });
-    })
+    });
+
+    client.on('gameConfig', async ({ speed, duration }) => {
+      await this.gameService.setGameConfig({ speed, duration, gameId });
+    });
 
     this.server.to(gameId).emit('players', {
       event: 'players',

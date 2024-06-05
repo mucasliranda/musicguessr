@@ -2,18 +2,18 @@ import { Button } from "src/shared/components/Button"
 import Timer from "../Timer"
 import SongVolume from "../SongVolume"
 import { useGuess } from "src/shared/hooks/useGuess"
-import { SongPlayerManager } from "src/shared/songPlayerManager"
 import Guess from "./Guess"
+import PlayersList from "../PlayersList"
 
 
 
 export default function GuessArea() {
-  const { songs } = useGuess()
+  const { songs, playCurrentSong } = useGuess()
 
   return (
     <main
       className="
-        w-3/4 
+        w-full 
         h-full
 
         p-4
@@ -21,7 +21,8 @@ export default function GuessArea() {
 
         flex
         flex-col
-        gap-8
+        gap-4
+        md:gap-8
         relative
       "
     >
@@ -34,9 +35,7 @@ export default function GuessArea() {
         "
       >
         <Button
-          onClick={() => {
-            SongPlayerManager.replaySong()
-          }}
+          onClick={playCurrentSong}
         >
           Replay Song
         </Button>
@@ -44,10 +43,21 @@ export default function GuessArea() {
         <SongVolume />
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+      <PlayersList orientation="row" />
 
+      <div 
+        className="
+          grid 
+          grid-cols-1 
+          sm:grid-cols-2 
+          md:grid-cols-3 
+          lg:grid-cols-4 
+          gap-4
+
+          overflow-auto
+        "
+      >
         {songs.length > 0 && songs.map((song) => <Guess song={song} key={song.id} />)}
-
       </div>
 
     </main>

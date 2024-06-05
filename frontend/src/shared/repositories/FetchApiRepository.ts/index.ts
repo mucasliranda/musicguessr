@@ -1,12 +1,16 @@
-import { Album, Artist, FullAlbum, FullPlaylist, Playlist } from "src/shared/model";
+import { Album, Artist, FullAlbum, FullPlaylist, Playlist, Song } from "src/shared/model";
 import { ApiRepository } from "../ApiRepository";
 
 
 
-interface CreateGameDto {
+interface CreateGameByAlbumsDto {
   gameId: string;
-  albums?: {[key: string]: string[]};
-  songsId?: string[];
+  albums: {[key: string]: string[]};
+}
+
+interface CreateGameBySongs {
+  gameId: string;
+  songs: Array<Song>;
 }
 
 const fetchDefaultOpts = {
@@ -67,14 +71,25 @@ class FetchApiRepository
 
 
 
-  async createGame({ gameId, albums, songsId }: CreateGameDto): Promise<void> {
-    await fetch(`${this.baseUrl}/game`, {
+  async createGameByAlbums({ gameId, albums }: CreateGameByAlbumsDto): Promise<void> {
+    await fetch(`${this.baseUrl}/game/albums`, {
       ...fetchDefaultOpts,
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ gameId, albums, songsId }),
+      body: JSON.stringify({ gameId, albums }),
+    });
+  }
+
+  async createGameBySongs({ gameId, songs }: CreateGameBySongs): Promise<void> {
+    await fetch(`${this.baseUrl}/game/songs`, {
+      ...fetchDefaultOpts,
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ gameId, songs }),
     });
   }
 }

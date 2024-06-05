@@ -1,35 +1,33 @@
 import Aside from "./components/Aside";
-import PlayersList from "./components/PlayersList";
 import SongPlayer from "./components/SongPlayer";
 import GameLayout from "./layout";
 import { useGame } from "src/shared/hooks/useGame";
 import { Button } from "src/shared/components/Button";
 import Lobby from "./components/Lobby";
 import GuessArea from "./components/GuessArea";
-import { useGameStore } from "src/shared/zustand/game";
+import PlayersList from "./components/PlayersList";
 
 
 
 export default function GamePage() {
-  const isGameStarted = useGameStore((state) => state.isGameStarted);
-
-  const { startGame } = useGame();
+  const { startGame, isGameStarted } = useGame();
 
   return (
     <GameLayout>
       <Aside>
-        <PlayersList />
+        <PlayersList orientation="col" />
 
         {!isGameStarted && (
           <Button
             onClick={startGame}
+            className="mt-4"
           >
             Start Game
           </Button>
         )}
       </Aside>
 
-        {!isGameStarted ? <Lobby /> : <GuessArea />}
+      {!isGameStarted ? <Lobby /> : <GuessArea />}
 
       <SongPlayer />
     </GameLayout>

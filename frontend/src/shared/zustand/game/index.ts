@@ -5,6 +5,7 @@ import { create } from "zustand";
 import { useTimerStore } from "../timer";
 import { SongPlayerManager } from "src/shared/songPlayerManager";
 import { SocketSingleton } from "src/shared/repositories/socketClient";
+import { usePlayerStore } from "../player";
 
 
 
@@ -24,16 +25,22 @@ type State = {
   isGameStarted: Boolean,
   guess: Guess | null,
   isRoundEnded: Boolean
+
+  guessTime: number,
+  songDuration: number | null,
+  cooldownTime: number
 }
 
 type Actions = {
   startGame: () => void;
-  onStartGame: () => void;
+  emitGameConfig: ({ speed, duration }: { speed: string, duration: string }) => void;
+  onStartGame: (response: SocketResponse<{ guessTime: number, songDuration: number, cooldownTime: number }>) => void;
   guessSong: (song: Song) => void;
   timedOut: () => void;
   onChangePlayers: (response: SocketResponse<{ players: Array<Player> }>) => void;
   onNewRound: (response: SocketResponse<{currentSong: CurrentSong, songs: Array<Song>}>) => void;
   onEndRound: (response: SocketResponse<{players: Array<Player>}>) => void;
+  onConnected: (response: SocketResponse<{playerId: string}>) => void;
 }
 
 const gameEmitterUseCase = new GameEmitterUseCase(
@@ -48,11 +55,27 @@ export const useGameStore = create<State & Actions>((set) => ({
   isGameStarted: false,
   guess: null,
   isRoundEnded: false,
+  guessTime: 10000,
+  songDuration: 2000,
+  cooldownTime: 5000,
+
+
+
   startGame: () => {
     gameEmitterUseCase.emitStartGame();
   },
-  onStartGame: () => {
-    set((state) => ({ ...state, isGameStarted: true }));
+  emitGameConfig: ({ speed, duration }) => {
+    gameEmitterUseCase.emitGameConfig({ speed, duration });
+  },
+
+  onStartGame: ({ data }) => {
+    set((state) => ({ 
+      ...state, 
+      isGameStarted: true,
+      guessTime: data.guessTime,
+      songDuration: data.songDuration,
+      cooldownTime: data.cooldownTime
+    }));
   },
   guessSong: (song: Song) => set((state) => {
     if (!!!state.guess) {
@@ -66,7 +89,7 @@ export const useGameStore = create<State & Actions>((set) => ({
         }
       }
       
-      gameEmitterUseCase.emitGuessSong(songGuessed);
+      gameEmitterUseCase.emitGuessSong({ songGuessed: songGuessed, guessedAt: new Date().getTime() });
     }
     return state;
   }),
@@ -74,7 +97,8 @@ export const useGameStore = create<State & Actions>((set) => ({
     gameEmitterUseCase.emitTimedOut();
   },
   onChangePlayers: ({ data }) => {
-    set((state) => ({ ...state, players: data.players }));
+    const orderedPlayers = data.players.sort((a, b) => b.score - a.score);
+    set((state) => ({ ...state, players: orderedPlayers }));
   },
   onNewRound: ({ data }) => {
     set((state) => ({
@@ -84,7 +108,7 @@ export const useGameStore = create<State & Actions>((set) => ({
       songs: data.songs,
       guess: null
     }));
-    useTimerStore.getState().startTimer(); // startTimer
+    useTimerStore.getState().startGuessTimer(); // startTimer
     SongPlayerManager.playSong(data.currentSong); // playSong
   },
   onEndRound: ({ data }) => {
@@ -93,6 +117,15 @@ export const useGameStore = create<State & Actions>((set) => ({
       isRoundEnded: true,
       players: data.players
     }));
-    useTimerStore.getState().startTimer(5000); // startTimer parcial
+    useTimerStore.getState().startCooldownTimer(); // startTimer parcial
+
+    const songDuration = useGameStore.getState().songDuration;
+    
+    if (songDuration !== null) {
+      SongPlayerManager.resumeSongOnRoundEnded(); // resume current song without starting from the beginning or stopping
+    }
+  },
+  onConnected: ({ data }) => {
+    usePlayerStore.getState().setPlayerId(data.playerId);
   }
 }));

@@ -18,7 +18,7 @@ export default class Game {
   private gameId: string;
   private players: Player[] = [];
   private currentSong?: Song & { startAt: number };
-  private currentRound?: number;
+  private currentRound: number = 0;
   private songs: Array<Song>;
 
   public addSongs(songs: Array<Song>) {
@@ -26,12 +26,19 @@ export default class Game {
 
     this.songs.push(...songs);
 
-    console.log({songs: this.songs})
-
     return songs;
   };
 
-  private guessTime = 10000 // 10 SECS
+  // GAME CONFIG
+  private guessTime = 12000; // 10 SECS
+  private songDuration = 3000; // 2 SECS
+  private cooldownTime = 5000; // 5 SECS
+  private shouldSortStartAt = true;
+
+  private roundStartedAt: number = 0;
+
+
+
   private playersPlayed = 0;
   private totalPlayers = 0; // Atualize este valor de acordo com o número de jogadores no seu jogo
 
@@ -85,8 +92,6 @@ export default class Game {
       }
     })
 
-    console.log({'players na entity':players})
-
     return players
   }
 
@@ -94,28 +99,48 @@ export default class Game {
     this.currentRound = 0
     console.log('Game started!')
 
-    this.publish({ event: 'startGame' }); // Notificar todos os assinantes
+    const {
+      guessTime,
+      songDuration,
+      cooldownTime
+    } = this
+
+    this.publish({ event: 'startGame', guessTime, songDuration, cooldownTime })
 
     return this.onNextRound();
   }
 
   public onNextRound() {
-    this.currentRound === undefined ? this.currentRound = 0 : this.currentRound++
+    this.currentRound++
   
     // GET A RANDOM SONG
-    const rightSongIndex = Math.floor(Math.random() * this.songs.length)
+    const randomSongIndex = Math.floor(Math.random() * this.songs.length)
+    const randomSong = this.songs[randomSongIndex]
 
     // GET A RANDOM START TIME
-    const startAt = Math.floor(Math.random() * 27)
+    const startAt = (() => {
+      if (
+        this.shouldSortStartAt
+        && this.songDuration !== null
+      ) {
+        const songTotalTime = 30000 // as millis
+        const maxStartAt = songTotalTime - this.songDuration
+        // the maximum startAt and not breaking the songTotalTime
+        const startAt = Math.floor(Math.random() * maxStartAt)
+
+        return Math.floor(startAt / 1000)
+      }
+      return 0
+    })();
 
     this.currentSong = {
-      ...this.songs[rightSongIndex],
+      ...randomSong,
       startAt: startAt
     }
 
     // Vou retornar somente 6 músicas para o usuário poder chutar, tem que ser a resposta correta +5 aleatórias
     const songsToGuess = [
-      this.songs[rightSongIndex]
+      randomSong
     ]
 
     if (this.songs.length === 0) {
@@ -124,7 +149,7 @@ export default class Game {
 
     while(
       songsToGuess.length < 6
-      && !(songsToGuess.length === this.songs.length)
+      && songsToGuess.length !== this.songs.length
     ) {
       const randomIndex = Math.floor(Math.random() * this.songs.length)
       const randomSong = this.songs[randomIndex]
@@ -135,6 +160,8 @@ export default class Game {
     }
 
     songsToGuess.sort(() => Math.random() - 0.5)
+
+    this.roundStartedAt = new Date().getTime()
     
     this.publish({ event: 'newRound', currentSong: this.currentSong, songs: songsToGuess }); //
   }
@@ -146,10 +173,10 @@ export default class Game {
     console.log('ESPERANDO 5 SEGUNDOS PARA O PRÓXIMO ROUND')
     setTimeout(() => {
       this.onNextRound();
-    }, 5000)
+    }, this.cooldownTime)
   }
 
-  public guessSong({ playerId, songGuessed, timePassed = 0 }: { playerId: string, songGuessed: Song, timePassed?: number }) {
+  public guessSong({ playerId, songGuessed, guessedAt }: { playerId: string, songGuessed: Song, guessedAt: number}) {
     // CHECK IF THE GUESS IS RIGHT
     // IF RIGHT, ADD POINTS TO THE USER
     // TIME PASSED WILL BE MILISECONDS SINCE THE SONG STARTED
@@ -157,18 +184,30 @@ export default class Game {
 
     if (player) {
       if(
-        this.currentSong && songGuessed.id == this.currentSong.id 
-        && timePassed <= this.guessTime
+        this.currentSong 
+        && songGuessed.id == this.currentSong.id
       ) {
-        // const points = this.guessTime - timePassed
-        const points = 10
-        player.addPoints(points)
-
-        console.log('Player guessed right!', player, points)
+        player.addPoints(this.calculateGuessPoints(guessedAt))
       }
-      
       this.increasePlayersPlayed();
     }
+  }
+
+  private calculateGuessPoints(guessedAt: number) {
+    const maxPoints = 100;
+    const startTime = this.roundStartedAt; // Supondo que você tenha um tempo de início armazenado
+
+    // Calcule o tempo decorrido
+    const elapsedTime = guessedAt - startTime;
+
+    // Calcule o tempo decorrido como uma porcentagem do tempo máximo
+    const timePassedPercentage = elapsedTime / this.guessTime;
+
+    // Calcule a pontuação com base na porcentagem do tempo decorrido
+    const points = maxPoints * (1 - timePassedPercentage);
+
+    // Certifique-se de que a pontuação não seja menor que 3 ou maior que maxPoints
+    return Math.max(3, Math.round(points));
   }
 
   public timedOut({ playerId }) {
@@ -177,6 +216,34 @@ export default class Game {
     if (!!player) {
       this.increasePlayersPlayed();
     }
+  }
+
+  public setGameConfig({ speed, duration }: { speed: string, duration: string }) {
+    // { speed: 'slow' | 'normal' | 'fast', duration: 'short' | 'normal' | 'long' }
+    
+    // this.guessTime = (() => {
+    //   switch(speed) {
+    //     case 'slow':
+    //       return 20000
+    //     case 'normal':
+    //       return 12000
+    //     case 'fast':
+    //       return 7000
+    //   }
+    // })();
+    // this.songDuration = (() => {
+    //   switch(duration) {
+    //     case 'short':
+    //       return 3000
+    //     case 'normal':
+    //       return 8000
+    //     case 'long':
+    //       return 30000
+    //   }
+    // })();
+
+    this.guessTime = Number(speed)
+    this.songDuration = Number(duration)
   }
 
   public getSongs() {

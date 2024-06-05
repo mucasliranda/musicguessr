@@ -25,6 +25,7 @@
       "src/*": ["./src/*"],
       "components/*": ["./src/shared/components/*"],
       "pages/*": ["./src/pages/*"],
+      "public/*": ["./public/*"],
     }
   },
   "include": ["src"],

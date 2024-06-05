@@ -43,8 +43,6 @@ export default function SongsList({ songs }: Props) {
         description: description,
       })
     }
-
-    console.log(songs)
   }, [])
 
   return (

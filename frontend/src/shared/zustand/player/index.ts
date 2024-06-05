@@ -17,26 +17,33 @@ function generateRandomName() {
 
 type State = {
   name: string;
+  id: string | null;
 }
 
 type Actions = {
   connect: (gameId: string) => void;
+  setPlayerId: (id: string) => void;
 }
 
 const gameEmitterUseCase = new GameEmitterUseCase(
   SocketSingleton.getSocket()
 );
 
-export const usePlayerStore = create<State & Actions>(() => ({
+export const usePlayerStore = create<State & Actions>((set) => ({
   name: generateRandomName(),
+  id: null,
   connect: (gameId) => {
     const player = {
       gameId: gameId,
       username: generateRandomName()
     }
 
-    console.log('conectando')
-
     gameEmitterUseCase.emitConnect(player);
   },
+  setPlayerId: (id) => {
+    set((state) => ({
+      ...state,
+      id
+    }))
+  }
 }));

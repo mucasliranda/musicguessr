@@ -1,3 +1,6 @@
+import { useGameStore } from "src/shared/zustand/game"
+import GameConfigDialog from "../GameConfigDialog"
+import { cn } from "src/shared/utils"
 
 
 
@@ -6,34 +9,53 @@ interface Props {
 }
 
 export default function Aside({ children }: Props) {
-  const isGameStarted = false
+  const isGameStarted = useGameStore((state) => state.isGameStarted)
 
   return (
     <aside
-      className="
-        w-1/4 
+      className={cn(`
+        w-full
+        max-w-[25%]
+        min-w-40
         h-full 
         p-4
         
-        flex
+        hidden
+
+        md:flex
         flex-col
         items-start
-        bg-onBackground
-      "
+        bg-onBackground`,
+        !isGameStarted && '!flex'
+      )}
     >
-      <h3
+      <div
         className="
-          w-fit
-          mb-6 
-        
-          text-white 
-          text-lg
-          border-b-[2px]
-          border-primary
+          w-full
+          h-fit
+          flex
+          justify-between
+
+          mb-3
         "
       >
-        {isGameStarted ? 'Score' : 'Lobby'}
-      </h3>
+        <h3
+          className="
+            w-fit
+          
+            text-white 
+            text-lg
+            border-b-[2px]
+            border-primary
+          "
+        >
+          {isGameStarted ? 'Score' : 'Lobby'}
+        </h3>
+
+        {!isGameStarted && (
+          <GameConfigDialog />
+        )}
+      </div>
       {children}
     </aside>
   )

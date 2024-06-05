@@ -8,6 +8,7 @@ export default function SongPlayer() {
     <audio
       onTimeUpdate={SongPlayerManager.onTimeUpdate}
       id="song-player"
+      autoPlay
     />
   )
 }

@@ -12,11 +12,13 @@ type Actions = {
   finishTimer: () => void;
   setProgress: (progress: number) => void;
   resetTimer: () => { progress: number };
-  startTimer: (duration?: number) => void;
+  startGuessTimer: () => void;
+  startCooldownTimer: () => void;
+
+  startTimer: (duration: number) => void;
 }
 
 let timer: NodeJS.Timeout;
-const guessDuration = 10000; // 10 SECS
 const timerInterval = 50;
 
 export const useTimerStore = create<State & Actions>((set) => ({
@@ -39,7 +41,14 @@ export const useTimerStore = create<State & Actions>((set) => ({
 
     return { progress: newProgress }
   },
-  startTimer: (duration = guessDuration) => set((state) => {
+  startGuessTimer() {
+    return this.startTimer(useGameStore.getState().guessTime);
+  },
+  startCooldownTimer() {
+    return this.startTimer(useGameStore.getState().cooldownTime);
+  },
+
+  startTimer: (duration) => set((state) => {
     let progress = state.resetTimer().progress;
     
     timer = setInterval(() => {

@@ -22,9 +22,10 @@ export default function SongsList({ songs }: Props) {
 
     const formData = new FormData(e.currentTarget);
     const songsId = formData.getAll('songs') as Array<string>;
+    const songsSelecteds = songs.filter(song => songsId.includes(song.id));
     const gameId = window.crypto.randomUUID();
 
-    await fetchApi.createGame({gameId, songsId});
+    await fetchApi.createGameBySongs({ gameId, songs: songsSelecteds });
 
     navigate(`/game/${gameId}`);
   }

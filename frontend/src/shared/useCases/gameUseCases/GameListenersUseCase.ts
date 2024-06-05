@@ -8,6 +8,7 @@ export class GameListenersUseCase {
   private onGameStartCallback?;
   private onNewRoundCallback?;
   private onEndRoundCallback?;
+  private onConnectedCallback?;
 
   constructor(socketServer: SocketRepository) {
     this.socketServer = socketServer;
@@ -35,6 +36,12 @@ export class GameListenersUseCase {
     this.onEndRoundCallback = callback;
     this.socketServer.removeAllListeners('endRound');
     this.socketServer.on('endRound', this.onEndRoundCallback);
+  }
+
+  setOnConnectedCallback(callback: (data: any) => void) {
+    this.onConnectedCallback = callback;
+    this.socketServer.removeAllListeners('connected');
+    this.socketServer.on('connected', this.onConnectedCallback);
   }
 
   offAllListeners() {

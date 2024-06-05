@@ -14,23 +14,32 @@ const gameListenersUseCase = new GameListenersUseCase(
 export function useGame() {
   const params = useParams()
 
-  const connect = usePlayerStore(state => state.connect)
-  const startGame = useGameStore(state => state.startGame)
-  const onStartGame = useGameStore(state => state.onStartGame)
-  const onChangePlayers = useGameStore(state => state.onChangePlayers)
-  const onNewRound = useGameStore(state => state.onNewRound)
-  const onEndRound = useGameStore(state => state.onEndRound)
+  const {
+    isGameStarted,
+    startGame,
+    onStartGame,
+    onChangePlayers,
+    onNewRound,
+    onEndRound,
+    onConnected
+  } = useGameStore()
+
+  const { 
+    connect
+  } = usePlayerStore()
   
   useEffect(() => {
     connect(params.gameId || '')
 
     gameListenersUseCase.setOnChangePlayersCallback((e) => onChangePlayers(e));
 
-    gameListenersUseCase.setOnGameStartCallback(() => onStartGame())
+    gameListenersUseCase.setOnGameStartCallback((e) => onStartGame(e))
 
     gameListenersUseCase.setOnNewRoundCallback((e) => onNewRound(e))
 
     gameListenersUseCase.setOnEndRoundCallback((e) => onEndRound(e))
+
+    gameListenersUseCase.setOnConnectedCallback((e) => onConnected(e))
 
     return () => {
       gameListenersUseCase.offAllListeners()
@@ -38,6 +47,7 @@ export function useGame() {
   }, [])
   
   return {
-    startGame
+    startGame,
+    isGameStarted
   }
 }

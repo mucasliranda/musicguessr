@@ -14,8 +14,9 @@ export default function Guess({ song }: Props) {
   return (
     <div
       onClick={() => guessSong(song)}
-      className={cn(
-        `p-4 
+      className={cn(`
+        p-2
+        md:p-3
         overflow-hidden 
         bg-gray-800 
         rounded 
@@ -35,7 +36,18 @@ export default function Guess({ song }: Props) {
         !isRoundEnded && guess?.id === song.id && 'border-4 border-gray-400',
       )}
     >
-      <div className="text-white font-bold text-xl mb-2">{song.name}</div>
+      <p 
+        className="
+          text-white 
+          font-bold 
+          text-xl 
+          mb-2
+
+          truncate
+          sm:line-clamp-2
+          sm:text-wrap
+        "
+      >{song.name}</p>
       <p className="text-gray-400">{song.artists.join(', ')}</p>
     </div>
   )

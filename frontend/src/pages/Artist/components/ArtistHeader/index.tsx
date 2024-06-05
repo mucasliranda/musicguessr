@@ -22,7 +22,7 @@ export default function ArtistHeader() {
       }
     }
 
-    await fetchApi.createGame({gameId, albums});
+    await fetchApi.createGameByAlbums({ gameId, albums });
 
     navigate(`/game/${gameId}`);
   }
