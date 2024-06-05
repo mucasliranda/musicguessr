@@ -77,10 +77,11 @@ export default function AlbumCard({ album }: Props) {
           text-wrap
           font-medium
 
+          leading-5
           line-clamp-2
+          truncate
 
           relative
-          truncate
 
           group/paragraph
         "
@@ -105,6 +106,7 @@ export default function AlbumCard({ album }: Props) {
           "
         />
       </p>
+
     </label>
   )
 }

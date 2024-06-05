@@ -444,7 +444,7 @@ export class SpotifySongsRepository implements SongsRepository {
 
     await this.ensureAccessToken();
 
-    const _fetch = await fetch(`https://api.spotify.com/v1/search?q=${search}:this&type=artist,playlist&limit=10`, {
+    const _fetch = await fetch(`https://api.spotify.com/v1/search?q=${search}:this&type=playlist,artist&limit=16`, {
       headers: {
         'Authorization': `Bearer ${this.accessToken}`
       }

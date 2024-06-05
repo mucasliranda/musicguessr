@@ -36,14 +36,15 @@ export function Image({ src, blurHash, alt, className, grayscaleEffect = true, h
         src={src}
         alt={alt}
         className={cn(`
-          object-cover 
           w-full 
           h-full
           
           transition 
           duration-500 
           ease-in-out 
-          transform`,
+          transform
+          object-contain
+          sm:object-cover`,
           grayscaleEffect && "grayscale-50 group-hover:grayscale-0",
           hoverscaleEffect && "group-hover:scale-110"
         )}

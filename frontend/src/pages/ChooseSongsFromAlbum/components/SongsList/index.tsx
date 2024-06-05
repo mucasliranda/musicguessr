@@ -1,22 +1,24 @@
 import "./styles.css"
-import { Song } from "src/shared/model";
-import { useEffect } from "react"
-import { useToast } from "src/shared/components/Toast/use-toast";
 import { Button } from "src/shared/components/Button";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SongCard from "src/shared/components/SongCard";
+import { useQueryClient } from "@tanstack/react-query";
+import { FullAlbum } from "src/shared/model";
+import { Skeleton } from "src/shared/components/Skeleton";
 
 
 
-interface Props {
-  songs: Song[]
-}
-
-export default function SongsList({ songs }: Props) {
+export default function SongsList() {
+  const queryClient = useQueryClient();
   const [searchParams, _] = useSearchParams();
   const { artistId, albumId } = useParams();
   const navigate = useNavigate();
-  const { toast } = useToast();
+
+  const data = queryClient.getQueryData(['album', albumId]) as FullAlbum | undefined;
+
+  if (!data) return <LoadingSkeleton />;
+
+  const { songs } = data;
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -35,15 +37,6 @@ export default function SongsList({ songs }: Props) {
 
     navigate(`/artist/${artistId}?${params.toString()}`)
   }
-
-  useEffect(() => {
-    if(songs.some(song => !song.playable)) {
-      const description = "Some songs are not playable";
-      toast({
-        description: description,
-      })
-    }
-  }, [])
 
   return (
     <form
@@ -71,5 +64,63 @@ export default function SongsList({ songs }: Props) {
         {"<---"}
       </Button>
     </form>
+  )
+}
+
+
+
+function LoadingSkeleton() {
+  return (
+    <div
+      className="
+        w-full
+        h-full
+        flex 
+        flex-col
+        mt-6
+        gap-4
+        overflow-y-auto
+      "
+    >
+      <div
+        className="
+          w-full
+          flex
+          flex-col
+          grow-1
+          overflow-hidden
+        "
+      >
+        {[...Array(18)].map((_, index) => {
+          return (
+            <div
+              className="
+                w-full
+                flex 
+                p-2 
+                gap-2
+              "
+              key={index}
+            >
+              <div
+                className="
+                  flex
+                  flex-col
+                  justify-between
+                  w-full
+                  h-12
+                  pb-2
+                "
+              >
+                <Skeleton className="w-60 h-4" />
+                <Skeleton className="w-40 h-3" />
+              </div> 
+            </div> 
+          )
+        })}
+      </div>
+
+      <Skeleton className="w-32 h-16 ml-auto" />
+    </div>
   )
 }

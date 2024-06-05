@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import HomeLayout from "./layout";
 import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
 import PlaylistList from "./components/PlaylistList";
+import { Playlist } from "src/shared/model";
 
 const playlistsIds = [
   {
@@ -43,14 +44,13 @@ export default function HomePage() {
           const result = await fetchApi.getPlaylistsByCategory(playlist.id);
           return {
             label: playlist.name,
-            data: result,
+            data: result as Array<Playlist> | undefined,
           };
         })
       );
     },
+    initialData: playlistsIds.map((playlist) => ({ label: playlist.name, data: undefined })),
   });
-
-  if (!playlists) return null;
 
   return (
     <HomeLayout>

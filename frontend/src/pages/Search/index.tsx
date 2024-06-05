@@ -14,16 +14,14 @@ export default function SearchPage() {
 
   const { data } = useQuery({ queryKey: ['search'], queryFn: () => fetchApi.getFullSearch(searchValue)});
 
-  if (!data) return null;
-
   return (
     <SearchLayout>
-      <PlaylistList playlists={data.playlists} category={'Playlists'} />
+      <PlaylistList playlists={data?.playlists} category={'Playlists'} />
       <div
         className="flex flex-col gap-4"
       >
         <h3 className="text-white underline decoration-primary text-2xl font-bold">Artists</h3>
-        <ArtistList artists={data.artists} />
+        <ArtistList artists={data?.artists} />
       </div>
     </SearchLayout>
   )
