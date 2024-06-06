@@ -78,7 +78,7 @@ export const useGameStore = create<State & Actions>((set) => ({
     }));
   },
   guessSong: (song: Song) => set((state) => {
-    if (!!!state.guess) {
+    if (!!!state.guess && !state.isRoundEnded) {
       const songGuessed = song;
 
       state = {

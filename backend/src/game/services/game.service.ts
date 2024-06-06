@@ -15,6 +15,10 @@ export class GameService {
     private readonly songsRepository: SongsRepository,
   ) {}
 
+  public async hasGame(gameId: string) {
+    return await this.gameRepository.hasGame(gameId);
+  }
+
   public async subscribe(fn: any, gameId: string) {
     const game = await this.gameRepository.getGame(gameId);
 
@@ -58,9 +62,13 @@ export class GameService {
   }
 
   public async removePlayer({ playerId, gameId }) {
-    const game = await this.gameRepository.getGame(gameId);
+    const hasGame = await this.gameRepository.hasGame(gameId);
 
-    game.removePlayer({ playerId });
+    if (hasGame) {
+      const game = await this.gameRepository.getGame(gameId);
+  
+      game.removePlayer({ playerId });
+    }
   }
 
   public async startGame({ gameId }) {

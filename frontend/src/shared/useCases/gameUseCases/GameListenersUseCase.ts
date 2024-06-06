@@ -50,5 +50,6 @@ export class GameListenersUseCase {
     this.socketServer.removeAllListeners('startGame');
     this.socketServer.removeAllListeners('newRound');
     this.socketServer.removeAllListeners('endRound');
+    this.socketServer.removeAllListeners('connected');
   }
 }

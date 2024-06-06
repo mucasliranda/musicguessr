@@ -219,29 +219,6 @@ export default class Game {
   }
 
   public setGameConfig({ speed, duration }: { speed: string, duration: string }) {
-    // { speed: 'slow' | 'normal' | 'fast', duration: 'short' | 'normal' | 'long' }
-    
-    // this.guessTime = (() => {
-    //   switch(speed) {
-    //     case 'slow':
-    //       return 20000
-    //     case 'normal':
-    //       return 12000
-    //     case 'fast':
-    //       return 7000
-    //   }
-    // })();
-    // this.songDuration = (() => {
-    //   switch(duration) {
-    //     case 'short':
-    //       return 3000
-    //     case 'normal':
-    //       return 8000
-    //     case 'long':
-    //       return 30000
-    //   }
-    // })();
-
     this.guessTime = Number(speed)
     this.songDuration = Number(duration)
   }
