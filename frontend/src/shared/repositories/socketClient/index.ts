@@ -18,7 +18,7 @@ export class SocketSingleton {
 
 class SocketClient
   implements SocketRepository {
-  private socket: Socket = io('http://localhost:3005', { autoConnect: false });
+  private socket: Socket = io('http://localhost:3005', { autoConnect: true });
 
   constructor() { }
 
@@ -36,11 +36,6 @@ class SocketClient
 
   removeAllListeners(event: string) {
     this.socket.removeAllListeners(event);
-  }
-
-  connect({ username, gameId }: { username: string, gameId: string}) {
-    this.socket.auth = { gameId, username };
-    this.socket.connect();
   }
 
   disconnect() {

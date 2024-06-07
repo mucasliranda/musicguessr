@@ -40,7 +40,7 @@ type Actions = {
   onChangePlayers: (response: SocketResponse<{ players: Array<Player> }>) => void;
   onNewRound: (response: SocketResponse<{currentSong: CurrentSong, songs: Array<Song>}>) => void;
   onEndRound: (response: SocketResponse<{players: Array<Player>}>) => void;
-  onConnected: (response: SocketResponse<{playerId: string}>) => void;
+  onGameJoined: (response: SocketResponse<{playerId: string}>) => void;
 }
 
 const gameEmitterUseCase = new GameEmitterUseCase(
@@ -78,7 +78,7 @@ export const useGameStore = create<State & Actions>((set) => ({
     }));
   },
   guessSong: (song: Song) => set((state) => {
-    if (!!!state.guess) {
+    if (!!!state.guess && !state.isRoundEnded) {
       const songGuessed = song;
 
       state = {
@@ -97,8 +97,7 @@ export const useGameStore = create<State & Actions>((set) => ({
     gameEmitterUseCase.emitTimedOut();
   },
   onChangePlayers: ({ data }) => {
-    const orderedPlayers = data.players.sort((a, b) => b.score - a.score);
-    set((state) => ({ ...state, players: orderedPlayers }));
+    set((state) => ({ ...state, players: data.players }));
   },
   onNewRound: ({ data }) => {
     set((state) => ({
@@ -112,10 +111,12 @@ export const useGameStore = create<State & Actions>((set) => ({
     SongPlayerManager.playSong(data.currentSong); // playSong
   },
   onEndRound: ({ data }) => {
+    const orderedPlayers = [...data.players].sort((a, b) => b.score - a.score);
+    console.log({orderedPlayers})
     set((state) => ({
       ...state,
       isRoundEnded: true,
-      players: data.players
+      players: orderedPlayers
     }));
     useTimerStore.getState().startCooldownTimer(); // startTimer parcial
 
@@ -125,7 +126,7 @@ export const useGameStore = create<State & Actions>((set) => ({
       SongPlayerManager.resumeSongOnRoundEnded(); // resume current song without starting from the beginning or stopping
     }
   },
-  onConnected: ({ data }) => {
+  onGameJoined: ({ data }) => {
     usePlayerStore.getState().setPlayerId(data.playerId);
   }
 }));

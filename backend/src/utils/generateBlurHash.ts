@@ -25,7 +25,6 @@ async function getImageData(imageUrl: string): Promise<{ data: Uint8ClampedArray
   };
 }
 
-// Função para gerar o BlurHash
 export async function generateBlurHash(imageUrl: string): Promise<string> {
   const { data, width, height } = await getImageData(imageUrl);
   const blurHash = encode(data, width, height, 4, 4);

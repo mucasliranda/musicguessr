@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, NotFoundException } from "@nestjs/common";
 import Game from "../entities/game";
 import { GameRepository } from "./GameRepository";
 import { Song } from "src/shared/model";
@@ -15,16 +15,21 @@ export class InMemoryGameRepository
 
   async getGame(gameId: string): Promise<Game> {
     const game = this.games.get(gameId);
+    
     if (!game) {
-      throw new Error(`GAME_NOT_FOUND: ${gameId}`);
+      throw new NotFoundException(`Game with id ${gameId} not found`);
     }
+
     return game;
+  }
+
+  async hasGame(gameId: string): Promise<boolean> {
+    return this.games.has(gameId);
   }
 
   async createGame(gameId: string, songs: Song[] = []): Promise<Game> {
     const game = new Game(gameId, songs);
     this.games.set(gameId, game);
-    console.log({game})
     return game;
   }
 }

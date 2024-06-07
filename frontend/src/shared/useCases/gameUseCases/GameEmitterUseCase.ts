@@ -22,8 +22,8 @@ export class GameEmitterUseCase {
     this.socketServer.emit('timedOut');
   }
 
-  emitConnect({ gameId, username }: { gameId: string, username: string }) {
-    this.socketServer.connect({ gameId, username });
+  emitJoinGame({ gameId, username }: { gameId: string, username: string }) {
+    this.socketServer.emit('joinGame', { gameId, username });
   }
 
   emitGameConfig({ speed, duration }: { speed: string, duration: string }) {
