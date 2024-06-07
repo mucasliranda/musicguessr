@@ -9,6 +9,7 @@ export class GameListenersUseCase {
   private onNewRoundCallback?;
   private onEndRoundCallback?;
   private onConnectedCallback?;
+  private onGameNotFoundCallback?;
 
   constructor(socketServer: SocketRepository) {
     this.socketServer = socketServer;
@@ -38,10 +39,16 @@ export class GameListenersUseCase {
     this.socketServer.on('endRound', this.onEndRoundCallback);
   }
 
-  setOnConnectedCallback(callback: (data: any) => void) {
+  setOnGameJoinedCallback(callback: (data: any) => void) {
     this.onConnectedCallback = callback;
-    this.socketServer.removeAllListeners('connected');
-    this.socketServer.on('connected', this.onConnectedCallback);
+    this.socketServer.removeAllListeners('gameJoined');
+    this.socketServer.on('gameJoined', this.onConnectedCallback);
+  }
+
+  setOnGameNotFoundCallback(callback: (data: any) => void) {
+    this.onGameNotFoundCallback = callback;
+    this.socketServer.removeAllListeners('gameNotFound');
+    this.socketServer.on('gameNotFound', this.onGameNotFoundCallback);
   }
 
   offAllListeners() {
@@ -50,6 +57,7 @@ export class GameListenersUseCase {
     this.socketServer.removeAllListeners('startGame');
     this.socketServer.removeAllListeners('newRound');
     this.socketServer.removeAllListeners('endRound');
-    this.socketServer.removeAllListeners('connected');
+    this.socketServer.removeAllListeners('gameJoined');
+    this.socketServer.removeAllListeners('gameNotFound');
   }
 }

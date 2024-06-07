@@ -1,7 +1,7 @@
 import { useEffect } from "react"
 import { GameListenersUseCase } from "../useCases/gameUseCases/GameListenersUseCase"
 import { SocketSingleton } from "../repositories/socketClient"
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { usePlayerStore } from "../zustand/player"
 import { useGameStore } from "../zustand/game"
 
@@ -13,6 +13,7 @@ const gameListenersUseCase = new GameListenersUseCase(
 
 export function useGame() {
   const params = useParams()
+  const navigate = useNavigate()
 
   const {
     isGameStarted,
@@ -21,15 +22,15 @@ export function useGame() {
     onChangePlayers,
     onNewRound,
     onEndRound,
-    onConnected
+    onGameJoined
   } = useGameStore()
 
   const { 
-    connect
+    joinGame
   } = usePlayerStore()
   
   useEffect(() => {
-    connect(params.gameId || '')
+    joinGame(params.gameId || '')
 
     gameListenersUseCase.setOnChangePlayersCallback((e) => onChangePlayers(e));
 
@@ -39,7 +40,12 @@ export function useGame() {
 
     gameListenersUseCase.setOnEndRoundCallback((e) => onEndRound(e))
 
-    gameListenersUseCase.setOnConnectedCallback((e) => onConnected(e))
+    gameListenersUseCase.setOnGameJoinedCallback((e) => onGameJoined(e))
+
+    gameListenersUseCase.setOnGameNotFoundCallback(() => {
+      console.log('Game not found')
+      navigate('/')
+    })
 
     return () => {
       gameListenersUseCase.offAllListeners()

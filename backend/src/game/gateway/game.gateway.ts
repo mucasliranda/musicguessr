@@ -1,44 +1,43 @@
-import { OnGatewayConnection, OnGatewayDisconnect, WebSocketGateway, WebSocketServer, WsException } from "@nestjs/websockets";
+import { ConnectedSocket, MessageBody, OnGatewayDisconnect, SubscribeMessage, WebSocketGateway, WebSocketServer } from "@nestjs/websockets";
 import { Socket } from "socket.io";
 import { GameService } from "../services/game.service";
-import { UseFilters } from "@nestjs/common";
-import { WsCatchAllFilter } from "src/utils/WebSocketExceptionsFilter";
-import { Namespace } from 'socket.io';
+import { HttpException, NotFoundException, UseFilters } from "@nestjs/common";
+import { WebsocketExceptionsFilter } from "src/utils/WebSocketExceptionsFilter";
 
 
 
-@UseFilters(new WsCatchAllFilter())
+@UseFilters(WebsocketExceptionsFilter)
 @WebSocketGateway({
   cors: { origin: '*' }
 })
-export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
+export class GameGateway implements OnGatewayDisconnect {
   constructor(
     private gameService: GameService,
-
   ) {}
+  @WebSocketServer()
   // @ts-ignore
-  @WebSocketServer() server: Namespace;
+  server: Socket;
 
-  async handleConnection(client: Socket) {
+  @SubscribeMessage('joinGame')
+  async handleOnJoinGame(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: any,
+  ) {
     const playerId = client.id;
-    const username = client.handshake.auth.username;
-    const gameId = client.handshake.auth.gameId;
+    const username = data.username;
+    const gameId = data.gameId;
+
+    client.handshake.auth.gameId = gameId;
 
     const hasGame = await this.gameService.hasGame(gameId);
 
     if (hasGame) {
       client.join(gameId);
       
-      try {
-        console.log('tentando adicionar jogador')
-        await this.gameService.addPlayer({ id: playerId, gameId, name: username});
-      }
-      catch (error) {
-        throw new WsException('Invalid credentials.');
-      }
+      await this.gameService.addPlayer({ id: playerId, gameId, name: username});
 
-      client.emit('connected', {
-        event: 'connected',
+      client.emit('gameJoined', {
+        event: 'gameJoined',
         data: {
           playerId 
         }
@@ -52,43 +51,68 @@ export class GameGateway implements OnGatewayConnection, OnGatewayDisconnect {
         this.server.to(gameId).emit(command.event, { data: remaing })
       }, gameId);
 
-      client.on('startGame', async () => {  
-        await this.gameService.startGame({ gameId });
-      });
-
-      client.on('guessSong', async ({ songGuessed, guessedAt}) => {
-        await this.gameService.guessSong({ 
-          playerId, 
-          songGuessed, 
-          gameId,
-          guessedAt
-        });
-      });
-      
-      client.on('timedOut', async () => {
-        await this.gameService.timedOut({ playerId, gameId });
-      });
-
-      client.on('gameConfig', async ({ speed, duration }) => {
-        await this.gameService.setGameConfig({ speed, duration, gameId });
-      });
-
       this.server.to(gameId).emit('players', {
         event: 'players',
         data : {
           players: await this.gameService.getPlayers({ gameId })
         }
       });
-    } 
-    else {
-      client.disconnect();
     }
+    else {
+      client.emit('gameNotFound');
+    }
+  }
+
+  @SubscribeMessage('startGame')
+  async handleOnStartGame(
+    @ConnectedSocket() client: Socket,
+  ) {
+    const gameId = client.handshake.auth.gameId;
+
+    await this.gameService.startGame({ gameId });
+  }
+
+  @SubscribeMessage('guessSong')
+  async handleOnGuessSong(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: any,
+  ) {
+    const playerId = client.id;
+    const songGuessed = data.songGuessed;
+    const guessedAt = data.guessedAt;
+    const gameId = client.handshake.auth.gameId;
+
+    await this.gameService.guessSong({ playerId, songGuessed, gameId, guessedAt });
+  }
+
+  @SubscribeMessage('timedOut')
+  async handleOnTimedOut(
+    @ConnectedSocket() client: Socket,
+  ) {
+    const playerId = client.id;
+    const gameId = client.handshake.auth.gameId;
+
+    await this.gameService.timedOut({ playerId, gameId });
+  }
+
+  @SubscribeMessage('gameConfig')
+  async handleOnGameConfig(
+    @ConnectedSocket() client: Socket,
+    @MessageBody() data: any,
+  ) {
+    const gameId = client.handshake.auth.gameId;
+    const speed = data.speed;
+    const duration = data.duration;
+
+    await this.gameService.setGameConfig({ speed, duration, gameId });
   }
 
   // ON DISCONNECT
   async handleDisconnect(client: Socket) {
     const playerId = client.id;
     const gameId = client.handshake.auth.gameId;
+
+    if (!gameId) return;
 
     const hasGame = await this.gameService.hasGame(gameId);
 

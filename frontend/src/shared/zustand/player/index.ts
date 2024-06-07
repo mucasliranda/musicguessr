@@ -21,7 +21,7 @@ type State = {
 }
 
 type Actions = {
-  connect: (gameId: string) => void;
+  joinGame: (gameId: string) => void;
   setPlayerId: (id: string) => void;
 }
 
@@ -32,13 +32,13 @@ const gameEmitterUseCase = new GameEmitterUseCase(
 export const usePlayerStore = create<State & Actions>((set) => ({
   name: generateRandomName(),
   id: null,
-  connect: (gameId) => {
+  joinGame: (gameId) => {
     const player = {
       gameId: gameId,
       username: generateRandomName()
     }
 
-    gameEmitterUseCase.emitConnect(player);
+    gameEmitterUseCase.emitJoinGame(player);
   },
   setPlayerId: (id) => {
     set((state) => ({
