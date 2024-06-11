@@ -1,10 +1,10 @@
 import { Injectable } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { SongsRepository } from "../songsRepository";
-import { CacheService } from "src/cache/cacheService";
 import { Album, Artist, FullAlbum, FullPlaylist, Playlist, Song, Image, PlaylistSong } from "src/shared/model";
 import { generateBlurHash } from "src/utils/generateBlurHash";
 import fetch from 'node-fetch';
+import { CacheService } from "src/cache/services/cache.service";
 
 
 
@@ -36,8 +36,8 @@ export class SpotifySongsRepository implements SongsRepository {
     private cacheService: CacheService,
   ) { }
   private accessToken?: string | null;
-  private clientId?: string = this.configService.get<string>('SPOTIFY_CLIENT_ID');
-  private clientSecret?: string = this.configService.get<string>('SPOTIFY_CLIENT_SECRET');
+  private clientId?: string = this.configService.getOrThrow<string>('SPOTIFY_CLIENT_ID');
+  private clientSecret?: string = this.configService.getOrThrow<string>('SPOTIFY_CLIENT_SECRET');
   private tokenObtainedAt?: number;
 
 

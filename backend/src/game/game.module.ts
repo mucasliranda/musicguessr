@@ -5,7 +5,9 @@ import { GameService } from './services/game.service';
 import { InMemoryGameRepository } from './repository/InMemoryGameRepository';
 import { SongsRepository } from 'src/songs/repository/songsRepository';
 import { SpotifySongsRepository } from 'src/songs/repository/spotifySongsRepository';
-import { CacheService } from 'src/cache/cacheService';
+import { CacheService } from 'src/cache/services/cache.service';
+import { CacheRepository } from 'src/cache/repository/cacheRespository';
+import { UpstashCacheRepository } from 'src/cache/repository/upstashCacheRepository';
 
 @Module({
   imports: [],
@@ -19,6 +21,10 @@ import { CacheService } from 'src/cache/cacheService';
       provide: SongsRepository,
       useClass: SpotifySongsRepository,
     },
+    {
+      provide: CacheRepository,
+      useClass: UpstashCacheRepository,
+    }
   ],
 })
 export class GameModule {}
