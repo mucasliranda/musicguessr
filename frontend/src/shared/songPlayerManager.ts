@@ -1,4 +1,4 @@
-import { CurrentSong, useGameStore } from "./zustand/game";
+import { CurrentSong, useGameStore } from "./store/client/game";
 
 
 

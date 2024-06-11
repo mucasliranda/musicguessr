@@ -1,16 +1,14 @@
-import { FullPlaylist } from "src/shared/model"
-import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { Skeleton } from "src/shared/components/Skeleton";
 import { Image } from "src/shared/components/Image";
+import { useGetPlaylist } from "src/shared/store/server/playlist/queries";
 
 
 
 export default function SongsHeader() {
-  const queryClient = useQueryClient();
   const { playlistId } = useParams();
 
-  const data = queryClient.getQueryData(['playlist', playlistId]) as FullPlaylist | undefined;
+  const { data } = useGetPlaylist(playlistId || '');
   
   if (!data) return <LoadingSkeleton />;
 

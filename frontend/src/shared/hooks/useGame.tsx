@@ -2,8 +2,8 @@ import { useEffect } from "react"
 import { GameListenersUseCase } from "../useCases/gameUseCases/GameListenersUseCase"
 import { SocketSingleton } from "../repositories/socketClient"
 import { useNavigate, useParams } from "react-router-dom"
-import { usePlayerStore } from "../zustand/player"
-import { useGameStore } from "../zustand/game"
+import { usePlayerStore } from "../store/client/player"
+import { useGameStore } from "../store/client/game"
 
 
 

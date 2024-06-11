@@ -2,19 +2,17 @@ import "./styles.css"
 import { Button } from "src/shared/components/Button";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import SongCard from "src/shared/components/SongCard";
-import { useQueryClient } from "@tanstack/react-query";
-import { FullAlbum } from "src/shared/model";
 import { Skeleton } from "src/shared/components/Skeleton";
+import { useGetAlbum } from "src/shared/store/server/album/queries";
 
 
 
 export default function SongsList() {
-  const queryClient = useQueryClient();
   const [searchParams, _] = useSearchParams();
   const { artistId, albumId } = useParams();
   const navigate = useNavigate();
 
-  const data = queryClient.getQueryData(['album', albumId]) as FullAlbum | undefined;
+  const { data } = useGetAlbum(albumId || '');
 
   if (!data) return <LoadingSkeleton />;
 

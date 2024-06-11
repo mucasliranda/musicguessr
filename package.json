@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "server:dev": "cd backend && npm run start:prod",
+    "server:dev": "cd backend && npm run start:dev",
     "client::dev": "cd frontend && npm run dev",
     "dev": "npm-run-all -p server:dev client:dev"
   },

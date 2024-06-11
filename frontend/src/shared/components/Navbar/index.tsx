@@ -1,8 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import GlassIcon from "../GlassIcon";
-import { useQueryClient } from "@tanstack/react-query";
-import { Search, Upload, X } from "lucide-react";
+import { Search, X } from "lucide-react";
 import ImportPlaylistDialog from "./ImportPlaylistDialog";
+import { useChangeSearch } from "src/shared/store/server/search/mutation";
 
 
 
@@ -10,12 +9,11 @@ export default function Navbar() {
   const [searchParams, setSearchParams] = useSearchParams();
   const navigation = useNavigate();
 
-  const queryClient = useQueryClient();
-
   const artist = searchParams.get('q')?.split('+').join(' ') || '';
 
+  const changeSearchValue = useChangeSearch();
+
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
-    console.log({ artist })
     e.preventDefault();
 
     const val = e.target as HTMLFormElement;
@@ -23,9 +21,7 @@ export default function Navbar() {
 
     setSearchParams({ q: search });
 
-    queryClient.invalidateQueries({ queryKey: ['artists'] });
-
-    navigation(`/search?q=${search}`);
+    changeSearchValue.mutate(search);
   }
 
   function onChangeInput(e: React.ChangeEvent<HTMLInputElement>) {

@@ -1,14 +1,16 @@
 import { SongPlayerManager } from "../songPlayerManager"
-import { useGameStore } from "../zustand/game"
+import { useGameStore } from "../store/client/game"
 
 
 
 export function useGuess() {
-  const songs = useGameStore(state => state.songs)
-  const guessSong = useGameStore(state => state.guessSong)
-  const currentSong = useGameStore(state => state.currentSong)
-  const isRoundEnded = useGameStore(state => state.isRoundEnded)
-  const guess = useGameStore(state => state.guess)
+  const {
+    songs,
+    guessSong,
+    currentSong,
+    isRoundEnded,
+    guess
+  } = useGameStore()
 
   function playCurrentSong() {
     if (currentSong) {

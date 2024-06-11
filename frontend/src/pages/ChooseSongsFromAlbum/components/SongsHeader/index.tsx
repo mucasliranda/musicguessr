@@ -1,16 +1,14 @@
-import { FullAlbum } from "src/shared/model"
-import { useQueryClient } from "@tanstack/react-query";
 import { useParams } from "react-router-dom";
 import { Skeleton } from "src/shared/components/Skeleton";
 import { Image } from "src/shared/components/Image";
+import { useGetAlbum } from "src/shared/store/server/album/queries";
 
 
 
 export default function SongsHeader() {
-  const queryClient = useQueryClient();
   const { albumId } = useParams();
   
-  const data = queryClient.getQueryData(['album', albumId]) as FullAlbum | undefined;
+  const { data } = useGetAlbum(albumId || '');
   
   if (!data) return <LoadingSkeleton />;
 

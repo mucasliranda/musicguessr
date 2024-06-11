@@ -1,21 +1,18 @@
 import "./styles.css";
 import { Button } from "src/shared/components/Button";
 import { useNavigate, useParams } from "react-router-dom";
-import { FullPlaylist } from "src/shared/model";
 import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
 import SongCard from "src/shared/components/SongCard";
-import { useQueryClient } from "@tanstack/react-query";
 import { Skeleton } from "src/shared/components/Skeleton";
-
+import { useGetPlaylist } from "src/shared/store/server/playlist/queries";
 
 
 
 export default function SongsList() {
-  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const { playlistId } = useParams();
 
-  const data = queryClient.getQueryData(['playlist', playlistId]) as FullPlaylist | undefined;
+  const { data } = useGetPlaylist(playlistId || '');
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();

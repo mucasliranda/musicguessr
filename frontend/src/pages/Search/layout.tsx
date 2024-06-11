@@ -1,4 +1,3 @@
-import Navbar from "../../shared/components/Navbar";
 
 
 
@@ -20,21 +19,7 @@ export default function SearchLayout({ children }: Props) {
         lg:p-4
       "
     >
-      <Navbar />
-      <div 
-        className="
-          flex
-          flex-col
-
-          w-full
-          max-w-screen-2xl
-          pt-4
-
-          gap-4
-        "
-      >
-        {children}
-      </div>
+      {children}
     </main>
   )
 }

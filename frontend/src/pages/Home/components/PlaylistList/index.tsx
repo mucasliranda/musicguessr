@@ -5,8 +5,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "src/shared/components/Carousel"
-import { CarouselCard } from "src/shared/components/Card"
-import { useQueryClient } from "@tanstack/react-query";
+import { CarouselCard } from "src/shared/components/Card";
 import { Playlist } from "src/shared/model";
 import { Skeleton } from "src/shared/components/Skeleton";
 

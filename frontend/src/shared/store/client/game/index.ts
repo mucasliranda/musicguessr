@@ -112,7 +112,6 @@ export const useGameStore = create<State & Actions>((set) => ({
   },
   onEndRound: ({ data }) => {
     const orderedPlayers = [...data.players].sort((a, b) => b.score - a.score);
-    console.log({orderedPlayers})
     set((state) => ({
       ...state,
       isRoundEnded: true,

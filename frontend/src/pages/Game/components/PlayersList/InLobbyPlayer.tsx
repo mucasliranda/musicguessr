@@ -1,6 +1,6 @@
 import { Player } from "src/shared/model"
 import { cn } from "src/shared/utils";
-import { usePlayerStore } from "src/shared/zustand/player"
+import { usePlayerStore } from "src/shared/store/client/player"
 
 
 

@@ -1,4 +1,4 @@
-import { useTimerStore } from "src/shared/zustand/timer";
+import { useTimerStore } from "src/shared/store/client/timer";
 
 
 

@@ -1,9 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
 import SearchLayout from "./layout";
 import { useSearchParams } from "react-router-dom";
-import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
 import ArtistList from "./components/ArtistList";
 import PlaylistList from "../Home/components/PlaylistList";
+import Navbar from "src/shared/components/Navbar";
+import { useGetSearch } from "src/shared/store/server/search/queries";
 
 
 
@@ -12,16 +12,59 @@ export default function SearchPage() {
 
   const searchValue = searchParams.get('q')?.split('+').join(' ') || '';
 
-  const { data } = useQuery({ queryKey: ['search'], queryFn: () => fetchApi.getFullSearch(searchValue)});
+  const { data, isFetching } = useGetSearch(searchValue);
+  
+  // this is basically a loading state
+  if (isFetching) {
+    return (
+      <SearchLayout>
+        <Navbar />
+        <div 
+          className="
+            flex
+            flex-col
+
+            w-full
+            max-w-screen-2xl
+            pt-4
+
+            gap-4
+          "
+        >
+          <PlaylistList playlists={undefined} category={'Playlists'} />
+          <div
+            className="flex flex-col gap-4"
+          >
+            <h3 className="text-white underline decoration-primary text-2xl font-bold">Artists</h3>
+            <ArtistList artists={undefined} />
+          </div>
+      </div>
+      </SearchLayout>
+    )
+  }
 
   return (
     <SearchLayout>
-      <PlaylistList playlists={data?.playlists} category={'Playlists'} />
-      <div
-        className="flex flex-col gap-4"
+      <Navbar />
+      <div 
+        className="
+          flex
+          flex-col
+
+          w-full
+          max-w-screen-2xl
+          pt-4
+
+          gap-4
+        "
       >
-        <h3 className="text-white underline decoration-primary text-2xl font-bold">Artists</h3>
-        <ArtistList artists={data?.artists} />
+        <PlaylistList playlists={data?.playlists} category={'Playlists'} />
+        <div
+          className="flex flex-col gap-4"
+        >
+          <h3 className="text-white underline decoration-primary text-2xl font-bold">Artists</h3>
+          <ArtistList artists={data?.artists} />
+        </div>
       </div>
     </SearchLayout>
   )

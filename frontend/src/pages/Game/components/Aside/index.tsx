@@ -1,4 +1,4 @@
-import { useGameStore } from "src/shared/zustand/game"
+import { useGameStore } from "src/shared/store/client/game"
 import GameConfigDialog from "../GameConfigDialog"
 import { cn } from "src/shared/utils"
 

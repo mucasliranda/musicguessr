@@ -155,7 +155,7 @@ export default function ImportPlaylistDialog() {
           </form>
 
           <img
-            src='./public/playlist-tutorial.jpg'
+            src='./playlist-tutorial.jpg'
           />
         </div>
       </DialogContent>

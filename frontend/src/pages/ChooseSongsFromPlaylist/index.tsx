@@ -1,16 +1,10 @@
-import { useQuery } from "@tanstack/react-query"
-import { useParams } from "react-router-dom";
 import ChooseSongsFromPlaylistLayout from "./layout";
-import { fetchApi } from "src/shared/repositories/FetchApiRepository.ts";
 import SongsList from "./components/SongsList";
 import SongsHeader from "./components/SongsHeader";
 
 
 
 export default function ChooseSongsFromPlaylistPage() {
-  const { playlistId } = useParams();
-  
-  const {} = useQuery({ queryKey: ['playlist', playlistId], queryFn: () => fetchApi.getPlaylist(playlistId || '')});
 
   return (
     <ChooseSongsFromPlaylistLayout>

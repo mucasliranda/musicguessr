@@ -1,7 +1,6 @@
 import { Artist } from "src/shared/model"
 import { Card } from "src/shared/components/Card"
 import { Skeleton } from "src/shared/components/Skeleton";
-import { Image } from "src/shared/components/Image";
 
 
 

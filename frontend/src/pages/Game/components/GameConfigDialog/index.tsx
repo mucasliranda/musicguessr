@@ -3,7 +3,7 @@ import { useState } from "react";
 import { Button } from "src/shared/components/Button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogClose, DialogTitle, DialogFooter } from "src/shared/components/Dialog";
 import { useToast } from "src/shared/components/Toast/use-toast";
-import { useGameStore } from "src/shared/zustand/game";
+import { useGameStore } from "src/shared/store/client/game";
 
 
 

@@ -1,14 +1,15 @@
-import { Album } from "src/shared/model";
 import AlbumCard from "./AlbumCard";
 import { Skeleton } from "src/shared/components/Skeleton";
+import { useParams } from "react-router-dom";
+import { useGetAlbumByArtistId } from "src/shared/store/server/album/queries";
 
 
 
-interface Props {
-  albums: Array<Album> | undefined;
-}
+export default function AlbumList() {
+  const { artistId } = useParams();
 
-export default function AlbumList({ albums }: Props) {
+  const { data: albums } = useGetAlbumByArtistId(artistId || '')
+  
   return (
     <div 
       className="

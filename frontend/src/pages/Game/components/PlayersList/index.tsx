@@ -1,7 +1,7 @@
-import { useGameStore } from "src/shared/zustand/game"
 import { cn } from "src/shared/utils"
 import InGamePlayer from "./InGamePlayer"
 import InLobbyPlayer from "./InLobbyPlayer"
+import { useGameStore } from "src/shared/store/client/game"
 
 
 
