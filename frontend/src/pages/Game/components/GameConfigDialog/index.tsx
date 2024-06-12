@@ -1,8 +1,9 @@
-import { Settings } from "lucide-react";
+import { Info, Settings } from "lucide-react";
 import { useState } from "react";
 import { Button } from "src/shared/components/Button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogClose, DialogTitle, DialogFooter } from "src/shared/components/Dialog";
 import { useToast } from "src/shared/components/Toast/use-toast";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "src/shared/components/Tooltip";
 import { useGameStore } from "src/shared/store/client/game";
 
 
@@ -39,14 +40,14 @@ export default function GameConfigDialog() {
 
           onSubmit={async (e) => {
             e.preventDefault();
-          
+
             const formData = new FormData(e.currentTarget);
             const speed = formData.get('speed') as string;
             const duration = formData.get('duration') as string;
 
             setIsLoading(true);
             emitGameConfig({ speed, duration });
-            await new Promise(resolve => setTimeout(resolve, 1000));
+            await new Promise(resolve => setTimeout(resolve, 1500));
 
             setIsLoading(false);
             setIsOpen(false);
@@ -61,7 +62,31 @@ export default function GameConfigDialog() {
               justify-between
             "
           >
-            <p>Speed</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  className="relative"
+                >
+                  <p
+                    className="pr-5"
+                  >Speed</p>
+                  <Info
+                    className="
+                      absolute
+                      right-0
+                      top-0
+                    "
+                    size={16}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Game duration</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+
 
             <div
               className="
@@ -79,8 +104,8 @@ export default function GameConfigDialog() {
                   select-none
                 "
               >
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   name="speed"
                   value="20000"
                   className="hidden"
@@ -97,8 +122,8 @@ export default function GameConfigDialog() {
                   select-none
                 "
               >
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   name="speed"
                   value="12000"
                   className="hidden"
@@ -117,8 +142,8 @@ export default function GameConfigDialog() {
                   select-none
                 "
               >
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   name="speed"
                   value="7000"
                   className="hidden"
@@ -134,7 +159,31 @@ export default function GameConfigDialog() {
               justify-between
             "
           >
-            <p>Song Duration</p>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger
+                  type="button"
+                  className="relative"
+                >
+                  <p
+                    className="pr-5"
+                  >Song Duration</p>
+                  <Info
+                    className="
+                      absolute
+                      right-0
+                      top-0
+                    "
+                    size={16}
+                  />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Song playback duration</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+
+
 
             <div
               className="
@@ -152,8 +201,8 @@ export default function GameConfigDialog() {
                   select-none
                 "
               >
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   name="duration"
                   value="2000"
                   className="hidden"
@@ -170,8 +219,8 @@ export default function GameConfigDialog() {
                   select-none
                 "
               >
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   name="duration"
                   value="8000"
                   className="hidden"
@@ -190,8 +239,8 @@ export default function GameConfigDialog() {
                   select-none
                 "
               >
-                <input 
-                  type="radio" 
+                <input
+                  type="radio"
                   name="duration"
                   value="30000"
                   className="hidden"
@@ -200,6 +249,8 @@ export default function GameConfigDialog() {
               </label>
             </div>
           </div>
+
+
 
           <DialogFooter>
             {isLoading ? (
