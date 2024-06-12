@@ -25,7 +25,6 @@ export default function Lobby() {
       <div
         className="
           w-full
-          h-full
 
           flex
           flex-col
