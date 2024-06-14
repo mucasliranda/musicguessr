@@ -1,6 +1,6 @@
-import { toast } from "src/shared/components/Toast/use-toast";
 import { Image as ImageProps, Song } from "src/shared/model";
 import { Image } from "src/shared/components/Image";
+import { toast } from "react-toastify";
 
 
 
@@ -15,9 +15,7 @@ interface Props {
 export default function SongCard({ song }: Props) {
   function onChangeSong(song: Props["song"]) {
     if(!song.playable) {
-      toast({
-        description: "This song is not playable."
-      })
+      toast.warning("This song is not playable.");
     }
   }
   

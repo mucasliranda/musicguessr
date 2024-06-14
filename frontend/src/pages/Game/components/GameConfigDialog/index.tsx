@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "src/shared/components/Button";
 import { Dialog, DialogTrigger, DialogContent, DialogHeader, DialogClose, DialogTitle, DialogFooter } from "src/shared/components/Dialog";
-import { useToast } from "src/shared/components/Toast/use-toast";
 import { useGameStore } from "src/shared/store/client/game";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -11,6 +10,7 @@ import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel } fr
 import { RadioGroup } from "@radix-ui/react-radio-group";
 import { RadioGroupItem } from "src/shared/components/Radio";
 import { Slider } from "src/shared/components/Slider";
+import { toast } from "react-toastify";
 
 
 
@@ -30,7 +30,6 @@ function calculateNewValue(defaultValue: number, event: 'plus' | 'minus', gameMo
 export default function GameConfigDialog() {
   const [isOpen, setIsOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { toast } = useToast();
 
   const emitGameConfig = useGameStore((state) => state.emitGameConfig)
   const gameShouldEndOn = useGameStore((state) => state.gameShouldEndOn)
@@ -65,9 +64,7 @@ export default function GameConfigDialog() {
 
     setIsLoading(false);
     setIsOpen(false);
-    toast({
-      title: 'Game configuration saved'
-    })
+    toast.success('Game configuration saved');
   };
 
   return (
