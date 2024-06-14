@@ -18,7 +18,7 @@ export class SocketSingleton {
 
 class SocketClient
   implements SocketRepository {
-  private socket: Socket = io('http://localhost:3005', { autoConnect: true });
+  private socket: Socket = io(import.meta.env.VITE_API_URL, { autoConnect: true });
 
   constructor() { }
 

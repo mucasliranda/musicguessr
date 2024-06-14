@@ -19,7 +19,7 @@ const fetchDefaultOpts = {
 
 class FetchApiRepository
   implements ApiRepository {
-  private baseUrl = 'http://localhost:3005';
+  private baseUrl = import.meta.env.VITE_API_URL;
 
   async getArtists(search: string): Promise<Array<Artist>> {
     if (!search) {
