@@ -10,14 +10,14 @@ import PlayersList from "./components/PlayersList";
 
 
 export default function GamePage() {
-  const { startGame, isGameStarted } = useGame();
+  const { startGame, gameStatus } = useGame();
 
   return (
     <GameLayout>
       <Aside>
         <PlayersList orientation="col" />
 
-        {!isGameStarted && (
+        {gameStatus === 'waiting' && (
           <Button
             onClick={startGame}
             className="mt-4"
@@ -27,7 +27,7 @@ export default function GamePage() {
         )}
       </Aside>
 
-      {!isGameStarted ? <Lobby /> : <GuessArea />}
+      {gameStatus === 'waiting' ? <Lobby /> : <GuessArea />}
 
       <SongPlayer />
     </GameLayout>

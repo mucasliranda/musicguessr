@@ -95,10 +95,10 @@ export class GameService {
     game.timedOut({ playerId });
   }
 
-  public async setGameConfig({ speed, duration, gameId }) {
+  public async setGameConfig({ gameId, roundDuration, songDuration, gameMode, value }) {
     const game = await this.gameRepository.getGame(gameId);
 
-    game.setGameConfig({ speed, duration });
+    game.setGameConfig({ roundDuration, songDuration, gameMode, value });
   }
 
   public async getSongs({ gameId }) {

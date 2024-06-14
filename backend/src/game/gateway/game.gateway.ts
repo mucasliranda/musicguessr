@@ -98,13 +98,17 @@ export class GameGateway implements OnGatewayDisconnect {
   @SubscribeMessage('gameConfig')
   async handleOnGameConfig(
     @ConnectedSocket() client: Socket,
-    @MessageBody() data: any,
+    @MessageBody() data: {
+      roundDuration: number,
+      songDuration: number,
+      gameMode: string,
+      value: number
+    },
   ) {
     const gameId = client.handshake.auth.gameId;
-    const speed = data.speed;
-    const duration = data.duration;
+    const { roundDuration, songDuration, gameMode, value } = data;
 
-    await this.gameService.setGameConfig({ speed, duration, gameId });
+    await this.gameService.setGameConfig({ gameId, roundDuration, songDuration, gameMode, value });
   }
 
   // ON DISCONNECT

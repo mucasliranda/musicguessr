@@ -9,24 +9,25 @@ interface Props {
 }
 
 export default function Aside({ children }: Props) {
-  const isGameStarted = useGameStore((state) => state.isGameStarted)
+  const gameStatus = useGameStore((state) => state.gameStatus)
 
   return (
     <aside
       className={cn(`
         w-full
-        max-w-[25%]
         min-w-40
         h-full 
         p-4
         
         hidden
-
-        md:flex
+        
+        max-w-[40%]
+        md:max-w-[25%]
+        lg:flex
         flex-col
         items-start
         bg-onBackground`,
-        !isGameStarted && '!flex'
+        gameStatus === 'waiting' && '!flex'
       )}
     >
       <div
@@ -49,10 +50,10 @@ export default function Aside({ children }: Props) {
             border-primary
           "
         >
-          {isGameStarted ? 'Score' : 'Lobby'}
+          {gameStatus === 'waiting' ? 'Lobby' : 'Score'}
         </h3>
 
-        {!isGameStarted && (
+        {gameStatus === 'waiting' && (
           <GameConfigDialog />
         )}
       </div>

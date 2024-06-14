@@ -4,11 +4,14 @@ import SongVolume from "../SongVolume"
 import { useGuess } from "src/shared/hooks/useGuess"
 import Guess from "./Guess"
 import PlayersList from "../PlayersList"
+import { useGameStore } from "src/shared/store/client/game"
+import Podium from "./Podium"
 
 
 
 export default function GuessArea() {
   const { songs, playCurrentSong } = useGuess()
+  const gameStatus = useGameStore(state => state.gameStatus)
 
   return (
     <main
@@ -28,37 +31,43 @@ export default function GuessArea() {
     >
       <Timer />
 
-      <div
-        className="
-          flex
-          gap-4
-        "
-      >
-        <Button
-          onClick={playCurrentSong}
-        >
-          Replay Song
-        </Button>
+      {gameStatus === 'playing' ? (
+        <>
+          <div
+            className="
+              flex
+              gap-4
+            "
+          >
+            <Button
+              onClick={playCurrentSong}
+            >
+              Replay Song
+            </Button>
 
-        <SongVolume />
-      </div>
+            <SongVolume />
+          </div>
 
-      <PlayersList orientation="row" />
+          <PlayersList orientation="row" />
 
-      <div 
-        className="
-          grid 
-          grid-cols-1 
-          sm:grid-cols-2 
-          md:grid-cols-3 
-          lg:grid-cols-4 
-          gap-4
+          <div 
+            className="
+              grid 
+              grid-cols-1 
+              sm:grid-cols-2 
+              md:grid-cols-3 
+              lg:grid-cols-4 
+              gap-4
 
-          overflow-auto
-        "
-      >
-        {songs.length > 0 && songs.map((song) => <Guess song={song} key={song.id} />)}
-      </div>
+              overflow-auto
+            "
+          >
+            {songs.length > 0 && songs.map((song) => <Guess song={song} key={song.id} />)}
+          </div>
+        </>
+      ) : (
+        <Podium />
+      )}
 
     </main>
   )

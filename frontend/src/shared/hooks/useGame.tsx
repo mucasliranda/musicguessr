@@ -16,9 +16,10 @@ export function useGame() {
   const navigate = useNavigate()
 
   const {
-    isGameStarted,
+    gameStatus,
     startGame,
     onStartGame,
+    onEndGame,
     onChangePlayers,
     onNewRound,
     onEndRound,
@@ -42,10 +43,9 @@ export function useGame() {
 
     gameListenersUseCase.setOnGameJoinedCallback((e) => onGameJoined(e))
 
-    gameListenersUseCase.setOnGameNotFoundCallback(() => {
-      console.log('Game not found')
-      navigate('/')
-    })
+    gameListenersUseCase.setOnGameNotFoundCallback(() => navigate('/'))
+
+    gameListenersUseCase.setOnEndGameCallback((e) => onEndGame(e))
 
     return () => {
       gameListenersUseCase.offAllListeners()
@@ -54,6 +54,6 @@ export function useGame() {
   
   return {
     startGame,
-    isGameStarted
+    gameStatus
   }
 }

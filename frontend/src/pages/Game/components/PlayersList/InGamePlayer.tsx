@@ -27,13 +27,13 @@ export default function InGamePlayer({ player }: Props) {
         border-b-[3px]
         bg-gray-800
 
-        md:rounded-none
-        md:min-h-fit
-        md:min-w-0
-        md:border-b-[1px]
-        md:pb-1
-        md:flex-row
-        md:bg-transparent
+        lg:rounded-none
+        lg:min-h-fit
+        lg:min-w-0
+        lg:border-b-[1px]
+        lg:pb-1
+        lg:flex-row
+        lg:bg-transparent
       `,
         playerId === player.id ? "border-primary" : "border-[#646464]"
       )}

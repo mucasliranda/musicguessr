@@ -22,19 +22,23 @@ type State = {
   gameId: string | null,
   songs: Array<Song>,
   currentSong: CurrentSong | null,
-  isGameStarted: Boolean,
+  gameStatus: 'waiting' | 'playing' | 'ended',
   guess: Guess | null,
   isRoundEnded: Boolean
-
-  guessTime: number,
+  roundDuration: number,
   songDuration: number | null,
   cooldownTime: number
+  gameShouldEndOn: {
+    type: string,
+    value: number
+  }
 }
 
 type Actions = {
   startGame: () => void;
-  emitGameConfig: ({ speed, duration }: { speed: string, duration: string }) => void;
-  onStartGame: (response: SocketResponse<{ guessTime: number, songDuration: number, cooldownTime: number }>) => void;
+  emitGameConfig: ({ roundDuration, songDuration, gameMode, value }: { roundDuration: number, songDuration: number, gameMode: string, value: number }) => void;
+  onStartGame: (response: SocketResponse<{ roundDuration: number, songDuration: number, cooldownTime: number }>) => void;
+  onEndGame: (response: SocketResponse<{ players: Array<Player> }>) => void;
   guessSong: (song: Song) => void;
   timedOut: () => void;
   onChangePlayers: (response: SocketResponse<{ players: Array<Player> }>) => void;
@@ -52,30 +56,46 @@ export const useGameStore = create<State & Actions>((set) => ({
   gameId: null,
   songs: [],
   currentSong: null,
-  isGameStarted: false,
+  gameStatus: 'waiting',
+
   guess: null,
   isRoundEnded: false,
-  guessTime: 10000,
+  roundDuration: 10000,
   songDuration: 2000,
   cooldownTime: 5000,
+  gameShouldEndOn: {
+    type: 'rounds',
+    value: 15
+  },
 
-
+  
 
   startGame: () => {
     gameEmitterUseCase.emitStartGame();
   },
-  emitGameConfig: ({ speed, duration }) => {
-    gameEmitterUseCase.emitGameConfig({ speed, duration });
+  emitGameConfig: ({ roundDuration, songDuration, gameMode, value }) => {
+    set((state) => ({ ...state, roundDuration, songDuration }));
+
+    gameEmitterUseCase.emitGameConfig({ roundDuration, songDuration, gameMode, value });
   },
 
   onStartGame: ({ data }) => {
     set((state) => ({ 
       ...state, 
-      isGameStarted: true,
-      guessTime: data.guessTime,
+      gameStatus: 'playing',
+      roundDuration: data.roundDuration,
       songDuration: data.songDuration,
       cooldownTime: data.cooldownTime
     }));
+  },
+  async onEndGame({ data }) {
+    set((state) => ({ ...state, players: data.players, gameStatus: 'ended' }));
+
+    await useTimerStore.getState().startEndGameTimer();
+
+    set((state) => ({ ...state, gameStatus: 'waiting' }));
+
+    SongPlayerManager.pauseSong();
   },
   guessSong: (song: Song) => set((state) => {
     if (!!!state.guess && !state.isRoundEnded) {
@@ -99,7 +119,7 @@ export const useGameStore = create<State & Actions>((set) => ({
   onChangePlayers: ({ data }) => {
     set((state) => ({ ...state, players: data.players }));
   },
-  onNewRound: ({ data }) => {
+  async onNewRound({ data }) {
     set((state) => ({
       ...state,
       isRoundEnded: false,
@@ -107,23 +127,29 @@ export const useGameStore = create<State & Actions>((set) => ({
       songs: data.songs,
       guess: null
     }));
-    useTimerStore.getState().startGuessTimer(); // startTimer
     SongPlayerManager.playSong(data.currentSong); // playSong
+
+    await useTimerStore.getState().startGuessTimer(); // startTimer
+
+    useGameStore.getState().timedOut();
   },
-  onEndRound: ({ data }) => {
+  async onEndRound({ data }) {
     const orderedPlayers = [...data.players].sort((a, b) => b.score - a.score);
     set((state) => ({
       ...state,
       isRoundEnded: true,
       players: orderedPlayers
     }));
-    useTimerStore.getState().startCooldownTimer(); // startTimer parcial
-
+    
     const songDuration = useGameStore.getState().songDuration;
     
     if (songDuration !== null) {
       SongPlayerManager.resumeSongOnRoundEnded(); // resume current song without starting from the beginning or stopping
     }
+
+    await useTimerStore.getState().startCooldownTimer(); // startTimer parcial
+
+    useGameStore.getState().timedOut();
   },
   onGameJoined: ({ data }) => {
     usePlayerStore.getState().setPlayerId(data.playerId);
