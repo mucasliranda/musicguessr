@@ -1,13 +1,30 @@
+import { toast } from "react-toastify";
 import { Button } from "src/shared/components/Button";
 
 
 
 export default function Lobby() {
+  
+  async function copyInviteLink() {
+    try {
+      await navigator.clipboard.writeText(window.location.href);
+      toast.success('Invite link copied to clipboard!');
+    }
+    catch (err) {
+      console.error(err);
+      toast.error('Failed to copy invite link to clipboard.');
+    }
+  }
+
   return (
     <main
       className="
         w-3/4 
         h-full
+
+        flex
+        flex-col
+        justify-items-start
 
         p-4
       "
@@ -31,6 +48,8 @@ export default function Lobby() {
           justify-center
           items-center
           gap-4
+
+          mt-24
         "
       >
         <p
@@ -42,7 +61,9 @@ export default function Lobby() {
           Share the invite link with your friends to start the game!
         </p>
 
-        <Button>
+        <Button
+          onClick={copyInviteLink}
+        >
           Copy Invite Link
         </Button>
       </div>
