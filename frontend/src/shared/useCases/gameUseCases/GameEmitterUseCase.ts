@@ -19,7 +19,6 @@ export class GameEmitterUseCase {
   }
 
   emitTimedOut() {
-    console.log('timedOut')
     this.socketServer.emit('timedOut');
   }
 

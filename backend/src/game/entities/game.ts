@@ -83,8 +83,6 @@ export default class Game {
   private increasePlayersPlayed() {
     this.playersPlayed++;
     if(this.playersPlayed >= this.totalPlayers) {
-      console.log('ACABA O ROUND AQUI')
-
       this.endRound();
     }
   }
@@ -119,7 +117,6 @@ export default class Game {
 
   public startGame() {
     this.currentRound = 0
-    console.log('Game started!')
 
     const {
       roundDuration,
@@ -192,7 +189,6 @@ export default class Game {
     this.publish({ event: 'endRound', players: this.getPlayers() }); // Notificar todos os assinantes
     this.clearPlayersPlayed();
 
-    console.log('ESPERANDO 5 SEGUNDOS PARA O PRÓXIMO ROUND')
     setTimeout(() => {
       this.onNextRound();
     }, this.cooldownTime)

@@ -46,8 +46,6 @@ export class GameGateway implements OnGatewayDisconnect {
       await this.gameService.subscribe((command: any) => {
         const { event, ...remaing } = command;
 
-        console.log({event, data: remaing})
-
         this.server.to(gameId).emit(command.event, { data: remaing })
       }, gameId);
 
