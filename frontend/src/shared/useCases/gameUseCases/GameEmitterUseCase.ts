@@ -19,6 +19,7 @@ export class GameEmitterUseCase {
   }
 
   emitTimedOut() {
+    console.log('timedOut')
     this.socketServer.emit('timedOut');
   }
 
@@ -26,7 +27,7 @@ export class GameEmitterUseCase {
     this.socketServer.emit('joinGame', { gameId, username });
   }
 
-  emitGameConfig({ speed, duration }: { speed: string, duration: string }) {
-    this.socketServer.emit('gameConfig', { speed, duration });
+  emitGameConfig({ roundDuration, songDuration, gameMode, value }: { roundDuration: number, songDuration: number, gameMode: string, value: number }) {
+    this.socketServer.emit('gameConfig', { roundDuration, songDuration, gameMode, value });
   }
 }

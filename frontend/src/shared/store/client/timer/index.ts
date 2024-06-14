@@ -12,10 +12,11 @@ type Actions = {
   finishTimer: () => void;
   setProgress: (progress: number) => void;
   resetTimer: () => { progress: number };
-  startGuessTimer: () => void;
-  startCooldownTimer: () => void;
+  startGuessTimer: () => Promise<void>;
+  startCooldownTimer: () => Promise<void>;
+  startEndGameTimer: () => Promise<void>;
 
-  startTimer: (duration: number) => void;
+  startTimer: (duration: number) => Promise<void>;
 }
 
 let timer: NodeJS.Timeout;
@@ -25,8 +26,7 @@ export const useTimerStore = create<State & Actions>((set) => ({
   progress: 100,
   finished: false,
   finishTimer: () => {
-    useGameStore.getState().timedOut();
-    set(() => ({ finished: true }))
+    set(() => ({ finished: true }));
   },
   setProgress: (progress) => set(() => ({ progress })),
   resetTimer: () => {
@@ -41,29 +41,32 @@ export const useTimerStore = create<State & Actions>((set) => ({
 
     return { progress: newProgress }
   },
-  startGuessTimer() {
-    return this.startTimer(useGameStore.getState().guessTime);
+  async startGuessTimer() {
+    return await this.startTimer(useGameStore.getState().roundDuration);
   },
-  startCooldownTimer() {
-    return this.startTimer(useGameStore.getState().cooldownTime);
+  async startCooldownTimer() {
+    return await this.startTimer(useGameStore.getState().cooldownTime);
+  },
+  async startEndGameTimer() {
+    return await this.startTimer(10000);
   },
 
-  startTimer: (duration) => set((state) => {
+  startTimer: async (duration) => {
+    const state = useTimerStore.getState();
     let progress = state.resetTimer().progress;
-    
-    timer = setInterval(() => {
-      if (progress === 0) {
-        clearInterval(timer);
-        state.finishTimer();
-        return { progress: 0, finished: true }; // Return the updated state
-      }
-      const diff = (timerInterval / duration) * 100;
-      const newProgress = Math.max(progress - diff, 0);
-      progress = newProgress;
-      state.setProgress(newProgress);
-      return { finished: false, progress: newProgress }; // Return the updated state
-    }, timerInterval);
-    
-    return state
-  })
+
+    return await new Promise((resolve) => {
+      timer = setInterval(() => {
+        if (progress === 0) {
+          clearInterval(timer);
+          state.finishTimer();
+          resolve();
+        }
+        const diff = (timerInterval / duration) * 100;
+        const newProgress = Math.max(progress - diff, 0);
+        progress = newProgress;
+        state.setProgress(newProgress);
+      }, timerInterval);
+    });
+  }
 }))

@@ -9,12 +9,13 @@ export default function CongratulationsConfetti() {
 
   const {
     isRoundEnded,
+    gameStatus,
     guess,
   } = useGameStore();
   
   return (
     <Confetti
-      numberOfPieces={isRoundEnded && guess?.right ? 1000 : 0}
+      numberOfPieces={gameStatus === 'ended' || (isRoundEnded && gameStatus === 'playing' && guess?.right) ? 1000 : 0}
       recycle={false}
       gravity={0.15}
       onConfettiComplete={(confetti) => confetti?.reset()}

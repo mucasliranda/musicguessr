@@ -78,7 +78,7 @@ export default function ImportPlaylistDialog() {
         "
       >
         <DialogHeader>
-          <DialogTitle>Import any playlist and play!</DialogTitle>
+          <DialogTitle>Import any playlist from Spotify and play!</DialogTitle>
           <DialogClose />
         </DialogHeader>
 

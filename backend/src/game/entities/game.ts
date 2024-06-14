@@ -29,18 +29,20 @@ export default class Game {
     return songs;
   };
 
-  // GAME CONFIG
-  private guessTime = 12000; // 10 SECS
-  private songDuration = 3000; // 2 SECS
+  private roundDuration = 12000; // 12 SECS
+  private songDuration = 3000; // 3 SECS
   private cooldownTime = 5000; // 5 SECS
   private shouldSortStartAt = true;
 
   private roundStartedAt: number = 0;
 
-
+  private gameShouldEndOn = {
+    type: 'rounds',
+    value: 15
+  }
 
   private playersPlayed = 0;
-  private totalPlayers = 0; // Atualize este valor de acordo com o número de jogadores no seu jogo
+  private totalPlayers = 0;
 
   private subscribers = [] as Array<Function>;
 
@@ -52,6 +54,26 @@ export default class Game {
     for (let subscriber of this.subscribers) {
       subscriber(data);
     }
+  }
+
+  private shouldEndGame() {
+    if (this.players.length === 0) {
+      return true
+    }
+
+    if (this.gameShouldEndOn.type === 'rounds') {
+      return this.currentRound > this.gameShouldEndOn.value
+    }
+
+    const maxScore = this.players.reduce((acc, player) => Math.max(acc, player.getScore()), 0)
+
+    return maxScore >= this.gameShouldEndOn.value
+  }
+
+  private endGame() {
+    this.publish({ event: 'endGame', players: this.getPlayers() });
+
+    this.players.forEach(player => player.clearPoints())
   }
 
   private changeTotalPlayers() {
@@ -100,32 +122,33 @@ export default class Game {
     console.log('Game started!')
 
     const {
-      guessTime,
+      roundDuration,
       songDuration,
       cooldownTime
     } = this
 
-    this.publish({ event: 'startGame', guessTime, songDuration, cooldownTime })
+    this.publish({ event: 'startGame', roundDuration, songDuration, cooldownTime })
 
     return this.onNextRound();
   }
 
   public onNextRound() {
+    if (this.shouldEndGame()) {
+      return this.endGame();
+    }
+
     this.currentRound++
   
-    // GET A RANDOM SONG
     const randomSongIndex = Math.floor(Math.random() * this.songs.length)
     const randomSong = this.songs[randomSongIndex]
 
-    // GET A RANDOM START TIME
     const startAt = (() => {
       if (
         this.shouldSortStartAt
         && this.songDuration !== null
       ) {
-        const songTotalTime = 30000 // as millis
+        const songTotalTime = 30000
         const maxStartAt = songTotalTime - this.songDuration
-        // the maximum startAt and not breaking the songTotalTime
         const startAt = Math.floor(Math.random() * maxStartAt)
 
         return Math.floor(startAt / 1000)
@@ -138,7 +161,6 @@ export default class Game {
       startAt: startAt
     }
 
-    // Vou retornar somente 6 músicas para o usuário poder chutar, tem que ser a resposta correta +5 aleatórias
     const songsToGuess = [
       randomSong
     ]
@@ -201,7 +223,7 @@ export default class Game {
     const elapsedTime = guessedAt - startTime;
 
     // Calcule o tempo decorrido como uma porcentagem do tempo máximo
-    const timePassedPercentage = elapsedTime / this.guessTime;
+    const timePassedPercentage = elapsedTime / this.roundDuration;
 
     // Calcule a pontuação com base na porcentagem do tempo decorrido
     const points = maxPoints * (1 - timePassedPercentage);
@@ -218,9 +240,14 @@ export default class Game {
     }
   }
 
-  public setGameConfig({ speed, duration }: { speed: string, duration: string }) {
-    this.guessTime = Number(speed)
-    this.songDuration = Number(duration)
+  public setGameConfig({ roundDuration, songDuration, gameMode, value }) {
+    this.roundDuration = roundDuration;
+    this.songDuration = songDuration;
+
+    this.gameShouldEndOn = {
+      type: gameMode,
+      value: value
+    }
   }
 
   public getSongs() {
@@ -235,6 +262,10 @@ class Player {
     this.score += points
   }
 
+  public clearPoints() {
+    this.score = 0
+  }
+
   public getPlayerId() {
     return this.id
   }
@@ -247,24 +278,3 @@ class Player {
     return this.score
   }
 }
-
-// const newPlayer = new Player('123', 0)
-
-// private state = {
-//   // UUID THAT WILL BE GENERATED ONCE THE GAME STARTS
-//   gameId: '',
-//   // ARRAY OF UUID PLAYERS
-//   players: [
-    
-//   ] as Array<Player>,
-//   // ARRAY OF TRACKS UUID
-//   songs: [],
-//   // CURRENT ROUND
-//   currentRound: 0,
-//   // CURRENT TRACK UUID, NAME AND START TIME
-//   currentTrack: {
-//     trackId: '',
-//     trackName: '',
-//     startAt: 0,
-//   },
-// }

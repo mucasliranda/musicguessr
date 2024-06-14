@@ -10,15 +10,15 @@ interface Props {
 }
 
 export default function PlayersList({ orientation }: Props) {
-  const isGameStarted = useGameStore((state) => state.isGameStarted)
+  const gameStatus = useGameStore((state) => state.gameStatus)
   const players = useGameStore((state) => state.players)
 
-  const DynamicPlayerComponent = isGameStarted ? InGamePlayer : InLobbyPlayer
+  const DynamicPlayerComponent = gameStatus !== 'waiting' ? InGamePlayer : InLobbyPlayer
   const DynamicList = orientation === "row" ? RowList : ColList
 
   return (
     <DynamicList
-      isGameStarted={isGameStarted}
+      isGameStarted={gameStatus !== 'waiting'}
     >
       {players.map((player) => {
         return (
@@ -45,7 +45,7 @@ function RowList({ children, isGameStarted }) {
         overflow-x-scroll
         no-scrollbar
         
-        md:hidden`,
+        lg:hidden`,
         isGameStarted ? "flex" : "hidden"
       )}
     >
